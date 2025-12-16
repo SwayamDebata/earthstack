@@ -1,0 +1,80 @@
+{
+    "rivers": [
+        {
+            "id": "ganges-1",
+            "name": "Ganges",
+            "location": "Haridwar",
+            "coordinates": {
+                "lat": 29.9457,
+                "lng": 78.1642
+            },
+            "currentLevel": 295.4,
+            "normalLevel": 290.0,
+            "dangerLevel": 305.0,
+            "status": "normal",
+            "trend": "rising",
+            "flowRate": 1250.5
+        },
+        {
+            "id": "yamuna-1",
+            "name": "Yamuna",
+            "location": "Delhi",
+            "coordinates": {
+                "lat": 28.6139,
+                "lng": 77.2090
+            },
+            "currentLevel": 203.8,
+            "normalLevel": 204.5,
+            "dangerLevel": 207.0,
+            "status": "warning",
+            "trend": "rising",
+            "flowRate": 850.2
+        },
+        {
+            "id": "brahmaputra-1",
+            "name": "Brahmaputra",
+            "location": "Guwahati",
+            "coordinates": {
+                "lat": 26.1445,
+                "lng": 91.7362
+            },
+            "currentLevel": 48.9,
+            "normalLevel": 49.7,
+            "dangerLevel": 51.5,
+            "status": "normal",
+            "trend": "stable",
+            "flowRate": 2100.8
+        },
+        {
+            "id": "godavari-1",
+            "name": "Godavari",
+            "location": "Rajahmundry",
+            "coordinates": {
+                "lat": 17.0005,
+                "lng": 81.8040
+            },
+            "currentLevel": 12.3,
+            "normalLevel": 10.5,
+            "dangerLevel": 13.5,
+            "status": "alert",
+            "trend": "rising",
+            "flowRate": 1680.3
+        },
+        {
+            "id": "krishna-1",
+            "name": "Krishna",
+            "location": "Vijayawada",
+            "coordinates": {
+                "lat": 16.5062,
+                "lng": 80.6480
+            },
+            "currentLevel": 8.7,
+            "normalLevel": 9.2,
+            "dangerLevel": 11.0,
+            "status": "normal",
+            "trend": "falling",
+            "flowRate": 920.5
+        }
+    ],
+    "lastUpdated": "2024-11-22T18:40:00Z"
+}

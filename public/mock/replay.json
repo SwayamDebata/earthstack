@@ -1,0 +1,359 @@
+{
+    "frames": [
+        {
+            "frameId": 0,
+            "timestamp": "2024-11-22T00:00:00Z",
+            "rainfall": 5.2,
+            "riverLevel": 290.5,
+            "riskScore": 2.1,
+            "rainfallLayer": [
+                {
+                    "lat": 19.0760,
+                    "lng": 72.8777,
+                    "intensity": 0.2
+                },
+                {
+                    "lat": 19.2,
+                    "lng": 73.0,
+                    "intensity": 0.1
+                },
+                {
+                    "lat": 18.9,
+                    "lng": 72.8,
+                    "intensity": 0.15
+                }
+            ]
+        },
+        {
+            "frameId": 1,
+            "timestamp": "2024-11-22T00:05:00Z",
+            "rainfall": 15.5,
+            "riverLevel": 291.2,
+            "riskScore": 3.5,
+            "rainfallLayer": [
+                {
+                    "lat": 19.1,
+                    "lng": 73.0,
+                    "intensity": 0.4
+                },
+                {
+                    "lat": 19.3,
+                    "lng": 73.2,
+                    "intensity": 0.3
+                },
+                {
+                    "lat": 19.0,
+                    "lng": 72.9,
+                    "intensity": 0.35
+                },
+                {
+                    "lat": 19.5,
+                    "lng": 73.5,
+                    "intensity": 0.2
+                }
+            ]
+        },
+        {
+            "frameId": 2,
+            "timestamp": "2024-11-22T00:10:00Z",
+            "rainfall": 28.3,
+            "riverLevel": 292.8,
+            "riskScore": 5.2,
+            "rainfallLayer": [
+                {
+                    "lat": 19.2,
+                    "lng": 73.2,
+                    "intensity": 0.6
+                },
+                {
+                    "lat": 19.4,
+                    "lng": 73.4,
+                    "intensity": 0.5
+                },
+                {
+                    "lat": 19.1,
+                    "lng": 73.1,
+                    "intensity": 0.55
+                },
+                {
+                    "lat": 19.6,
+                    "lng": 73.7,
+                    "intensity": 0.4
+                },
+                {
+                    "lat": 19.8,
+                    "lng": 74.0,
+                    "intensity": 0.3
+                }
+            ]
+        },
+        {
+            "frameId": 3,
+            "timestamp": "2024-11-22T00:15:00Z",
+            "rainfall": 45.7,
+            "riverLevel": 294.5,
+            "riskScore": 6.8,
+            "rainfallLayer": [
+                {
+                    "lat": 19.3,
+                    "lng": 73.4,
+                    "intensity": 0.8
+                },
+                {
+                    "lat": 19.5,
+                    "lng": 73.6,
+                    "intensity": 0.7
+                },
+                {
+                    "lat": 19.2,
+                    "lng": 73.3,
+                    "intensity": 0.75
+                },
+                {
+                    "lat": 19.7,
+                    "lng": 73.9,
+                    "intensity": 0.6
+                },
+                {
+                    "lat": 20.0,
+                    "lng": 74.2,
+                    "intensity": 0.5
+                }
+            ]
+        },
+        {
+            "frameId": 4,
+            "timestamp": "2024-11-22T00:20:00Z",
+            "rainfall": 62.4,
+            "riverLevel": 296.8,
+            "riskScore": 8.1,
+            "rainfallLayer": [
+                {
+                    "lat": 19.4,
+                    "lng": 73.6,
+                    "intensity": 1.0
+                },
+                {
+                    "lat": 19.6,
+                    "lng": 73.8,
+                    "intensity": 0.9
+                },
+                {
+                    "lat": 19.3,
+                    "lng": 73.5,
+                    "intensity": 0.95
+                },
+                {
+                    "lat": 19.8,
+                    "lng": 74.1,
+                    "intensity": 0.8
+                },
+                {
+                    "lat": 20.2,
+                    "lng": 74.5,
+                    "intensity": 0.7
+                }
+            ]
+        },
+        {
+            "frameId": 5,
+            "timestamp": "2024-11-22T00:25:00Z",
+            "rainfall": 58.1,
+            "riverLevel": 299.2,
+            "riskScore": 7.5,
+            "rainfallLayer": [
+                {
+                    "lat": 19.5,
+                    "lng": 73.8,
+                    "intensity": 0.9
+                },
+                {
+                    "lat": 19.7,
+                    "lng": 74.0,
+                    "intensity": 0.8
+                },
+                {
+                    "lat": 19.4,
+                    "lng": 73.7,
+                    "intensity": 0.85
+                },
+                {
+                    "lat": 19.9,
+                    "lng": 74.3,
+                    "intensity": 0.7
+                },
+                {
+                    "lat": 20.4,
+                    "lng": 74.8,
+                    "intensity": 0.6
+                }
+            ]
+        },
+        {
+            "frameId": 6,
+            "timestamp": "2024-11-22T00:30:00Z",
+            "rainfall": 45.9,
+            "riverLevel": 301.5,
+            "riskScore": 6.2,
+            "rainfallLayer": [
+                {
+                    "lat": 19.6,
+                    "lng": 74.0,
+                    "intensity": 0.7
+                },
+                {
+                    "lat": 19.8,
+                    "lng": 74.2,
+                    "intensity": 0.6
+                },
+                {
+                    "lat": 19.5,
+                    "lng": 73.9,
+                    "intensity": 0.65
+                },
+                {
+                    "lat": 20.0,
+                    "lng": 74.5,
+                    "intensity": 0.5
+                },
+                {
+                    "lat": 20.6,
+                    "lng": 75.0,
+                    "intensity": 0.4
+                }
+            ]
+        },
+        {
+            "frameId": 7,
+            "timestamp": "2024-11-22T00:35:00Z",
+            "rainfall": 32.5,
+            "riverLevel": 303.8,
+            "riskScore": 5.1,
+            "rainfallLayer": [
+                {
+                    "lat": 19.7,
+                    "lng": 74.2,
+                    "intensity": 0.5
+                },
+                {
+                    "lat": 19.9,
+                    "lng": 74.4,
+                    "intensity": 0.4
+                },
+                {
+                    "lat": 19.6,
+                    "lng": 74.1,
+                    "intensity": 0.45
+                },
+                {
+                    "lat": 20.1,
+                    "lng": 74.7,
+                    "intensity": 0.3
+                },
+                {
+                    "lat": 20.8,
+                    "lng": 75.2,
+                    "intensity": 0.2
+                }
+            ]
+        },
+        {
+            "frameId": 8,
+            "timestamp": "2024-11-22T00:40:00Z",
+            "rainfall": 20.2,
+            "riverLevel": 305.2,
+            "riskScore": 4.0,
+            "rainfallLayer": [
+                {
+                    "lat": 19.8,
+                    "lng": 74.4,
+                    "intensity": 0.3
+                },
+                {
+                    "lat": 20.0,
+                    "lng": 74.6,
+                    "intensity": 0.2
+                },
+                {
+                    "lat": 19.7,
+                    "lng": 74.3,
+                    "intensity": 0.25
+                },
+                {
+                    "lat": 20.2,
+                    "lng": 74.9,
+                    "intensity": 0.15
+                },
+                {
+                    "lat": 21.0,
+                    "lng": 75.5,
+                    "intensity": 0.1
+                }
+            ]
+        },
+        {
+            "frameId": 9,
+            "timestamp": "2024-11-22T00:45:00Z",
+            "rainfall": 12.8,
+            "riverLevel": 304.5,
+            "riskScore": 3.2,
+            "rainfallLayer": [
+                {
+                    "lat": 19.9,
+                    "lng": 74.6,
+                    "intensity": 0.2
+                },
+                {
+                    "lat": 20.1,
+                    "lng": 74.8,
+                    "intensity": 0.1
+                },
+                {
+                    "lat": 19.8,
+                    "lng": 74.5,
+                    "intensity": 0.15
+                }
+            ]
+        },
+        {
+            "frameId": 10,
+            "timestamp": "2024-11-22T00:50:00Z",
+            "rainfall": 8.5,
+            "riverLevel": 303.2,
+            "riskScore": 2.5,
+            "rainfallLayer": [
+                {
+                    "lat": 20.0,
+                    "lng": 74.8,
+                    "intensity": 0.1
+                },
+                {
+                    "lat": 20.2,
+                    "lng": 75.0,
+                    "intensity": 0.05
+                }
+            ]
+        },
+        {
+            "frameId": 11,
+            "timestamp": "2024-11-22T00:55:00Z",
+            "rainfall": 4.1,
+            "riverLevel": 301.8,
+            "riskScore": 1.8,
+            "rainfallLayer": [
+                {
+                    "lat": 20.1,
+                    "lng": 75.0,
+                    "intensity": 0.05
+                }
+            ]
+        }
+    ],
+    "metadata": {
+        "totalFrames": 12,
+        "duration": "55 minutes",
+        "frameInterval": "5 seconds",
+        "region": "India - Major Cities",
+        "dataSource": "Satellite + Ground Stations"
+    }
+}

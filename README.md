@@ -25,12 +25,34 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 To learn more about Next.js, take a look at the following resources:
 
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+npm run build
+npm start
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🎯 MVP Goals
 
-## Deploy on Vercel
+This is a production-ready MVP designed for:
+- Investor demonstrations
+- Proof of concept for climate intelligence platforms
+- Showcase of modern web development practices
+- Foundation for scaling to real satellite data integration
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🌟 Key Highlights
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **World-class UI/UX** - NASA x Palantir vibes
+- **Smooth animations** - Micro-interactions throughout
+- **Responsive design** - Works on all devices
+- **Type-safe** - Full TypeScript coverage
+- **Production-ready** - Clean, maintainable code
+
+## 📝 License
+
+This project is built as an MVP demonstration.
+
+## 🤝 Contributing
+
+This is an MVP project. For production deployment, replace mock data with real satellite feeds and API integrations.
+
+---
+
+**Built with ❤️ for climate intelligence**

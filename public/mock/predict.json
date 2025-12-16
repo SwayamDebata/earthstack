@@ -1,0 +1,110 @@
+{
+    "predictions": [
+        {
+            "location": "Mumbai Metropolitan Region",
+            "coordinates": {
+                "lat": 19.0760,
+                "lng": 72.8777
+            },
+            "riskLevel": "High",
+            "riskScore": 8.5,
+            "confidence": 87,
+            "probability": 75,
+            "timeframe": "24-48 hours",
+            "factors": [
+                "Heavy rainfall predicted (150mm+)",
+                "High tide coinciding with peak rainfall",
+                "Saturated ground conditions",
+                "Urban drainage capacity exceeded"
+            ],
+            "affectedArea": 245.5,
+            "population": 1250000
+        },
+        {
+            "location": "Assam Valley",
+            "coordinates": {
+                "lat": 26.2006,
+                "lng": 92.9376
+            },
+            "riskLevel": "Medium",
+            "riskScore": 5.2,
+            "confidence": 72,
+            "probability": 45,
+            "timeframe": "48-72 hours",
+            "factors": [
+                "Brahmaputra river level rising",
+                "Moderate rainfall expected",
+                "Historical flood-prone area"
+            ],
+            "affectedArea": 180.3,
+            "population": 850000
+        },
+        {
+            "location": "Chennai Coastal Area",
+            "coordinates": {
+                "lat": 13.0827,
+                "lng": 80.2707
+            },
+            "riskLevel": "Low",
+            "riskScore": 2.1,
+            "confidence": 91,
+            "probability": 15,
+            "timeframe": "72+ hours",
+            "factors": [
+                "Normal weather conditions",
+                "Good drainage infrastructure",
+                "Low river levels"
+            ],
+            "affectedArea": 45.2,
+            "population": 120000
+        }
+    ],
+    "floodZones": [
+        {
+            "coordinates": [
+                [
+                    19.0760,
+                    72.8777
+                ],
+                [
+                    19.1136,
+                    72.8697
+                ],
+                [
+                    19.1270,
+                    72.9089
+                ],
+                [
+                    19.0896,
+                    72.9169
+                ]
+            ],
+            "severity": "high",
+            "depth": "2-4 meters"
+        },
+        {
+            "coordinates": [
+                [
+                    26.1445,
+                    91.7362
+                ],
+                [
+                    26.1845,
+                    91.7162
+                ],
+                [
+                    26.2045,
+                    91.7562
+                ],
+                [
+                    26.1645,
+                    91.7762
+                ]
+            ],
+            "severity": "medium",
+            "depth": "1-2 meters"
+        }
+    ],
+    "generatedAt": "2024-11-22T18:45:00Z",
+    "modelVersion": "FloodPredict-AI v2.1"
+}
