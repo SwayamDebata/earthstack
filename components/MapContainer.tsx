@@ -204,27 +204,46 @@ export default function MapContainer({ children, className = '', layers, replayF
           }
         });
 
-        // Add River Circles Layer
+        // Background Glow
         mapInstance.addLayer({
-          id: 'river-points',
-          type: 'circle',
-          source: 'rivers',
-          paint: {
-            'circle-radius': 8,
-            'circle-color': [
-              'match',
-              ['get', 'status'],
-              'normal', '#4ADE80',
-              'warning', '#FACC15',
-              'alert', '#EF4444',
-              '#4ADE80'
-            ],
-            'circle-stroke-width': 2,
-            'circle-stroke-color': '#ffffff'
-          },
-          layout: {
-            visibility: 'visible'
-          }
+            id: 'river-glow',
+            type: 'circle',
+            source: 'rivers',
+            paint: {
+                'circle-radius': 15,
+                'circle-color': [
+                    'match',
+                    ['get', 'status'],
+                    'normal', '#4ADE80',
+                    'warning', '#FACC15',
+                    'alert', '#EF4444',
+                    '#4ADE80' // Default fallback
+                ],
+                'circle-opacity': 0.4,
+                'circle-blur': 0.5
+            },
+            layout: { visibility: 'visible' }
+        });
+
+        // Core Sensor Point
+        mapInstance.addLayer({
+            id: 'river-core',
+            type: 'circle',
+            source: 'rivers',
+            paint: {
+                'circle-radius': 6,
+                'circle-color': '#FFFFFF',
+                'circle-stroke-width': 2,
+                'circle-stroke-color': [
+                    'match',
+                    ['get', 'status'],
+                    'normal', '#4ADE80',
+                    'warning', '#FACC15',
+                    'alert', '#EF4444',
+                    '#4ADE80'
+                ]
+            },
+            layout: { visibility: 'visible' }
         });
       }
 
@@ -326,7 +345,8 @@ export default function MapContainer({ children, className = '', layers, replayF
     };
 
     toggleLayer('rainfall-heat', !!layers.rainfall);
-    toggleLayer('river-points', !!layers.riverLevels);
+    toggleLayer('river-glow', !!layers.riverLevels);
+    toggleLayer('river-core', !!layers.riverLevels);
     toggleLayer('flood-zones', !!layers.floodZones);
     // toggleLayer('clouds', !!layers.clouds);
     

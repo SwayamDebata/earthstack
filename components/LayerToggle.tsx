@@ -20,7 +20,7 @@ export default function LayerToggle({ layers, onToggle }: LayerToggleProps) {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5 }}
-      className="absolute top-6 right-6 glass-card p-4 rounded-2xl w-64 z-10"
+      className="glass-card p-4 rounded-2xl w-64 z-10"
     >
       <h3 className="text-sm font-semibold mb-3 text-gray-300">Map Layers</h3>
       <div className="space-y-2">

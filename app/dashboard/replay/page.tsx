@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import MapContainer from '@/components/MapContainer';
-import TimelineControl from '@/components/TimelineControl';
+import TimelineControl, { TimelineEvent } from '@/components/TimelineControl';
+import ReplayMetadata from '@/components/ReplayMetadata';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ReplayModePage() {
@@ -12,6 +13,7 @@ export default function ReplayModePage() {
   const [loading, setLoading] = useState(true);
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [gameSpeed, setGameSpeed] = useState(1);
 
   useEffect(() => {
     fetch('/api/mock/replay')
@@ -26,9 +28,11 @@ export default function ReplayModePage() {
       });
   }, []);
 
-  // Auto-play functionality
+  // Auto-play functionality with speed
   useEffect(() => {
     if (!isPlaying || !replayData) return;
+
+    const intervalTime = 1000 / gameSpeed;
 
     const interval = setInterval(() => {
       setCurrentFrame((prev) => {
@@ -38,10 +42,10 @@ export default function ReplayModePage() {
         }
         return prev + 1;
       });
-    }, 1000); // 1 second per frame
+    }, intervalTime);
 
     return () => clearInterval(interval);
-  }, [isPlaying, replayData]);
+  }, [isPlaying, replayData, gameSpeed]);
 
   const handleFrameChange = useCallback((frame: number) => {
     setCurrentFrame(frame);
@@ -52,6 +56,13 @@ export default function ReplayModePage() {
   }, []);
 
   const currentFrameData = replayData?.frames[currentFrame];
+
+  // Mock Events
+  const mockEvents: TimelineEvent[] = [
+      { frame: 12, label: 'Heavy Rainfall Onset', type: 'info' },
+      { frame: 28, label: 'River Surge', type: 'warning' },
+      { frame: 45, label: 'CRITICAL BREACH', type: 'critical' },
+  ];
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -81,98 +92,19 @@ export default function ReplayModePage() {
               </div>
 
               {/* Frame Metadata Panel - Top Right */}
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentFrame}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  transition={{ duration: 0.3 }}
-                  className="absolute top-6 right-6 z-10 w-80"
-                >
-                  <div className="glass-card p-6 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-bold gradient-text">Replay Mode</h3>
-                      <span className="text-xs text-gray-400 font-mono">
-                        {isPlaying ? '▶ PLAYING' : '⏸ PAUSED'}
-                      </span>
-                    </div>
-
-                    {currentFrameData && (
-                      <>
-                        {/* Timestamp */}
-                        <div className="space-y-1">
-                          <p className="text-xs text-gray-400">Timestamp</p>
-                          <p className="text-lg font-mono text-white">
-                            {new Date(currentFrameData.timestamp).toLocaleString('en-US', {
-                              month: 'short',
-                              day: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
-                          </p>
-                        </div>
-
-                        {/* Metrics Grid */}
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="space-y-1">
-                            <p className="text-xs text-gray-400">🌧 Rainfall</p>
-                            <p className="text-xl font-bold text-white">
-                              {currentFrameData.rainfall.toFixed(1)} mm
-                            </p>
-                          </div>
-                          <div className="space-y-1">
-                            <p className="text-xs text-gray-400">🌊 River Level</p>
-                            <p className="text-xl font-bold text-white">
-                              {currentFrameData.riverLevel.toFixed(1)} m
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Risk Score */}
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <p className="text-xs text-gray-400">⚠️ Risk Score</p>
-                            <p className={`text-2xl font-bold ${
-                              currentFrameData.riskScore > 7 ? 'text-red-400' :
-                              currentFrameData.riskScore > 4 ? 'text-yellow-400' :
-                              'text-green-400'
-                            }`}>
-                              {currentFrameData.riskScore.toFixed(1)}/10
-                            </p>
-                          </div>
-                          
-                          {/* Risk Progress Bar */}
-                          <div className="relative h-2 bg-white/5 rounded-full overflow-hidden">
-                            <motion.div
-                              initial={{ width: 0 }}
-                              animate={{ width: `${(currentFrameData.riskScore / 10) * 100}%` }}
-                              transition={{ duration: 0.5 }}
-                              className={`h-full rounded-full ${
-                                currentFrameData.riskScore > 7 ? 'bg-gradient-to-r from-red-500 to-rose-600' :
-                                currentFrameData.riskScore > 4 ? 'bg-gradient-to-r from-yellow-500 to-orange-500' :
-                                'bg-gradient-to-r from-green-500 to-emerald-500'
-                              }`}
-                            />
-                          </div>
-                        </div>
-
-                        {/* Data Points */}
-                        <div className="pt-4 border-t border-white/10 space-y-2 text-xs">
-                          <div className="flex justify-between">
-                            <span className="text-gray-400">Data Points</span>
-                            <span className="text-white">{currentFrameData.rainfallLayer?.length || 0}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-400">Frame ID</span>
-                            <span className="text-white font-mono">#{currentFrameData.frameId}</span>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </motion.div>
-              </AnimatePresence>
+              <div className="absolute top-6 right-6 z-10 w-72">
+                 {currentFrameData && (
+                    <ReplayMetadata data={{
+                        timestamp: new Date(currentFrameData.timestamp).toLocaleString(),
+                        rainfall: Number(currentFrameData.rainfall.toFixed(1)),
+                        riverLevel: Number(currentFrameData.riverLevel.toFixed(1)),
+                        riskScore: Number(currentFrameData.riskScore.toFixed(1)),
+                        temperature: 28, // Mock
+                        windSpeed: 45, // Mock
+                        primaryEvent: currentFrame === 45 ? 'LEVEE FAILURE' : undefined
+                    }} />
+                 )}
+              </div>
 
               {/* Timeline Control - Bottom */}
               {replayData && currentFrameData && (
@@ -182,12 +114,11 @@ export default function ReplayModePage() {
                   onFrameChange={handleFrameChange}
                   isPlaying={isPlaying}
                   onPlayPause={handlePlayPause}
-                  frameData={{
-                    timestamp: new Date(currentFrameData.timestamp).toLocaleTimeString(),
-                    rainfall: currentFrameData.rainfall,
-                    riverLevel: currentFrameData.riverLevel,
-                    riskScore: currentFrameData.riskScore,
-                  }}
+                  gameSpeed={gameSpeed}
+                  setGameSpeed={setGameSpeed}
+                  events={mockEvents}
+                  startTime="06:00"
+                  endTime="18:00"
                 />
               )}
             </>

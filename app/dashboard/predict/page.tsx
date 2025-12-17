@@ -6,12 +6,16 @@ import Sidebar from '@/components/Sidebar';
 import MapContainer from '@/components/MapContainer';
 import RiskCard from '@/components/RiskCard';
 import { motion } from 'framer-motion';
+import Skeleton from '@/components/ui/Skeleton';
+import ScenarioBuilder, { ScenarioParams } from '@/components/ScenarioBuilder';
+import { Settings2 } from 'lucide-react';
 
 export default function FloodPredictPage() {
   const [predictions, setPredictions] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [selectedPrediction, setSelectedPrediction] = useState(0);
+  const [isScenarioBuilderOpen, setIsScenarioBuilderOpen] = useState(false);
 
   useEffect(() => {
     fetch('/api/mock/predict')
@@ -25,6 +29,16 @@ export default function FloodPredictPage() {
         setLoading(false);
       });
   }, []);
+
+  const handleApplyScenario = (params: ScenarioParams) => {
+      // In a real app, we would re-fetch predictions with these params
+      console.log("Applying scenario params:", params);
+      setGenerating(true);
+      setTimeout(() => {
+          setGenerating(false);
+          alert(`Scenario Applied: Rainfall ${params.rainfallIntensity}% | Blockage ${params.drainageBlockage}%`);
+      }, 2000);
+  };
 
   const handleGeneratePrediction = () => {
     setGenerating(true);
@@ -54,23 +68,37 @@ export default function FloodPredictPage() {
             />
           </div>
 
+          <ScenarioBuilder 
+             isOpen={isScenarioBuilderOpen}
+             onClose={() => setIsScenarioBuilderOpen(false)}
+             onApply={handleApplyScenario}
+          />
+
           {/* Right Panel - Risk Cards */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             className="absolute top-6 right-6 z-10 w-96 space-y-4 max-h-[calc(100vh-6rem)] overflow-y-auto pr-2 pb-6 custom-scrollbar"
           >
-            <div className="glass-card p-4">
-              <h2 className="text-xl font-bold gradient-text mb-2">Flood Prediction</h2>
-              <p className="text-sm text-gray-400">AI-powered risk assessment</p>
+            <div className="glass-card p-4 flex justify-between items-center">
+               <div>
+                  <h2 className="text-xl font-bold gradient-text mb-1">Flood Prediction</h2>
+                  <p className="text-sm text-gray-400">AI-powered risk assessment</p>
+               </div>
+               <button 
+                onClick={() => setIsScenarioBuilderOpen(true)}
+                className="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                title="Configure Scenario"
+               >
+                   <Settings2 size={20} />
+               </button>
             </div>
 
             {loading ? (
-              <div className="glass-card p-6">
-                <div className="animate-pulse space-y-4">
-                  <div className="h-4 bg-white/10 rounded" />
-                  <div className="h-4 bg-white/10 rounded w-3/4" />
-                </div>
+              <div className="glass-card p-6 space-y-4">
+                  <Skeleton className="h-8 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                  <Skeleton className="h-32 w-full rounded-xl" />
               </div>
             ) : (
               <>
@@ -144,7 +172,7 @@ export default function FloodPredictPage() {
                       Generating...
                     </span>
                   ) : (
-                    'Generate New Prediction'
+                    'Run Base Prediction'
                   )}
                 </button>
               </>

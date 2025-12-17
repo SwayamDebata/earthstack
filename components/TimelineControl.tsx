@@ -1,7 +1,14 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { Play, Pause, SkipBack, SkipForward, FastForward } from 'lucide-react';
+import { useEffect } from 'react';
+
+export interface TimelineEvent {
+  frame: number;
+  label: string;
+  type: 'critical' | 'warning' | 'info';
+}
 
 interface TimelineControlProps {
   currentFrame: number;
@@ -9,12 +16,11 @@ interface TimelineControlProps {
   onFrameChange: (frame: number) => void;
   isPlaying: boolean;
   onPlayPause: () => void;
-  frameData?: {
-    timestamp: string;
-    rainfall: number;
-    riverLevel: number;
-    riskScore: number;
-  };
+  gameSpeed: number; // 1, 2, 5
+  setGameSpeed: (speed: number) => void;
+  events?: TimelineEvent[]; // Array of events to mark on timeline
+  startTime: string; // e.g. "06:00"
+  endTime: string;   // e.g. "18:00"
 }
 
 export default function TimelineControl({
@@ -23,144 +29,136 @@ export default function TimelineControl({
   onFrameChange,
   isPlaying,
   onPlayPause,
-  frameData,
+  gameSpeed,
+  setGameSpeed,
+  events = [],
+  startTime,
+  endTime
 }: TimelineControlProps) {
-  const handleSkip = (seconds: number) => {
-    const frameChange = Math.floor(seconds / 5); // Assuming 5s per frame
-    const newFrame = Math.max(0, Math.min(totalFrames - 1, currentFrame + frameChange));
+  
+  const handleSkip = (frames: number) => {
+    const newFrame = Math.max(0, Math.min(totalFrames - 1, currentFrame + frames));
     onFrameChange(newFrame);
   };
 
-  const formatTime = (frame: number) => {
-    const totalSeconds = frame * 5;
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-  };
+  const calculateProgress = () => (currentFrame / (totalFrames - 1)) * 100;
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.code === 'Space') {
+            e.preventDefault();
+            onPlayPause();
+        }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onPlayPause]);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="fixed bottom-0 left-0 right-0 z-50 glass-card border-t border-white/10"
+      className="fixed bottom-0 left-0 right-0 z-40 glass-card border-t border-white/10 px-6 py-4 bg-[#0B0F19]/90 backdrop-blur-xl"
     >
-      <div className="container mx-auto px-6 py-4">
-        {/* Timeline Slider */}
-        <div className="mb-4">
-          <input
-            type="range"
-            min="0"
-            max={totalFrames - 1}
-            value={currentFrame}
-            onChange={(e) => onFrameChange(parseInt(e.target.value))}
-            className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer slider"
-            style={{
-              background: `linear-gradient(to right, #2D82FF ${(currentFrame / (totalFrames - 1)) * 100}%, rgba(255,255,255,0.1) ${(currentFrame / (totalFrames - 1)) * 100}%)`,
-            }}
-          />
-          <div className="flex justify-between text-xs text-gray-400 mt-2">
-            <span>{formatTime(0)}</span>
-            <span>{formatTime(currentFrame)}</span>
-            <span>{formatTime(totalFrames - 1)}</span>
-          </div>
+      <div className="container mx-auto max-w-6xl flex flex-col gap-4">
+        
+        {/* Top Row: Time & Controls */}
+        <div className="flex items-center justify-between">
+           <div className="flex items-center gap-4">
+              <button 
+                onClick={onPlayPause}
+                className="w-12 h-12 flex items-center justify-center rounded-full bg-primary hover:bg-blue-600 shadow-lg shadow-blue-500/20 transition-all active:scale-95"
+              >
+                {isPlaying ? <Pause fill="white" size={20} /> : <Play fill="white" size={20} className="ml-1" />}
+              </button>
+              
+              <div className="flex gap-1 bg-white/5 rounded-lg p-1">
+                 <button onClick={() => handleSkip(-10)} className="p-2 hover:bg-white/10 rounded transition-colors"><SkipBack size={16} /></button>
+                 <button onClick={() => handleSkip(10)} className="p-2 hover:bg-white/10 rounded transition-colors"><SkipForward size={16} /></button>
+              </div>
+
+              <div className="h-8 w-px bg-white/10 mx-2" />
+
+              {/* Speed Control */}
+              <div className="flex gap-2 text-xs font-mono">
+                {[1, 2, 5, 10].map(speed => (
+                    <button
+                        key={speed}
+                        onClick={() => setGameSpeed(speed)}
+                        className={`px-3 py-1 rounded border transition-all ${
+                            gameSpeed === speed 
+                            ? 'bg-white text-black border-white' 
+                            : 'bg-transparent text-gray-500 border-white/10 hover:border-white/30'
+                        }`}
+                    >
+                        {speed}x
+                    </button>
+                ))}
+              </div>
+           </div>
+
+           <div className="text-right">
+              <div className="text-2xl font-mono font-bold tracking-tight text-white">{startTime} <span className="text-xs text-gray-500 font-sans align-middle ml-2">CURRENT SIMULATION TIME</span></div>
+           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-6">
-          {/* Playback Controls */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => handleSkip(-5)}
-              className="p-3 rounded-md glass-card hover:bg-white/10 transition-all duration-300 border border-white/10"
-              title="Back 5s"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M8.445 14.832A1 1 0 0010 14v-2.798l5.445 3.63A1 1 0 0017 14V6a1 1 0 00-1.555-.832L10 8.798V6a1 1 0 00-1.555-.832l-6 4a1 1 0 000 1.664l6 4z" />
-              </svg>
-            </button>
+        {/* Bottom Row: Scrubber */}
+        <div className="relative h-8 flex items-center group">
+           {/* Track Background with Risk Bands (Simulated as gradient for now, can be passed as prop) */}
+           <div className="absolute inset-x-0 h-2 bg-white/10 rounded-full overflow-hidden">
+                {/* Risk Bands Simulation: Safe -> Warning -> Safe -> Critical */}
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 via-yellow-500/20 to-red-500/20 opacity-50" />
+                
+                {/* Progress Fill */}
+                <div 
+                    className="absolute top-0 left-0 h-full bg-primary origin-left transition-transform duration-100 ease-linear"
+                    style={{ width: `${calculateProgress()}%` }}
+                />
+           </div>
 
-            <button
-              onClick={onPlayPause}
-              className="p-4 rounded-md bg-gradient-to-r from-primary to-accent-end hover:shadow-[0_0_20px_rgba(45,130,255,0.5)] transition-all duration-300"
-            >
-              {isPlaying ? (
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                </svg>
-              ) : (
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-                </svg>
-              )}
-            </button>
+           {/* Event Markers */}
+           {events.map((event, idx) => (
+               <div 
+                 key={idx}
+                 className="absolute top-1/2 -translate-y-1/2 w-0.5 h-4 bg-white/50 hover:bg-white hover:h-6 transition-all cursor-help group/marker z-10"
+                 style={{ left: `${(event.frame / totalFrames) * 100}%` }}
+               >
+                   <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-black/80 rounded text-[10px] whitespace-nowrap opacity-0 group-hover/marker:opacity-100 pointer-events-none border border-white/20">
+                       {event.label}
+                   </div>
+                   {/* Icon at bottom */}
+                   <div className={`absolute top-full left-1/2 -translate-x-1/2 mt-1 w-2 h-2 rounded-full ${
+                       event.type === 'critical' ? 'bg-red-500 shadow-red-500/50' : 
+                       event.type === 'warning' ? 'bg-orange-500 shadow-orange-500/50' : 'bg-blue-400'
+                   } shadow-[0_0_8px_currentColor]`} />
+               </div>
+           ))}
 
-            <button
-              onClick={() => handleSkip(5)}
-              className="p-3 rounded-md glass-card hover:bg-white/10 transition-all duration-300 border border-white/10"
-              title="Forward 5s"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M4.555 5.168A1 1 0 003 6v8a1 1 0 001.555.832L10 11.202V14a1 1 0 001.555.832l6-4a1 1 0 000-1.664l-6-4A1 1 0 0010 6v2.798l-5.445-3.63z" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Frame Metadata */}
-          {frameData && (
-            <div className="flex items-center gap-6 text-sm">
-              <div className="flex items-center gap-2">
-                <span className="text-gray-400">🕒</span>
-                <span className="font-mono text-white">{frameData.timestamp}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-gray-400">🌧</span>
-                <span className="text-white">{frameData.rainfall}mm</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-gray-400">🌊</span>
-                <span className="text-white">{frameData.riverLevel}m</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-gray-400">⚠️</span>
-                <span className={`font-semibold ${
-                  frameData.riskScore > 7 ? 'text-red-400' :
-                  frameData.riskScore > 4 ? 'text-yellow-400' :
-                  'text-green-400'
-                }`}>
-                  Risk: {frameData.riskScore}/10
-                </span>
-              </div>
-            </div>
-          )}
-
-          {/* Frame Counter */}
-          <div className="text-sm text-gray-400 font-mono">
-            Frame {currentFrame + 1} / {totalFrames}
-          </div>
+           {/* Thumb (Invisible native input on top) */}
+           <input
+             type="range"
+             min="0"
+             max={totalFrames - 1}
+             value={currentFrame}
+             onChange={(e) => onFrameChange(parseInt(e.target.value))}
+             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+           />
+           
+           {/* Visual Thumb */}
+           <div 
+             className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.5)] pointer-events-none z-10 transition-all duration-75 ease-linear group-hover:scale-125"
+             style={{ left: `${calculateProgress()}%`, transform: `translate(-50%, -50%) scale(${isPlaying ? 1 : 1})` }}
+           >
+                <div className="absolute inset-0 bg-primary rounded-full opacity-20 animate-ping" />
+           </div>
         </div>
+        
+        <div className="flex justify-between text-xs text-gray-500 font-mono -mt-2">
+            <span>{startTime}</span>
+            <span>{endTime}</span>
+        </div>
+
       </div>
-
-      <style jsx>{`
-        .slider::-webkit-slider-thumb {
-          appearance: none;
-          width: 16px;
-          height: 16px;
-          border-radius: 50%;
-          background: #2D82FF;
-          cursor: pointer;
-          box-shadow: 0 0 10px rgba(45, 130, 255, 0.5);
-        }
-
-        .slider::-moz-range-thumb {
-          width: 16px;
-          height: 16px;
-          border-radius: 50%;
-          background: #2D82FF;
-          cursor: pointer;
-          border: none;
-          box-shadow: 0 0 10px rgba(45, 130, 255, 0.5);
-        }
-      `}</style>
     </motion.div>
   );
 }
