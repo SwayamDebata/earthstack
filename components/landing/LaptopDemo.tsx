@@ -60,6 +60,7 @@ export default function LaptopDemo() {
               <div className="w-full h-full relative bg-[#0F1424]">
                 <MapContainer 
                   className="w-full h-full"
+                  aggressiveResize={true}
                   layers={{
                     rainfall: true,
                     riverLevels: true,

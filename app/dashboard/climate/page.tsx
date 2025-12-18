@@ -5,6 +5,8 @@ import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import MapContainer from '@/components/MapContainer';
 import MetricPanel from '@/components/MetricPanel';
+import SatelliteTracker from '@/components/SatelliteTracker';
+import ForecastPanel from '@/components/ForecastPanel';
 import { motion } from 'framer-motion';
 
 export default function ClimateObservePage() {
@@ -95,12 +97,12 @@ export default function ClimateObservePage() {
               </div>
 
               {/* Right Panel - Metrics */}
-              <div className="col-span-3 space-y-4 pointer-events-auto max-h-[calc(100vh-8rem)] overflow-y-auto pr-2 scrollbar-hide">
+              <div className="col-span-3 space-y-4 pointer-events-auto max-h-[calc(100vh-8rem)] overflow-y-auto pr-2 pb-6 custom-scrollbar">
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 }}
-                  className="" 
+                  className="space-y-4" 
                 >
                   {loading ? (
                     <div className="glass-card p-6">
@@ -111,9 +113,14 @@ export default function ClimateObservePage() {
                       </div>
                     </div>
                   ) : (
-                    <div className="space-y-4">
+                    <>
                       <MetricPanel metrics={metrics} />
                       
+                      <div className="grid grid-cols-1 gap-4">
+                        <ForecastPanel />
+                        <SatelliteTracker />
+                      </div>
+
                       {/* Detailed Stats Card */}
                       <div className="glass-card p-4 space-y-3">
                         <h3 className="font-semibold text-white text-sm uppercase tracking-wide border-b border-white/10 pb-2">
@@ -138,7 +145,7 @@ export default function ClimateObservePage() {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </>
                   )}
                 </motion.div>
               </div>

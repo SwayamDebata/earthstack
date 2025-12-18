@@ -13,12 +13,24 @@ interface MapContainerProps {
     clouds?: boolean;
   };
   replayFrame?: any;
+  aggressiveResize?: boolean;
 }
 
-export default function MapContainer({ children, className = '', layers, replayFrame }: MapContainerProps) {
+export default function MapContainer({ children, className = '', layers, replayFrame, aggressiveResize = false }: MapContainerProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+
+  // Aggressive resizing for challenging layouts (like 3D transforms)
+  useEffect(() => {
+    if (!aggressiveResize || !map.current || !mapLoaded) return;
+
+    const interval = setInterval(() => {
+      map.current?.resize();
+    }, 200);
+
+    return () => clearInterval(interval);
+  }, [aggressiveResize, mapLoaded]);
 
   useEffect(() => {
     if (map.current) return; // Initialize map only once
@@ -97,6 +109,16 @@ export default function MapContainer({ children, className = '', layers, replayF
   useEffect(() => {
     if (mapLoaded && map.current) {
       initializeLayers(map.current);
+      
+      // Safety: Force a resize after a short delay to fix "partial render" issues
+      // often caused by flexbox or animations settling late.
+      setTimeout(() => {
+        map.current?.resize();
+      }, 500);
+      
+      setTimeout(() => {
+        map.current?.resize();
+      }, 2000);
     }
   }, [mapLoaded]);
 
