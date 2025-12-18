@@ -119,6 +119,7 @@ function Ring({ radius, speed, color, tilt }: { radius: number, speed: number, c
     const geometry = useMemo(() => new THREE.BufferGeometry().setFromPoints(points), [points]);
 
     return (
+        // @ts-ignore
         <line ref={ref as any} geometry={geometry}>
             <lineBasicMaterial color={color} transparent opacity={0.3} />
         </line>
