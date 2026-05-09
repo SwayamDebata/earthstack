@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
+import { MAPBOX_TOKEN } from '@/lib/config';
 
 interface MapContainerProps {
   children?: React.ReactNode;
@@ -35,7 +36,7 @@ export default function MapContainer({ children, className = '', layers, replayF
   useEffect(() => {
     if (map.current) return; // Initialize map only once
 
-    const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+    const token = MAPBOX_TOKEN;
     
     if (!token) {
       console.warn('Mapbox token not found. Please add NEXT_PUBLIC_MAPBOX_TOKEN to .env.local');
@@ -378,7 +379,7 @@ export default function MapContainer({ children, className = '', layers, replayF
     <div className={`relative ${className}`}>
       <div ref={mapContainer} className="absolute inset-0 overflow-hidden" />
       
-      {!process.env.NEXT_PUBLIC_MAPBOX_TOKEN && (
+      {!MAPBOX_TOKEN && (
         <div className="absolute inset-0 flex items-center justify-center bg-map-bg rounded-2xl">
           <div className="text-center glass-card p-8 rounded-2xl max-w-md">
             <div className="text-5xl mb-4">🗺️</div>

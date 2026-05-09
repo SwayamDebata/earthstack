@@ -1,35 +1,39 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "mapbox-gl/dist/mapbox-gl.css";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Space_Grotesk, JetBrains_Mono } from 'next/font/google';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import './globals.css';
+import Providers from '@/app/providers';
 
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const spaceGrotesk = Space_Grotesk({
+  variable: '--font-sans',
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['300', '400', '500', '600', '700'],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const jetbrainsMono = JetBrains_Mono({
+  variable: '--font-mono',
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['400', '500', '600'],
 });
 
 export const metadata: Metadata = {
-  title: "EarthStack - Climate Intelligence Platform",
-  description: "Real-time climate monitoring, flood prediction, and environmental intelligence powered by satellite data and advanced AI.",
+  title: 'ModelEarth · Climate intelligence & mission control',
+  description:
+    'ModelEarth: planetary-scale resilience intelligence. Flood risk, hydrology, and operations in a unified command experience.',
+  metadataBase: new URL('https://www.modelearth.in'),
+  icons: {
+    icon: [{ url: '/modelearth-favicon.svg', type: 'image/svg+xml' }],
+    apple: '/modelearth-favicon.svg',
+  },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} antialiased bg-slate-950`}>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

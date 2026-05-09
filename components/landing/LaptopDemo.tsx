@@ -26,7 +26,7 @@ export default function LaptopDemo() {
             whileInView={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-5xl font-bold gradient-text mb-6"
           >
-            Mission Control for Earth
+            ModelEarth command surface
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
@@ -34,8 +34,7 @@ export default function LaptopDemo() {
             transition={{ delay: 0.2 }}
             className="text-xl text-gray-400 max-w-2xl mx-auto"
           >
-            Real-time environmental intelligence at your fingertips. 
-            Monitor floods, track storms, and predict risks with military-grade precision.
+            Real-time environmental intelligence at your fingertips. Floods, storms, and risk in one glass cockpit.
           </motion.p>
         </div>
 

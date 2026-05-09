@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
+import BrandMark from '@/components/landing/BrandMark';
 
 const footerLinks = {
   product: [
@@ -43,11 +44,11 @@ export default function PremiumFooter() {
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-5 mb-12">
           {/* Brand Column */}
           <div className="lg:col-span-2">
-            <Link href="/" className="mb-4 inline-flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent-end flex items-center justify-center">
-                <span className="text-lg">🌍</span>
+            <Link href="/" className="mb-4 inline-flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-slate-900/80">
+                <BrandMark size={40} className="h-8 w-8 object-contain" />
               </div>
-              <span className="text-xl font-bold gradient-text">EarthStack</span>
+              <span className="text-xl font-bold gradient-text">ModelEarth</span>
             </Link>
             <p className="mt-4 text-gray-400 max-w-sm">
               The Operating System for a Climate-Resilient Future. Real-time intelligence for rainfall, floods, and extreme weather.
@@ -128,7 +129,7 @@ export default function PremiumFooter() {
         {/* Bottom Bar */}
         <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 md:flex-row">
           <p className="text-sm text-gray-400">
-            © 2024 EarthStack. Climate Intelligence Platform.
+            © {new Date().getFullYear()} ModelEarth. Climate intelligence platform.
           </p>
           <p className="text-sm text-gray-500">
             Powered by Satellite Data & Advanced AI

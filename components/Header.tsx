@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { RotatingGlobe } from './AnimatedIcon';
 import { User } from 'lucide-react';
+import BrandMark from '@/components/landing/BrandMark';
 import { motion } from 'framer-motion';
 
 export default function Header() {
@@ -10,14 +10,14 @@ export default function Header() {
     <header className="h-16 border-b border-white/10 glass-card flex items-center justify-between px-6">
       <Link href="/" className="flex items-center gap-3 group">
         <motion.div
-          className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-accent-end/20 flex items-center justify-center backdrop-blur-sm border border-white/10"
+          className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-slate-900/80 backdrop-blur-sm"
           whileHover={{ scale: 1.05, borderColor: 'rgba(45, 130, 255, 0.5)' }}
           transition={{ type: 'spring', stiffness: 400 }}
         >
-          <RotatingGlobe size={24} />
+          <BrandMark size={36} className="h-8 w-8 object-contain" />
         </motion.div>
         <h1 className="text-xl font-bold gradient-text group-hover:opacity-80 transition-opacity">
-          EarthStack
+          ModelEarth
         </h1>
       </Link>
       

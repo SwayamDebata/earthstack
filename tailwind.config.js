@@ -15,6 +15,11 @@ module.exports = {
                 'accent-end': '#22C1EE',
                 'map-bg': '#0F1424',
             },
+            fontFamily: {
+                sans: ['var(--font-sans)', 'Inter', 'system-ui', 'sans-serif'],
+                mono: ['var(--font-mono)', 'SF Mono', 'JetBrains Mono', 'Menlo', 'monospace'],
+                display: ['var(--font-sans)', 'Inter', 'system-ui', 'sans-serif'],
+            },
             boxShadow: {
                 glow: '0 0 20px rgba(45, 130, 255, 0.3)',
                 card: '0 8px 32px rgba(0, 0, 0, 0.4)',

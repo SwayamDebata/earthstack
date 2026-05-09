@@ -84,15 +84,15 @@ export default function VideoModal({ isOpen, onClose, videoSrc = "https://cdn.co
                         <div>
                              <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Climate Impact: Sector 7</h2>
                              <p className="text-gray-400 max-w-lg text-sm leading-relaxed">
-                                AI-generated simulation of projected flood risks in coastal urban zones. 
-                                EarthStack models predict a 45% increase in surge events by 2030.
+                                AI-generated simulation of projected flood risks in coastal urban zones. ModelEarth ties
+                                observation, models, and replay into one operational narrative.
                              </p>
                         </div>
                         
                         <div className="flex flex-col items-end gap-2 text-xs font-mono text-white/50">
                             <div className="flex items-center gap-2">
                                 <Signal size={14} />
-                                <span>BITRATE: 450 MBPS</span>
+                                <span>STREAM: LIVE PREVIEW</span>
                             </div>
                              <div className="flex items-center gap-2">
                                 <Disc size={14} className="animate-spin duration-[3s]" />

@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Cloud, Flame, Film } from 'lucide-react';
 import { useRef } from 'react';
 
@@ -33,13 +33,9 @@ const platforms = [
 
 export default function PlatformCards() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start end', 'end start'],
-  });
 
   return (
-    <section ref={containerRef} className="relative py-32 px-6 bg-gradient-to-b from-[#080B14] to-[#0B0F19]">
+    <section id="platforms" ref={containerRef} className="relative scroll-mt-24 bg-gradient-to-b from-[#080B14] to-[#0B0F19] px-6 py-32">
       {/* Section Header */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -48,11 +44,12 @@ export default function PlatformCards() {
         viewport={{ once: true }}
         className="mb-20 text-center"
       >
-        <h2 className="text-5xl md:text-6xl font-bold mb-6">
-          Next-Generation <span className="gradient-text">Climate Intelligence</span>
+        <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.35em] text-cyan-400/80">ModelEarth stack</p>
+        <h2 className="mb-6 text-5xl font-bold md:text-6xl">
+          Next-gen <span className="gradient-text">climate intelligence</span>
         </h2>
-        <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-          Three powerful platforms working in harmony to protect communities and infrastructure
+        <p className="mx-auto max-w-2xl text-xl text-gray-400">
+          Three composable surfaces. Observe, predict, and replay, orchestrated for real operations.
         </p>
       </motion.div>
 
@@ -69,19 +66,10 @@ export default function PlatformCards() {
             className="group relative"
           >
             {/* Card */}
-            <div className="relative h-full rounded-3xl border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.02] p-8 backdrop-blur-xl overflow-hidden">
+            <div className="relative h-full rounded-3xl border border-white/10 bg-slate-900/60 p-8 overflow-hidden">
               {/* Gradient Background on Hover */}
               <motion.div
                 className={`absolute inset-0 bg-gradient-to-br ${platform.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
-              />
-
-              {/* Neon Edge Glow */}
-              <motion.div
-                className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                style={{
-                  background: `linear-gradient(90deg, ${platform.iconColor.replace('text-', 'rgb(var(--color-')})}, transparent)`,
-                  filter: 'blur(20px)',
-                }}
               />
 
               {/* Content */}
@@ -112,19 +100,7 @@ export default function PlatformCards() {
                   {platform.description}
                 </p>
 
-                {/* Floating Animation */}
-                <motion.div
-                  animate={{
-                    y: [0, -10, 0],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                    delay: index * 0.3,
-                  }}
-                  className="absolute -bottom-4 -right-4 w-32 h-32 bg-gradient-to-br from-primary/20 to-accent-end/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                />
+                <div className="pointer-events-none absolute -bottom-4 -right-4 h-32 w-32 rounded-full bg-gradient-to-br from-primary/20 to-accent-end/20 blur-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
               </div>
             </div>
 
