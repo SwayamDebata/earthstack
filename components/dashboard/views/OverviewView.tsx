@@ -17,7 +17,7 @@ import { Play, RefreshCw } from 'lucide-react';
 import { api } from '@/lib/api/endpoints';
 import { extractNumericSeries } from '@/lib/api/coerce';
 import { formatScalar } from '@/lib/api/payload';
-import { POLLING_INTERVALS } from '@/lib/config';
+import { POLLING_INTERVALS, withJitter } from '@/lib/config';
 import HudFrame from '@/components/dashboard/HudFrame';
 import StatusLed from '@/components/dashboard/StatusLed';
 import KpiRibbon, { type Kpi } from '@/components/dashboard/KpiRibbon';
@@ -32,14 +32,14 @@ export default function OverviewView() {
 
   const [risk, riskMap, alerts, rainfall, rainfallStats, forecast, replay, mlLogs] = useQueries({
     queries: [
-      { queryKey: ['risk', location], queryFn: () => api.risk(location), refetchInterval: POLLING_INTERVALS.risk },
-      { queryKey: ['risk-map'], queryFn: () => api.riskMap(), refetchInterval: POLLING_INTERVALS.map },
-      { queryKey: ['alerts', activeOnly], queryFn: () => api.alerts(activeOnly, 20), refetchInterval: POLLING_INTERVALS.alerts },
-      { queryKey: ['rainfall', location], queryFn: () => api.rainfallLocation(location), refetchInterval: POLLING_INTERVALS.rainfall },
-      { queryKey: ['rainfall-stats'], queryFn: () => api.rainfallStats(), refetchInterval: POLLING_INTERVALS.rainfall },
-      { queryKey: ['forecast', location], queryFn: () => api.forecast(location), refetchInterval: POLLING_INTERVALS.forecast },
+      { queryKey: ['risk', location], queryFn: () => api.risk(location), refetchInterval: () => withJitter(POLLING_INTERVALS.risk) },
+      { queryKey: ['risk-map'], queryFn: () => api.riskMap(), refetchInterval: () => withJitter(POLLING_INTERVALS.map) },
+      { queryKey: ['alerts', activeOnly], queryFn: () => api.alerts(activeOnly, 20), refetchInterval: () => withJitter(POLLING_INTERVALS.alerts) },
+      { queryKey: ['rainfall', location], queryFn: () => api.rainfallLocation(location), refetchInterval: () => withJitter(POLLING_INTERVALS.rainfall) },
+      { queryKey: ['rainfall-stats'], queryFn: () => api.rainfallStats(), refetchInterval: () => withJitter(POLLING_INTERVALS.rainfall) },
+      { queryKey: ['forecast', location], queryFn: () => api.forecast(location), refetchInterval: () => withJitter(POLLING_INTERVALS.forecast) },
       { queryKey: ['replay', location], queryFn: () => api.replay(location), refetchInterval: false },
-      { queryKey: ['ml-logs', location], queryFn: () => api.mlInferenceLogs(location, 20), refetchInterval: POLLING_INTERVALS.mlLogs },
+      { queryKey: ['ml-logs', location], queryFn: () => api.mlInferenceLogs(location, 20), refetchInterval: () => withJitter(POLLING_INTERVALS.mlLogs) },
     ],
   });
 

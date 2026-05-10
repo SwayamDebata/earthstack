@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useQueries } from '@tanstack/react-query';
 import { Check, Copy, RefreshCw, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { api } from '@/lib/api/endpoints';
-import { LOCATIONS, MAPBOX_TOKEN, POLLING_INTERVALS, STALE_THRESHOLDS_MS } from '@/lib/config';
+import { LOCATIONS, MAPBOX_TOKEN, POLLING_INTERVALS, STALE_THRESHOLDS_MS, withJitter } from '@/lib/config';
 import { useMission } from '@/components/dashboard/MissionContext';
 import HudFrame from '@/components/dashboard/HudFrame';
 import StatusLed from '@/components/dashboard/StatusLed';
@@ -21,12 +21,15 @@ const ENDPOINTS = [
 export default function SettingsView() {
   const { location, setLocation, activeOnly, setActiveOnly, latencyMs } = useMission();
 
+  // Reuse the shell's cache keys so the diagnostics panel does not double-fire
+  // these endpoints. This page only adds `rainfall-stats` on top of what the
+  // shell already polls.
   const queries = useQueries({
     queries: [
-      { queryKey: ['health-diag'], queryFn: () => api.health(), refetchInterval: 30_000 },
-      { queryKey: ['risk-map-diag'], queryFn: () => api.riskMap(), refetchInterval: 60_000 },
-      { queryKey: ['alerts-diag'], queryFn: () => api.alerts(true, 5), refetchInterval: 30_000 },
-      { queryKey: ['rainfall-stats-diag'], queryFn: () => api.rainfallStats(), refetchInterval: 60_000 },
+      { queryKey: ['health'], queryFn: () => api.health(), refetchInterval: () => withJitter(POLLING_INTERVALS.health) },
+      { queryKey: ['risk-map'], queryFn: () => api.riskMap(), refetchInterval: () => withJitter(POLLING_INTERVALS.map) },
+      { queryKey: ['alerts', true], queryFn: () => api.alerts(true, 20), refetchInterval: () => withJitter(POLLING_INTERVALS.alerts) },
+      { queryKey: ['rainfall-stats'], queryFn: () => api.rainfallStats(), refetchInterval: () => withJitter(POLLING_INTERVALS.rainfall) },
     ],
   });
 

@@ -5,12 +5,13 @@ import { useQueries, useQuery } from '@tanstack/react-query';
 import { CartesianGrid, Legend as ReLegend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { RefreshCw } from 'lucide-react';
 import { api } from '@/lib/api/endpoints';
-import { LOCATIONS, POLLING_INTERVALS } from '@/lib/config';
+import { LOCATIONS, POLLING_INTERVALS, withJitter } from '@/lib/config';
 import { useMission } from '@/components/dashboard/MissionContext';
 import HudFrame from '@/components/dashboard/HudFrame';
 import StatusLed from '@/components/dashboard/StatusLed';
 import RegionChips from '@/components/dashboard/RegionChips';
 import { PageTitle, ErrorBlock, EmptyBlock, Telemetry } from '@/components/dashboard/Atoms';
+import { useStagger } from '@/components/dashboard/useStagger';
 import { extractNumericSeries } from '@/lib/api/coerce';
 
 const PALETTE = ['#22d3ee', '#a78bfa', '#f59e0b', '#34d399', '#f472b6'];
@@ -21,14 +22,16 @@ export default function ForecastView() {
   const focusQ = useQuery({
     queryKey: ['forecast', location, 'focus'],
     queryFn: () => api.forecast(location),
-    refetchInterval: POLLING_INTERVALS.forecast,
+    refetchInterval: () => withJitter(POLLING_INTERVALS.forecast),
   });
 
+  const enabled = useStagger(LOCATIONS.length, 400);
   const peerQueries = useQueries({
-    queries: LOCATIONS.map((loc) => ({
+    queries: LOCATIONS.map((loc, i) => ({
       queryKey: ['forecast', loc],
       queryFn: () => api.forecast(loc),
-      refetchInterval: POLLING_INTERVALS.forecast,
+      enabled: enabled[i],
+      refetchInterval: () => withJitter(POLLING_INTERVALS.forecast),
     })),
   });
 

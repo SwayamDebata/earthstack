@@ -4,12 +4,13 @@ import { useState } from 'react';
 import { useMutation, useQueries } from '@tanstack/react-query';
 import { Play, RotateCcw, Square } from 'lucide-react';
 import { api } from '@/lib/api/endpoints';
-import { LOCATIONS } from '@/lib/config';
+import { LOCATIONS, withJitter } from '@/lib/config';
 import { useMission } from '@/components/dashboard/MissionContext';
 import HudFrame from '@/components/dashboard/HudFrame';
 import StatusLed from '@/components/dashboard/StatusLed';
 import RegionChips from '@/components/dashboard/RegionChips';
 import { PageTitle, Telemetry } from '@/components/dashboard/Atoms';
+import { useStagger } from '@/components/dashboard/useStagger';
 import { formatScalar } from '@/lib/api/payload';
 import { relTime } from '@/components/dashboard/util';
 
@@ -26,12 +27,14 @@ export default function ReplayView() {
   const { location } = useMission();
   const [history, setHistory] = useState<DispatchEntry[]>([]);
 
-  // Fetch replay state for every region in parallel.
+  // Stagger initial fetches across regions; refresh on a slow jittered cadence.
+  const enabled = useStagger(LOCATIONS.length, 300);
   const queries = useQueries({
-    queries: LOCATIONS.map((loc) => ({
+    queries: LOCATIONS.map((loc, i) => ({
       queryKey: ['replay', loc],
       queryFn: () => api.replay(loc),
-      refetchInterval: 30_000,
+      enabled: enabled[i],
+      refetchInterval: () => withJitter(120_000),
     })),
   });
 

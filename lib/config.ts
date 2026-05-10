@@ -36,16 +36,40 @@ export const LOCATIONS = [
 
 export type Location = (typeof LOCATIONS)[number];
 
+/**
+ * Polling cadence per channel.
+ *
+ * Tuned to be friendly to a DB-backed upstream:
+ *   - chrome (health/alerts/map) refresh ~ once a minute
+ *   - per-region heavy endpoints (rainfall/forecast/ml) refresh every 2-5 minutes
+ *   - replay is on-demand only
+ *
+ * Each subscriber should pass these through `withJitter()` so multiple
+ * widgets sharing an interval don't synchronize their polls into a spike.
+ */
 export const POLLING_INTERVALS = {
-  health: 15_000,
-  alerts: 20_000,
-  risk: 30_000,
-  rainfall: 45_000,
-  forecast: 60_000,
-  map: 60_000,
-  mlLogs: 60_000,
+  health: 60_000,
+  alerts: 60_000,
+  risk: 90_000,
+  map: 120_000,
+  rainfall: 180_000,
+  forecast: 300_000,
+  mlLogs: 120_000,
   replay: 0,
 } as const;
+
+/**
+ * Add up to ±25% jitter to a polling interval.
+ * Spreads out concurrent subscribers so they don't fire at the same instant.
+ *
+ * Usage in React Query:
+ *   refetchInterval: () => withJitter(POLLING_INTERVALS.risk)
+ */
+export function withJitter(intervalMs: number, ratio = 0.25): number {
+  if (!intervalMs || intervalMs <= 0) return intervalMs;
+  const delta = intervalMs * ratio;
+  return Math.round(intervalMs + (Math.random() * 2 - 1) * delta);
+}
 
 export const STALE_THRESHOLDS_MS = {
   health: 60_000,

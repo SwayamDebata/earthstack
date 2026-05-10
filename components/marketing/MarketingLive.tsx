@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useQueries } from '@tanstack/react-query';
 import { api } from '@/lib/api/endpoints';
 import { getTimestampCandidate } from '@/lib/api/client';
-import { LOCATIONS, POLLING_INTERVALS, STALE_THRESHOLDS_MS } from '@/lib/config';
+import { LOCATIONS, POLLING_INTERVALS, STALE_THRESHOLDS_MS, withJitter } from '@/lib/config';
 import DataState from '@/components/system/DataState';
 import StatusBadge from '@/components/system/StatusBadge';
 
@@ -42,9 +42,9 @@ export default function MarketingLive({ initial }: { initial?: Initial }) {
   const [nowMs, setNowMs] = useState<number>(new Date().getTime());
   const [health, alerts, riskMap] = useQueries({
     queries: [
-      { queryKey: ['health'], queryFn: () => api.health(), refetchInterval: POLLING_INTERVALS.health },
-      { queryKey: ['alerts', true], queryFn: () => api.alerts(true, 20), refetchInterval: POLLING_INTERVALS.alerts },
-      { queryKey: ['risk-map'], queryFn: () => api.riskMap(), refetchInterval: POLLING_INTERVALS.map },
+      { queryKey: ['health'], queryFn: () => api.health(), refetchInterval: () => withJitter(POLLING_INTERVALS.health) },
+      { queryKey: ['alerts', true], queryFn: () => api.alerts(true, 20), refetchInterval: () => withJitter(POLLING_INTERVALS.alerts) },
+      { queryKey: ['risk-map'], queryFn: () => api.riskMap(), refetchInterval: () => withJitter(POLLING_INTERVALS.map) },
     ],
   });
 

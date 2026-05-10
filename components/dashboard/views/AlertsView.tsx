@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { RefreshCw, Search } from 'lucide-react';
 import { api } from '@/lib/api/endpoints';
-import { POLLING_INTERVALS } from '@/lib/config';
+import { POLLING_INTERVALS, withJitter } from '@/lib/config';
 import { useMission } from '@/components/dashboard/MissionContext';
 import HudFrame from '@/components/dashboard/HudFrame';
 import StatusLed from '@/components/dashboard/StatusLed';
@@ -25,7 +25,7 @@ export default function AlertsView() {
   const alertsQ = useQuery({
     queryKey: ['alerts', activeOnly, 'all'],
     queryFn: () => api.alerts(activeOnly, 100),
-    refetchInterval: POLLING_INTERVALS.alerts,
+    refetchInterval: () => withJitter(POLLING_INTERVALS.alerts),
   });
 
   const alerts = useMemo(() => toArray<Record<string, unknown>>(alertsQ.data), [alertsQ.data]);

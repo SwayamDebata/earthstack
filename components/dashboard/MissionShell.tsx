@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useQueries } from '@tanstack/react-query';
 import { Wifi, WifiOff } from 'lucide-react';
 import { api } from '@/lib/api/endpoints';
-import { POLLING_INTERVALS } from '@/lib/config';
+import { POLLING_INTERVALS, withJitter } from '@/lib/config';
 import { formatScalar } from '@/lib/api/payload';
 import StatusLed from '@/components/dashboard/StatusLed';
 import MissionClock from '@/components/dashboard/MissionClock';
@@ -60,9 +60,9 @@ export default function MissionShell({ children }: { children: ReactNode }) {
 
   const [health, riskMap, alerts] = useQueries({
     queries: [
-      { queryKey: ['health'], queryFn: () => api.health(), refetchInterval: POLLING_INTERVALS.health },
-      { queryKey: ['risk-map'], queryFn: () => api.riskMap(), refetchInterval: POLLING_INTERVALS.map },
-      { queryKey: ['alerts', true], queryFn: () => api.alerts(true, 20), refetchInterval: POLLING_INTERVALS.alerts },
+      { queryKey: ['health'], queryFn: () => api.health(), refetchInterval: () => withJitter(POLLING_INTERVALS.health) },
+      { queryKey: ['risk-map'], queryFn: () => api.riskMap(), refetchInterval: () => withJitter(POLLING_INTERVALS.map) },
+      { queryKey: ['alerts', true], queryFn: () => api.alerts(true, 20), refetchInterval: () => withJitter(POLLING_INTERVALS.alerts) },
     ],
   });
 

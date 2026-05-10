@@ -5,26 +5,29 @@ import { useQueries, useQuery } from '@tanstack/react-query';
 import { Area, AreaChart, CartesianGrid, Line, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { RefreshCw } from 'lucide-react';
 import { api } from '@/lib/api/endpoints';
-import { LOCATIONS, POLLING_INTERVALS } from '@/lib/config';
+import { LOCATIONS, POLLING_INTERVALS, withJitter } from '@/lib/config';
 import { useMission } from '@/components/dashboard/MissionContext';
 import HudFrame from '@/components/dashboard/HudFrame';
 import StatusLed from '@/components/dashboard/StatusLed';
 import RegionChips from '@/components/dashboard/RegionChips';
 import { PageTitle, ErrorBlock, EmptyBlock, Telemetry, Legend } from '@/components/dashboard/Atoms';
+import { useStagger } from '@/components/dashboard/useStagger';
 import { extractNumericSeries } from '@/lib/api/coerce';
 import { num } from '@/components/dashboard/util';
 
 export default function RainfallView() {
   const { location } = useMission();
 
-  const statsQ = useQuery({ queryKey: ['rainfall-stats'], queryFn: () => api.rainfallStats(), refetchInterval: POLLING_INTERVALS.rainfall });
-  const focusQ = useQuery({ queryKey: ['rainfall', location], queryFn: () => api.rainfallLocation(location), refetchInterval: POLLING_INTERVALS.rainfall });
+  const statsQ = useQuery({ queryKey: ['rainfall-stats'], queryFn: () => api.rainfallStats(), refetchInterval: () => withJitter(POLLING_INTERVALS.rainfall) });
+  const focusQ = useQuery({ queryKey: ['rainfall', location], queryFn: () => api.rainfallLocation(location), refetchInterval: () => withJitter(POLLING_INTERVALS.rainfall) });
 
+  const enabled = useStagger(LOCATIONS.length, 350);
   const peerQueries = useQueries({
-    queries: LOCATIONS.map((loc) => ({
+    queries: LOCATIONS.map((loc, i) => ({
       queryKey: ['rainfall', loc],
       queryFn: () => api.rainfallLocation(loc),
-      refetchInterval: POLLING_INTERVALS.rainfall,
+      enabled: enabled[i],
+      refetchInterval: () => withJitter(POLLING_INTERVALS.rainfall),
     })),
   });
 

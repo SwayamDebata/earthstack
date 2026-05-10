@@ -5,21 +5,25 @@ import { useQueries, useQuery } from '@tanstack/react-query';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { RefreshCw } from 'lucide-react';
 import { api } from '@/lib/api/endpoints';
-import { LOCATIONS, POLLING_INTERVALS } from '@/lib/config';
+import { LOCATIONS, POLLING_INTERVALS, withJitter } from '@/lib/config';
 import HudFrame from '@/components/dashboard/HudFrame';
 import StatusLed from '@/components/dashboard/StatusLed';
 import { PageTitle, ScoreBar, Telemetry, ErrorBlock } from '@/components/dashboard/Atoms';
+import { useStagger } from '@/components/dashboard/useStagger';
 import { num, numOrNull, severityToTone, toArray } from '@/components/dashboard/util';
 
 export default function RiskView() {
-  const riskMapQ = useQuery({ queryKey: ['risk-map'], queryFn: () => api.riskMap(), refetchInterval: POLLING_INTERVALS.map });
+  const riskMapQ = useQuery({ queryKey: ['risk-map'], queryFn: () => api.riskMap(), refetchInterval: () => withJitter(POLLING_INTERVALS.map) });
 
-  // Fetch /risk for each region in parallel for the matrix.
+  // Stagger the initial mount fetches and rely on jittered polling thereafter
+  // so we never spike 5 simultaneous DB-bound requests against the upstream.
+  const enabled = useStagger(LOCATIONS.length, 300);
   const perRegion = useQueries({
-    queries: LOCATIONS.map((loc) => ({
+    queries: LOCATIONS.map((loc, i) => ({
       queryKey: ['risk', loc],
       queryFn: () => api.risk(loc),
-      refetchInterval: POLLING_INTERVALS.risk,
+      enabled: enabled[i],
+      refetchInterval: () => withJitter(POLLING_INTERVALS.risk),
     })),
   });
 

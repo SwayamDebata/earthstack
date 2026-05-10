@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { CartesianGrid, Legend as ReLegend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { RefreshCw } from 'lucide-react';
 import { api } from '@/lib/api/endpoints';
-import { POLLING_INTERVALS } from '@/lib/config';
+import { POLLING_INTERVALS, withJitter } from '@/lib/config';
 import { useMission } from '@/components/dashboard/MissionContext';
 import HudFrame from '@/components/dashboard/HudFrame';
 import StatusLed from '@/components/dashboard/StatusLed';
@@ -19,12 +19,12 @@ export default function MlView() {
   const logsQ = useQuery({
     queryKey: ['ml-logs', location, 100],
     queryFn: () => api.mlInferenceLogs(location, 100),
-    refetchInterval: POLLING_INTERVALS.mlLogs,
+    refetchInterval: () => withJitter(POLLING_INTERVALS.mlLogs),
   });
   const debugQ = useQuery({
     queryKey: ['debug-risk', location],
     queryFn: () => api.debugRisk(location),
-    refetchInterval: POLLING_INTERVALS.risk,
+    refetchInterval: () => withJitter(POLLING_INTERVALS.risk),
   });
 
   const logs = useMemo(() => toArray<Record<string, unknown>>(logsQ.data), [logsQ.data]);
