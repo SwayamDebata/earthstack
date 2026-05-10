@@ -44,22 +44,33 @@ function rowSeverity(row: RiskMapRow): string | undefined {
   return s !== undefined && s !== null ? String(s) : undefined;
 }
 
+function fmtCoord(n: number, axis: 'lat' | 'lng') {
+  const abs = Math.abs(n);
+  const dir = axis === 'lat' ? (n >= 0 ? 'N' : 'S') : n >= 0 ? 'E' : 'W';
+  return `${abs.toFixed(4)}° ${dir}`;
+}
+
 export default function RiskMapPanel({
   rows,
   isLoading,
   isError,
   onRetry,
+  activeLocation,
 }: {
   rows: RiskMapRow[];
   isLoading: boolean;
   isError: boolean;
   onRetry: () => void;
+  activeLocation?: string;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
   const [mapReady, setMapReady] = useState(false);
   const [mapLoadError, setMapLoadError] = useState<string | null>(null);
+  const [center, setCenter] = useState<[number, number]>([85.5, 20.5]);
+  const [zoom, setZoom] = useState<number>(6);
+  const [bearing, setBearing] = useState<number>(-14);
   const tokenMissing = !MAPBOX_TOKEN;
 
   const enrichedRows = useMemo(() => {
@@ -77,7 +88,6 @@ export default function RiskMapPanel({
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
-
     if (tokenMissing) return;
 
     mapboxgl.accessToken = MAPBOX_TOKEN;
@@ -87,7 +97,7 @@ export default function RiskMapPanel({
       style: 'mapbox://styles/mapbox/dark-v11',
       center: [85.5, 20.5],
       zoom: 6,
-      pitch: 42,
+      pitch: 48,
       bearing: -14,
       antialias: true,
     });
@@ -97,6 +107,13 @@ export default function RiskMapPanel({
     map.on('load', () => {
       setMapReady(true);
       map.resize();
+    });
+
+    map.on('move', () => {
+      const c = map.getCenter();
+      setCenter([c.lng, c.lat]);
+      setZoom(map.getZoom());
+      setBearing(map.getBearing());
     });
 
     map.on('error', (e) => {
@@ -113,6 +130,7 @@ export default function RiskMapPanel({
     };
   }, [tokenMissing]);
 
+  // Markers
   useEffect(() => {
     if (!mapRef.current || !mapReady) return;
 
@@ -120,11 +138,27 @@ export default function RiskMapPanel({
     markersRef.current = [];
 
     enrichedRows.forEach(({ row, location, severity, lat, lng }) => {
-      const el = document.createElement('div');
-      el.className = 'h-3 w-3 rounded-full border border-white/80 shadow-[0_0_16px_rgba(34,211,238,0.7)]';
-      el.style.background = getSeverityColor(severity);
+      const wrap = document.createElement('div');
+      wrap.style.position = 'relative';
+      wrap.style.width = '20px';
+      wrap.style.height = '20px';
 
-      const marker = new mapboxgl.Marker({ element: el })
+      const ring = document.createElement('div');
+      ring.style.cssText = `position:absolute;inset:0;border-radius:9999px;border:1px solid ${getSeverityColor(severity)};opacity:0.45;`;
+
+      const dot = document.createElement('div');
+      const color = getSeverityColor(severity);
+      dot.style.cssText = `position:absolute;left:50%;top:50%;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:9999px;background:${color};box-shadow:0 0 12px ${color};`;
+
+      const tag = document.createElement('div');
+      tag.textContent = location || 'unknown';
+      tag.style.cssText = `position:absolute;left:14px;top:-6px;font:600 9px/1 ui-monospace,monospace;letter-spacing:0.12em;text-transform:uppercase;color:#a5f3fc;background:rgba(2,6,23,0.85);padding:3px 5px;border:1px solid rgba(34,211,238,0.25);border-radius:2px;white-space:nowrap;`;
+
+      wrap.appendChild(ring);
+      wrap.appendChild(dot);
+      wrap.appendChild(tag);
+
+      const marker = new mapboxgl.Marker({ element: wrap, anchor: 'center' })
         .setLngLat([lng as number, lat as number])
         .setPopup(
           new mapboxgl.Popup({ closeButton: false, offset: 14 }).setHTML(
@@ -141,58 +175,110 @@ export default function RiskMapPanel({
     });
   }, [enrichedRows, mapReady]);
 
-  return (
-    <div className="relative min-h-[420px] w-full rounded-xl overflow-hidden border border-cyan-500/25 bg-[#050816] shadow-[inset_0_0_0_1px_rgba(34,211,238,0.08)]">
-      {/* HUD corners */}
-      <div className="pointer-events-none absolute inset-0 z-10">
-        <span className="absolute left-2 top-2 h-6 w-6 border-l-2 border-t-2 border-cyan-400/50" />
-        <span className="absolute right-2 top-2 h-6 w-6 border-r-2 border-t-2 border-cyan-400/50" />
-        <span className="absolute bottom-2 left-2 h-6 w-6 border-b-2 border-l-2 border-cyan-400/50" />
-        <span className="absolute bottom-2 right-2 h-6 w-6 border-b-2 border-r-2 border-cyan-400/50" />
-        <div
-          className="absolute inset-0 opacity-[0.07]"
-          style={{
-            backgroundImage:
-              'linear-gradient(rgba(34,211,238,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(34,211,238,0.35) 1px, transparent 1px)',
-            backgroundSize: '48px 48px',
-          }}
-        />
-      </div>
+  // Fly to active location when it changes
+  useEffect(() => {
+    if (!mapRef.current || !mapReady || !activeLocation) return;
+    const target =
+      LOCATION_COORDS[activeLocation] ??
+      NORMALIZED_LOCATION_COORDS[activeLocation.toLowerCase().replace(/\s+/g, '')];
+    if (!target) return;
+    mapRef.current.flyTo({ center: target, zoom: 8.5, pitch: 52, speed: 1.1, curve: 1.4 });
+  }, [activeLocation, mapReady]);
 
+  return (
+    <div className="relative h-full min-h-[440px] w-full overflow-hidden rounded-md border border-cyan-400/20 bg-[#03070f]">
+      {/* Map */}
       <div ref={containerRef} className="absolute inset-0" />
 
+      {/* Radar sweep over the map (subtle, no scrim) */}
+      {mapReady && !isError ? (
+        <div className="pointer-events-none absolute left-1/2 top-1/2 z-10 h-[120%] w-[120%] -translate-x-1/2 -translate-y-1/2 mix-blend-screen opacity-60">
+          <div className="radar-sweep absolute inset-0 rounded-full" />
+        </div>
+      ) : null}
+
+      {/* Crosshair + concentric rings */}
+      {mapReady ? (
+        <div className="pointer-events-none absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2">
+          <div className="relative h-32 w-32">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-300/25"
+                style={{ width: i * 38, height: i * 38 }}
+              />
+            ))}
+            <div className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-cyan-300/25" />
+            <div className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 bg-cyan-300/25" />
+            <div className="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-300 shadow-[0_0_8px_#22d3ee]" />
+          </div>
+        </div>
+      ) : null}
+
+      {/* Grid overlay */}
+      <div className="pointer-events-none absolute inset-0 z-10 opacity-[0.06] hud-grid-overlay" />
+
+      {/* Coordinate readout — bottom left */}
+      <div className="pointer-events-none absolute bottom-3 left-3 z-20 rounded-sm border border-cyan-400/25 bg-black/60 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-cyan-200">
+        <p>LAT {fmtCoord(center[1], 'lat')}</p>
+        <p>LNG {fmtCoord(center[0], 'lng')}</p>
+        <p className="text-slate-500">ZOOM {zoom.toFixed(2)} · BRG {bearing.toFixed(0)}°</p>
+      </div>
+
+      {/* Severity legend — bottom right */}
+      <div className="pointer-events-none absolute bottom-3 right-3 z-20 flex gap-2 rounded-sm border border-cyan-400/25 bg-black/60 px-2 py-1 font-mono text-[10px] uppercase tracking-widest">
+        <span className="flex items-center gap-1 text-emerald-300">
+          <span className="h-2 w-2 rounded-full bg-emerald-400" /> Low
+        </span>
+        <span className="flex items-center gap-1 text-amber-300">
+          <span className="h-2 w-2 rounded-full bg-amber-400" /> Med
+        </span>
+        <span className="flex items-center gap-1 text-red-300">
+          <span className="h-2 w-2 rounded-full bg-red-400" /> High
+        </span>
+      </div>
+
+      {/* Active region label — top left */}
+      {activeLocation ? (
+        <div className="pointer-events-none absolute left-3 top-3 z-20 rounded-sm border border-cyan-400/25 bg-black/60 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-cyan-200">
+          <p className="text-slate-500">TARGET</p>
+          <p className="text-cyan-100">{activeLocation}</p>
+        </div>
+      ) : null}
+
+      {/* States */}
       {isLoading ? (
-        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950/55 backdrop-blur-[2px]">
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-950/55">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-cyan-400 border-t-transparent" />
-          <p className="mt-3 text-xs font-mono uppercase tracking-widest text-cyan-200/90">Syncing /risk/map</p>
+          <p className="mt-3 font-mono text-[10px] uppercase tracking-widest text-cyan-200/90">SYNCING /risk/map</p>
         </div>
       ) : null}
 
       {isError ? (
-        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950/70 px-6 text-center backdrop-blur-sm">
-          <p className="text-sm font-semibold text-red-200">Risk map API unavailable</p>
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-950/70 px-6 text-center">
+          <p className="text-sm font-semibold text-red-200">/risk/map upstream unavailable</p>
           <p className="mt-1 max-w-md text-xs text-slate-400">
-            Mapbox basemap may still load. Check Network tab for <span className="font-mono">/api/proxy/risk/map</span> (HTTP status or timeout).
+            Basemap may still load. Inspect <span className="font-mono">/api/proxy/risk/map</span> in Network tab.
           </p>
           <button
             type="button"
             onClick={onRetry}
-            className="mt-4 rounded-md border border-white/20 bg-white/10 px-4 py-2 text-sm text-white hover:bg-white/15"
+            className="mt-4 rounded-sm border border-cyan-400/40 bg-cyan-500/10 px-4 py-1.5 font-mono text-[10px] uppercase tracking-widest text-cyan-200 hover:bg-cyan-500/20"
           >
-            Retry
+            Retry transmission
           </button>
         </div>
       ) : null}
 
       {tokenMissing || mapLoadError ? (
-        <div className="absolute bottom-3 left-3 right-3 z-30 rounded-md border border-amber-500/40 bg-amber-950/80 px-3 py-2 text-xs text-amber-100">
-          Mapbox: {tokenMissing ? 'token missing (set NEXT_PUBLIC_MAPBOX_TOKEN)' : mapLoadError}
+        <div className="absolute bottom-14 left-3 right-3 z-30 rounded-sm border border-amber-500/40 bg-amber-950/80 px-3 py-2 font-mono text-[10px] uppercase tracking-widest text-amber-100">
+          MAPBOX: {tokenMissing ? 'TOKEN MISSING (set NEXT_PUBLIC_MAPBOX_TOKEN)' : mapLoadError}
         </div>
       ) : null}
 
       {!isLoading && !isError && enrichedRows.length === 0 && mapReady ? (
-        <div className="pointer-events-none absolute bottom-3 left-3 z-20 max-w-sm rounded-md border border-white/15 bg-slate-950/85 px-3 py-2 text-[11px] text-slate-300">
-          Basemap live. No mappable rows in payload (add <span className="font-mono">lat/lng</span> or known district names).
+        <div className="pointer-events-none absolute left-3 top-16 z-20 max-w-sm rounded-sm border border-white/15 bg-slate-950/85 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-slate-300">
+          BASEMAP LIVE · NO MAPPABLE ROWS IN PAYLOAD
         </div>
       ) : null}
     </div>

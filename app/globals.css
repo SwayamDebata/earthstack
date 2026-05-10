@@ -127,3 +127,107 @@ samp {
 .landing-grain {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
 }
+
+/* ========================================================================
+   MISSION CONTROL — HUD utilities
+   ======================================================================== */
+
+/* Faint grid overlay used inside HUD panels */
+.hud-grid-overlay {
+  background-image:
+    linear-gradient(rgba(34, 211, 238, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 211, 238, 0.18) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Scanline overlay (very subtle) */
+.hud-scanlines {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(34, 211, 238, 0.06) 2px,
+    rgba(34, 211, 238, 0.06) 3px
+  );
+}
+
+/* LED pulse — opacity only, GPU cheap */
+@keyframes led-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+.led-pulse {
+  animation: led-pulse 1.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .led-pulse {
+    animation: none;
+  }
+}
+
+/* Map radar sweep — single rotating conic gradient */
+@keyframes radar-sweep {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.radar-sweep {
+  background: conic-gradient(
+    from 0deg,
+    rgba(34, 211, 238, 0) 0deg,
+    rgba(34, 211, 238, 0) 300deg,
+    rgba(34, 211, 238, 0.18) 345deg,
+    rgba(34, 211, 238, 0.45) 360deg
+  );
+  animation: radar-sweep 6s linear infinite;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .radar-sweep {
+    animation: none;
+  }
+}
+
+/* Bottom telemetry ticker uses the same marquee keyframes */
+
+/* Tiny corner bracket helper — used as decorative pseudo */
+.hud-bracket {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: rgba(34, 211, 238, 0.5);
+  border-style: solid;
+  border-width: 0;
+}
+.hud-bracket-tl {
+  top: 0;
+  left: 0;
+  border-top-width: 2px;
+  border-left-width: 2px;
+}
+.hud-bracket-tr {
+  top: 0;
+  right: 0;
+  border-top-width: 2px;
+  border-right-width: 2px;
+}
+.hud-bracket-bl {
+  bottom: 0;
+  left: 0;
+  border-bottom-width: 2px;
+  border-left-width: 2px;
+}
+.hud-bracket-br {
+  bottom: 0;
+  right: 0;
+  border-bottom-width: 2px;
+  border-right-width: 2px;
+}

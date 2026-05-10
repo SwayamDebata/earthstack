@@ -1,7 +1,5 @@
-import CommandCenter from '@/components/dashboard/CommandCenter';
-
-export const dynamic = 'force-dynamic';
+import OverviewView from '@/components/dashboard/views/OverviewView';
 
 export default function DashboardPage() {
-  return <CommandCenter />;
+  return <OverviewView />;
 }
