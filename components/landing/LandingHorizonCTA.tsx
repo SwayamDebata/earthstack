@@ -6,7 +6,7 @@ import { ArrowUpRight } from 'lucide-react';
 
 export default function LandingHorizonCTA() {
   return (
-    <section className="relative px-4 py-24 md:px-8">
+    <section id="horizon" className="relative px-4 py-24 md:px-8">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#050816] via-[#0a1628] to-[#050816]" />
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[min(520px,70vw)] w-[min(900px,95vw)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-500/10 blur-[100px]" />
 

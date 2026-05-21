@@ -13,6 +13,7 @@ import LandingSpecMatrix from '@/components/landing/LandingSpecMatrix';
 import LandingHorizonCTA from '@/components/landing/LandingHorizonCTA';
 import Landing3DTunnel from '@/components/landing/Landing3DTunnel';
 import LandingHologramShowcase from '@/components/landing/LandingHologramShowcase';
+import LandingBhoomiG1 from '@/components/landing/LandingBhoomiG1';
 import LandingPinnedReveal from '@/components/landing/LandingPinnedReveal';
 
 export default function Home() {
@@ -23,6 +24,7 @@ export default function Home() {
       <MarqueeStrip />
       <Landing3DTunnel />
       <LandingOrbitalDeck />
+      <LandingBhoomiG1 />
       <BentoFeatures />
       <LandingHologramShowcase />
       <LandingSignalPath />

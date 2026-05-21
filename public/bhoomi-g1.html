@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ModelEarth · Bhoomi G1</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#060809; overflow:hidden; width:100vw; height:100vh; cursor:grab; }
+  body:active { cursor:grabbing; }
+  canvas { display:block; }
+</style>
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ─────────────────────────────────────────────
+// SCENE
+// ─────────────────────────────────────────────
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x060809);
+scene.fog = new THREE.FogExp2(0x060809, 0.038);
+
+const camera = new THREE.PerspectiveCamera(40, innerWidth/innerHeight, 0.01, 200);
+camera.position.set(0, 0.6, 7.0);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.physicallyCorrectLights = true;
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.15;
+document.body.appendChild(renderer.domElement);
+
+// ─────────────────────────────────────────────
+// CANVAS TEXTURE HELPERS
+// ─────────────────────────────────────────────
+function makeCanvasTexture(w, h, drawFn) {
+  const cv = document.createElement('canvas');
+  cv.width = w; cv.height = h;
+  const ctx = cv.getContext('2d');
+  drawFn(ctx, w, h);
+  const tex = new THREE.CanvasTexture(cv);
+  tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  return tex;
+}
+
+// ── FRONT FACE TEXTURE ───────────────────────
+const frontTex = makeCanvasTexture(1024, 2048, (ctx, W, H) => {
+  // Background — dark body
+  ctx.fillStyle = '#111518';
+  ctx.fillRect(0, 0, W, H);
+
+  // ── SOLAR PANEL ZONE (top 33%) ──────────────
+  const solarH = H * 0.335;
+  ctx.fillStyle = '#0a1608';
+  ctx.fillRect(0, 0, W, solarH);
+
+  // Solar cell grid lines
+  ctx.strokeStyle = 'rgba(42,200,42,0.18)';
+  ctx.lineWidth = 2;
+  const cols = 4, rows = 2;
+  const cw = W / cols, ch = solarH / rows;
+  for (let c = 0; c <= cols; c++) { ctx.beginPath(); ctx.moveTo(c*cw,0); ctx.lineTo(c*cw,solarH); ctx.stroke(); }
+  for (let r = 0; r <= rows; r++) { ctx.beginPath(); ctx.moveTo(0,r*ch); ctx.lineTo(W,r*ch); ctx.stroke(); }
+  // Cell diagonal shimmer
+  for (let c = 0; c < cols; c++) {
+    for (let r = 0; r < rows; r++) {
+      const grd = ctx.createLinearGradient(c*cw, r*ch, c*cw+cw, r*ch+ch);
+      grd.addColorStop(0, 'rgba(60,180,60,0.0)');
+      grd.addColorStop(0.45, 'rgba(80,220,80,0.07)');
+      grd.addColorStop(1, 'rgba(20,80,20,0.0)');
+      ctx.fillStyle = grd;
+      ctx.fillRect(c*cw+3, r*ch+3, cw-6, ch-6);
+    }
+  }
+
+  // Solar label inside panel (bottom of solar zone)
+  ctx.font = 'bold 22px "Courier New"';
+  ctx.fillStyle = 'rgba(140,220,40,0.35)';
+  ctx.letterSpacing = '4px';
+  ctx.textAlign = 'center';
+  ctx.fillText('5W SOLAR', W/2, solarH - 18);
+
+  // ── LIME SEPARATOR LINE ──────────────────────
+  ctx.fillStyle = 'rgba(184,240,42,0.55)';
+  ctx.fillRect(0, solarH, W, 4);
+
+  // ── BODY PANEL ──────────────────────────────
+  // Brand strip just below solar
+  ctx.fillStyle = 'rgba(184,240,42,0.08)';
+  ctx.fillRect(0, solarH + 4, W, 80);
+
+  // EARTHSTACK wordmark
+  ctx.font = 'bold 72px "Courier New"';
+  ctx.fillStyle = 'rgba(240,242,244,0.82)';
+  ctx.textAlign = 'center';
+  ctx.letterSpacing = '8px';
+  ctx.fillText('MODELEARTH', W/2, solarH + 66);
+
+  // Model label
+  ctx.font = '26px "Courier New"';
+  ctx.fillStyle = 'rgba(184,240,42,0.65)';
+  ctx.letterSpacing = '6px';
+  ctx.fillText('BHOOMI G1  ·  PROTOTYPE 01', W/2, solarH + 100);
+
+  // Thin rule
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(60, solarH+112); ctx.lineTo(W-60, solarH+112); ctx.stroke();
+
+  // ── HEXAGON LOGO (center) ────────────────────
+  const hexCX = W/2, hexCY = H * 0.52;
+  const hexR = 110;
+  ctx.save();
+  ctx.translate(hexCX, hexCY);
+  // Outer hex
+  ctx.beginPath();
+  for (let i = 0; i < 6; i++) {
+    const a = (Math.PI/3)*i - Math.PI/6;
+    i===0 ? ctx.moveTo(Math.cos(a)*hexR, Math.sin(a)*hexR)
+           : ctx.lineTo(Math.cos(a)*hexR, Math.sin(a)*hexR);
+  }
+  ctx.closePath();
+  ctx.strokeStyle = 'rgba(184,240,42,0.35)';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+  // Inner hex
+  const hexR2 = hexR * 0.72;
+  ctx.beginPath();
+  for (let i = 0; i < 6; i++) {
+    const a = (Math.PI/3)*i - Math.PI/6;
+    i===0 ? ctx.moveTo(Math.cos(a)*hexR2, Math.sin(a)*hexR2)
+           : ctx.lineTo(Math.cos(a)*hexR2, Math.sin(a)*hexR2);
+  }
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(184,240,42,0.06)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(184,240,42,0.18)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  // ES initials
+  ctx.font = 'bold 68px "Courier New"';
+  ctx.fillStyle = 'rgba(184,240,42,0.72)';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('ES', 0, 0);
+  ctx.restore();
+
+  // ── DISPLAY AREA ────────────────────────────
+  const dispY = H * 0.655, dispH = H * 0.175;
+  const dispX = 80, dispW = W - 160;
+  // Display bezel
+  ctx.fillStyle = '#0a0d0a';
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.roundRect(dispX, dispY, dispW, dispH, 12);
+  ctx.fill(); ctx.stroke();
+  // Screen glow bg
+  const scrnGrd = ctx.createRadialGradient(W/2, dispY+dispH/2, 0, W/2, dispY+dispH/2, dispW/2);
+  scrnGrd.addColorStop(0, 'rgba(13,32,16,0.9)');
+  scrnGrd.addColorStop(1, 'rgba(6,10,6,0.6)');
+  ctx.fillStyle = scrnGrd;
+  ctx.beginPath();
+  ctx.roundRect(dispX+6, dispY+6, dispW-12, dispH-12, 8);
+  ctx.fill();
+  // Screen header
+  ctx.font = 'bold 22px "Courier New"';
+  ctx.fillStyle = 'rgba(184,240,42,0.55)';
+  ctx.textAlign = 'left';
+  ctx.letterSpacing = '3px';
+  ctx.fillText('MODELEARTH · BHOOMI G1', dispX+24, dispY+36);
+  // Divider
+  ctx.strokeStyle = 'rgba(184,240,42,0.2)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(dispX+20, dispY+50); ctx.lineTo(dispX+dispW-20, dispY+50); ctx.stroke();
+  // Data rows
+  const dataRows = [
+    { label:'SOIL ', val:'68%',    col:'rgba(184,240,42,0.9)' },
+    { label:'TEMP ', val:'32.4°C', col:'rgba(240,242,244,0.85)' },
+    { label:'HUM  ', val:'71%',    col:'rgba(42,240,200,0.85)' },
+  ];
+  dataRows.forEach((row, i) => {
+    const ry = dispY + 82 + i * 46;
+    ctx.font = '28px "Courier New"';
+    ctx.fillStyle = 'rgba(240,242,244,0.4)';
+    ctx.textAlign = 'left';
+    ctx.fillText(row.label, dispX+24, ry);
+    ctx.font = 'bold 30px "Courier New"';
+    ctx.fillStyle = row.col;
+    ctx.textAlign = 'right';
+    ctx.fillText(row.val, dispX+dispW-24, ry);
+  });
+  // Live dot
+  ctx.beginPath();
+  ctx.arc(dispX+dispW-70, dispY+dispH-26, 7, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(42,240,154,0.9)';
+  ctx.fill();
+  ctx.font = '20px "Courier New"';
+  ctx.fillStyle = 'rgba(42,240,154,0.7)';
+  ctx.textAlign = 'right';
+  ctx.fillText('LIVE', dispX+dispW-24, dispY+dispH-20);
+
+  // ── LED ROW ──────────────────────────────────
+  const ledY = H * 0.845;
+  const ledLabels = [
+    { label:'PWR', col:'rgba(42,240,154,0.85)' },
+    { label:'NET', col:'rgba(42,157,240,0.85)' },
+    { label:'DAT', col:'rgba(184,240,42,0.85)' },
+    { label:'ALT', col:'rgba(60,70,80,0.5)' },
+  ];
+  const ledSpacing = W / 5;
+  ledLabels.forEach((led, i) => {
+    const lx = ledSpacing + i * ledSpacing;
+    // Circle
+    ctx.beginPath();
+    ctx.arc(lx, ledY, 20, 0, Math.PI*2);
+    ctx.fillStyle = led.col;
+    ctx.fill();
+    // Glow ring
+    const gr = ctx.createRadialGradient(lx, ledY, 10, lx, ledY, 40);
+    gr.addColorStop(0, led.col.replace('0.85','0.3').replace('0.5','0.08'));
+    gr.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = gr;
+    ctx.beginPath(); ctx.arc(lx, ledY, 40, 0, Math.PI*2); ctx.fill();
+    // Label
+    ctx.font = '22px "Courier New"';
+    ctx.fillStyle = 'rgba(240,242,244,0.35)';
+    ctx.textAlign = 'center';
+    ctx.letterSpacing = '2px';
+    ctx.fillText(led.label, lx, ledY + 44);
+  });
+
+  // ── SENSOR ZONE BOTTOM ───────────────────────
+  const szY = H * 0.895;
+  ctx.fillStyle = '#080c0a';
+  ctx.fillRect(0, szY, W, H - szY);
+  ctx.strokeStyle = 'rgba(184,240,42,0.25)';
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(0, szY); ctx.lineTo(W, szY); ctx.stroke();
+  ctx.font = 'bold 24px "Courier New"';
+  ctx.fillStyle = 'rgba(184,240,42,0.45)';
+  ctx.textAlign = 'center';
+  ctx.letterSpacing = '6px';
+  ctx.fillText('SENSOR ARRAY', W/2, szY + 42);
+
+  // Probe labels
+  const probeLabels = ['SOIL-A', 'SOIL-B', 'ENV', 'RAIN', 'EXP'];
+  const probeSpacing = W / (probeLabels.length + 1);
+  probeLabels.forEach((pl, i) => {
+    const px = probeSpacing + i * probeSpacing;
+    ctx.font = '18px "Courier New"';
+    ctx.fillStyle = i < 2 ? 'rgba(184,240,42,0.5)' : i === 2 ? 'rgba(42,240,200,0.5)' : 'rgba(42,157,240,0.4)';
+    ctx.textAlign = 'center';
+    ctx.letterSpacing = '1px';
+    ctx.fillText(pl, px, szY + 80);
+  });
+
+  // ── CERTIFICATIONS BOTTOM ────────────────────
+  ctx.font = '18px "Courier New"';
+  ctx.fillStyle = 'rgba(240,242,244,0.15)';
+  ctx.textAlign = 'center';
+  ctx.letterSpacing = '3px';
+  ctx.fillText('IP67  ·  CE  ·  RoHS  ·  BIS  ·  MADE IN INDIA', W/2, H - 22);
+});
+
+// ── BACK FACE TEXTURE ────────────────────────
+const backTex = makeCanvasTexture(1024, 2048, (ctx, W, H) => {
+  ctx.fillStyle = '#0f1216';
+  ctx.fillRect(0, 0, W, H);
+
+  // Back panel label
+  ctx.font = 'bold 38px "Courier New"';
+  ctx.fillStyle = 'rgba(184,240,42,0.2)';
+  ctx.textAlign = 'center';
+  ctx.letterSpacing = '6px';
+  ctx.fillText('MODELEARTH', W/2, 80);
+
+  // Mounting info
+  ctx.font = '22px "Courier New"';
+  ctx.fillStyle = 'rgba(240,242,244,0.15)';
+  ctx.letterSpacing = '2px';
+  ctx.fillText('POLE MOUNT · M6 HARDWARE', W/2, 120);
+
+  // Ventilation pattern
+  const vY = H * 0.2, vH = H * 0.35;
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.lineWidth = 1;
+  for (let y = vY; y < vY + vH; y += 22) {
+    ctx.beginPath(); ctx.moveTo(100, y); ctx.lineTo(W-100, y); ctx.stroke();
+  }
+  ctx.font = '20px "Courier New"';
+  ctx.fillStyle = 'rgba(255,255,255,0.1)';
+  ctx.textAlign = 'center';
+  ctx.letterSpacing = '3px';
+  ctx.fillText('THERMAL MANAGEMENT PANEL', W/2, vY + vH + 28);
+
+  // Spec block
+  const specY = H * 0.62;
+  const specs = [
+    'MCU    ESP32-S3 · 240MHz',
+    'CONN   4G LTE + LoRaWAN',
+    'SOLAR  5W MPPT',
+    'BATT   10,000mAh LiPo',
+    'RANGE  -10°C to +60°C',
+  ];
+  ctx.textAlign = 'left';
+  ctx.font = '26px "Courier New"';
+  specs.forEach((s, i) => {
+    ctx.fillStyle = i % 2 === 0 ? 'rgba(240,242,244,0.35)' : 'rgba(184,240,42,0.4)';
+    ctx.fillText(s, 100, specY + i * 52);
+  });
+
+  // Divider lines
+  ctx.strokeStyle = 'rgba(184,240,42,0.1)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(60, specY-20); ctx.lineTo(W-60, specY-20); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(60, specY + specs.length*52+10); ctx.lineTo(W-60, specY + specs.length*52+10); ctx.stroke();
+
+  // Serial / QR placeholder
+  ctx.font = '20px "Courier New"';
+  ctx.fillStyle = 'rgba(255,255,255,0.12)';
+  ctx.textAlign = 'center';
+  ctx.letterSpacing = '2px';
+  ctx.fillText('S/N: ME-BG1-2026-PR-0001', W/2, H - 60);
+  ctx.fillText('earthstack.in', W/2, H - 30);
+});
+
+// ── SIDE FACE TEXTURE ────────────────────────
+const sideTex = makeCanvasTexture(512, 2048, (ctx, W, H) => {
+  ctx.fillStyle = '#141820';
+  ctx.fillRect(0, 0, W, H);
+
+  // Vertical brand text
+  ctx.save();
+  ctx.translate(W/2, H/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.font = 'bold 36px "Courier New"';
+  ctx.fillStyle = 'rgba(184,240,42,0.22)';
+  ctx.textAlign = 'center';
+  ctx.letterSpacing = '8px';
+  ctx.fillText('MODELEARTH · BHOOMI G1 · FIELD INTELLIGENCE', 0, 0);
+  ctx.restore();
+
+  // Cable gland label
+  ctx.font = '20px "Courier New"';
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.textAlign = 'center';
+  ctx.letterSpacing = '2px';
+  ctx.fillText('CABLE', W/2, H * 0.74);
+  ctx.fillText('ENTRY', W/2, H * 0.74 + 26);
+
+  // Top: 4G/WiFi/LoRa
+  ctx.font = '20px "Courier New"';
+  ctx.fillStyle = 'rgba(42,240,200,0.35)';
+  ctx.textAlign = 'center';
+  ctx.letterSpacing = '2px';
+  ctx.fillText('4G', W/2, H * 0.06);
+  ctx.fillText('WiFi', W/2, H * 0.08);
+  ctx.fillText('LoRa', W/2, H * 0.10);
+});
+
+// ── TOP FACE TEXTURE (solar label) ───────────
+const topTex = makeCanvasTexture(1024, 512, (ctx, W, H) => {
+  ctx.fillStyle = '#0a1408';
+  ctx.fillRect(0, 0, W, H);
+  // Solar grid
+  ctx.strokeStyle = 'rgba(42,180,42,0.15)';
+  ctx.lineWidth = 2;
+  for (let x = 0; x <= 4; x++) { ctx.beginPath(); ctx.moveTo(x*W/4, 0); ctx.lineTo(x*W/4, H); ctx.stroke(); }
+  for (let y = 0; y <= 2; y++) { ctx.beginPath(); ctx.moveTo(0, y*H/2); ctx.lineTo(W, y*H/2); ctx.stroke(); }
+  // Cell shimmer
+  for (let c = 0; c < 4; c++) for (let r = 0; r < 2; r++) {
+    const g = ctx.createLinearGradient(c*W/4, r*H/2, c*W/4+W/4, r*H/2+H/2);
+    g.addColorStop(0.3,'rgba(100,255,80,0.0)');
+    g.addColorStop(0.55,'rgba(100,255,80,0.09)');
+    g.addColorStop(0.8,'rgba(20,80,20,0.0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(c*W/4+4, r*H/2+4, W/4-8, H/2-8);
+  }
+  // SOLAR label
+  ctx.font = 'bold 48px "Courier New"';
+  ctx.fillStyle = 'rgba(184,240,42,0.25)';
+  ctx.textAlign = 'center';
+  ctx.letterSpacing = '8px';
+  ctx.fillText('5W  MONOCRYSTALLINE  SOLAR', W/2, H/2 + 16);
+});
+
+// ─────────────────────────────────────────────
+// BUILD MATERIALS PER-FACE
+// ─────────────────────────────────────────────
+function mat(col, rough, metal, emissive, emInt) {
+  const m = new THREE.MeshStandardMaterial({ color: col, roughness: rough, metalness: metal });
+  if (emissive) { m.emissive = new THREE.Color(emissive); m.emissiveIntensity = emInt||1; }
+  return m;
+}
+function matTex(tex, rough, metal) {
+  return new THREE.MeshStandardMaterial({ map: tex, roughness: rough, metalness: metal });
+}
+
+const M = {
+  body:      mat(0x1a1f25, 0.55, 0.25),
+  bodyFront: matTex(frontTex, 0.55, 0.15),
+  bodyBack:  matTex(backTex,  0.55, 0.15),
+  bodySide:  matTex(sideTex,  0.55, 0.18),
+  bodyTop:   matTex(topTex,   0.28, 0.55),
+  bodyBot:   mat(0x0d1014, 0.8, 0.1),
+  solar:     mat(0x0a1608, 0.28, 0.65),
+  lime:      mat(0xb8f02a, 0.2, 0.1, 0xb8f02a, 2.0),
+  teal:      mat(0x2af0c8, 0.2, 0.1, 0x2af0c8, 1.8),
+  blue:      mat(0x2a9df0, 0.2, 0.1, 0x2a9df0, 1.6),
+  amber:     mat(0xf0a82a, 0.2, 0.1, 0xf0a82a, 1.4),
+  dimLed:    mat(0x1e2530, 0.7, 0.3),
+  probe:     mat(0x2af0c8, 0.3, 0.8, 0x0a3028, 0.4),
+  probeLime: mat(0xb8f02a, 0.3, 0.75, 0x3a5010, 0.3),
+  probeBlue: mat(0x2a9df0, 0.3, 0.8, 0x0a1830, 0.35),
+  antenna:   mat(0x2a3038, 0.5, 0.6),
+  rubber:    mat(0x141820, 0.96, 0.0),
+  mount:     mat(0x1a2028, 0.7, 0.45),
+  pole:      mat(0x1e2828, 0.65, 0.5),
+  rim:       (() => { const m = mat(0x2a3038, 0.4, 0.3); m.transparent=true; m.opacity=0.3; m.side=THREE.BackSide; return m; })(),
+  gasket:    mat(0x101418, 0.98, 0.0),
+  screen:    mat(0x0a1208, 0.05, 0.05, 0x0d2a10, 0.5),
+  screenGls: (() => { const m = mat(0x060d06, 0.04, 0.05); m.transparent=true; m.opacity=0.85; return m; })(),
+};
+
+// ─────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────
+const g = new THREE.Group();
+scene.add(g);
+
+const DW=1.2, DH=2.2, DD=0.6;
+
+function addBox(w,h,d, materials, px=0,py=0,pz=0, rx=0,ry=0,rz=0) {
+  const geo = new THREE.BoxGeometry(w,h,d);
+  const mats = Array.isArray(materials) ? materials : materials;
+  const m = new THREE.Mesh(geo, mats);
+  m.position.set(px,py,pz);
+  m.rotation.set(rx,ry,rz);
+  m.castShadow = true; m.receiveShadow = true;
+  g.add(m); return m;
+}
+
+function addCyl(rt,rb,h,segs,mat,px=0,py=0,pz=0,rx=0,ry=0,rz=0) {
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,segs), mat);
+  m.position.set(px,py,pz); m.rotation.set(rx,ry,rz);
+  m.castShadow=true; g.add(m); return m;
+}
+
+function addSphere(r,segs,mat,px=0,py=0,pz=0) {
+  const m = new THREE.Mesh(new THREE.SphereGeometry(r,segs,segs), mat);
+  m.position.set(px,py,pz); g.add(m); return m;
+}
+
+// Rounded box via ExtrudeGeometry
+function addRounded(w,h,d,radius,segs,mat,px=0,py=0,pz=0) {
+  const s = new THREE.Shape();
+  const r = Math.min(radius, w/2-0.001, h/2-0.001);
+  s.moveTo(-w/2+r,-h/2); s.lineTo(w/2-r,-h/2);
+  s.quadraticCurveTo(w/2,-h/2,w/2,-h/2+r);
+  s.lineTo(w/2,h/2-r); s.quadraticCurveTo(w/2,h/2,w/2-r,h/2);
+  s.lineTo(-w/2+r,h/2); s.quadraticCurveTo(-w/2,h/2,-w/2,h/2-r);
+  s.lineTo(-w/2,-h/2+r); s.quadraticCurveTo(-w/2,-h/2,-w/2+r,-h/2);
+  const geo = new THREE.ExtrudeGeometry(s, {
+    depth: d, bevelEnabled: true,
+    bevelThickness: radius*0.25, bevelSize: radius*0.25, bevelSegments: segs
+  });
+  geo.translate(0, 0, -d/2);
+  const m = new THREE.Mesh(geo, mat);
+  m.position.set(px,py,pz); m.castShadow=true; m.receiveShadow=true;
+  g.add(m); return m;
+}
+
+// ─────────────────────────────────────────────
+// DEVICE BODY — 6 separate faces with textures
+// Right=+x, Left=-x, Top=+y, Bottom=-y, Front=+z, Back=-z
+// BoxGeometry face order: px,nx,py,ny,pz,nz
+// ─────────────────────────────────────────────
+// Main enclosure
+const bodyMats = [M.bodySide, M.bodySide, M.bodyTop, M.bodyBot, M.bodyFront, M.bodyBack];
+addBox(DW, DH, DD, bodyMats, 0,0,0);
+
+// Rim
+addBox(DW+0.006, DH+0.006, DD+0.006, M.rim, 0,0,0);
+
+// IP67 gasket ring
+addRounded(DW+0.012, DH+0.012, 0.02, 0.04, 2, M.gasket, 0, 0, DD*0.498);
+
+// ─────────────────────────────────────────────
+// SOLAR PANEL raised face
+// ─────────────────────────────────────────────
+addBox(DW-0.06, 0.74, 0.012, M.solar, 0, DH/2-0.37, DD/2+0.005);
+
+// Lime separator strip
+addBox(DW, 0.006, DD+0.02, M.lime.clone(), 0, DH/2-0.755, 0);
+
+// Top separator ridge (rubber)
+addBox(DW, 0.022, DD+0.015, M.rubber, 0, DH/2-0.757, 0);
+
+// ─────────────────────────────────────────────
+// SCREEN / DISPLAY (raised slightly)
+// ─────────────────────────────────────────────
+addBox(0.92, 0.56, 0.012, M.screen, 0, -0.15, DD/2+0.004);
+addBox(0.90, 0.54, 0.006, M.screenGls, 0, -0.15, DD/2+0.014);
+
+// Screen bezel
+addBox(0.96, 0.60, 0.008, mat(0x0d1012, 0.85, 0.05), 0, -0.15, DD/2+0.001);
+
+// ─────────────────────────────────────────────
+// HEXAGON LOGO RING (3D geometry on front face)
+// ─────────────────────────────────────────────
+{
+  const hexOuter = 0.13, hexInner = 0.098;
+  const shape = new THREE.Shape();
+  for (let i=0;i<6;i++){
+    const a = (Math.PI/3)*i - Math.PI/6;
+    i===0 ? shape.moveTo(Math.cos(a)*hexOuter, Math.sin(a)*hexOuter)
+           : shape.lineTo(Math.cos(a)*hexOuter, Math.sin(a)*hexOuter);
+  }
+  shape.closePath();
+  const hole = new THREE.Path();
+  for (let i=0;i<6;i++){
+    const a = (Math.PI/3)*i - Math.PI/6;
+    i===0 ? hole.moveTo(Math.cos(a)*hexInner, Math.sin(a)*hexInner)
+           : hole.lineTo(Math.cos(a)*hexInner, Math.sin(a)*hexInner);
+  }
+  hole.closePath(); shape.holes.push(hole);
+  const geo = new THREE.ExtrudeGeometry(shape, { depth:0.014, bevelEnabled:false });
+  geo.translate(0, 0, -0.007);
+  const lm = M.lime.clone(); lm.emissiveIntensity = 0.9;
+  const hexMesh = new THREE.Mesh(geo, lm);
+  hexMesh.position.set(0, 0.38, DD/2+0.014);
+  hexMesh.castShadow = true;
+  g.add(hexMesh);
+
+  // Center fill hex
+  const cShape = new THREE.Shape();
+  for (let i=0;i<6;i++){
+    const a=(Math.PI/3)*i-Math.PI/6;
+    i===0?cShape.moveTo(Math.cos(a)*0.05,Math.sin(a)*0.05):cShape.lineTo(Math.cos(a)*0.05,Math.sin(a)*0.05);
+  }
+  cShape.closePath();
+  const cgeo = new THREE.ShapeGeometry(cShape);
+  const cm = M.lime.clone(); cm.emissiveIntensity = 2.5;
+  const cMesh = new THREE.Mesh(cgeo, cm);
+  cMesh.position.set(0, 0.38, DD/2+0.022);
+  g.add(cMesh);
+}
+
+// ─────────────────────────────────────────────
+// LEDs (4 dots on front, below screen)
+// ─────────────────────────────────────────────
+const ledMats = [M.lime.clone(), M.blue.clone(), M.teal.clone(), M.dimLed];
+const ledXs   = [-0.24, -0.08, 0.08, 0.24];
+const leds = ledMats.map((lm, i) => {
+  const l = addSphere(0.024, 14, lm, ledXs[i], -0.525, DD/2+0.026);
+  return l;
+});
+
+// LED label strip
+addBox(0.68, 0.018, 0.004, mat(0x1a1a22, 0.9, 0.0), 0, -0.56, DD/2+0.012);
+
+// ─────────────────────────────────────────────
+// SENSOR ZONE (bottom front recessed panel)
+// ─────────────────────────────────────────────
+addBox(DW-0.06, 0.24, 0.012, mat(0x080c0a, 0.85, 0.1), 0, -DH/2+0.12, DD/2+0.003);
+// Zone top border lime line
+addBox(DW-0.06, 0.004, 0.008, M.lime.clone(), 0, -DH/2+0.245, DD/2+0.008);
+
+// Bottom ridge / gasket
+addBox(DW, 0.022, DD+0.015, M.rubber, 0, -DH/2+0.245, 0);
+
+// ─────────────────────────────────────────────
+// SENSOR PROBES (bottom)
+// ─────────────────────────────────────────────
+const probes = [
+  { mat:M.probe,     x:-0.33, h:0.30, r:0.019 },
+  { mat:M.probeLime, x:-0.18, h:0.36, r:0.017 },
+  { mat:M.probe,     x:-0.05, h:0.23, r:0.014 },
+  { mat:M.probeBlue, x: 0.22, h:0.30, r:0.019 },
+  { mat:M.probeLime, x: 0.37, h:0.32, r:0.015 },
+];
+probes.forEach(({mat:pm, x, h, r}) => {
+  addCyl(r, r*0.82, h, 14, pm, x, -DH/2 - h/2 + 0.02, 0);
+  addCyl(r*0.82, 0.002, 0.042, 10, pm, x, -DH/2 - h - 0.018, 0);
+});
+
+// ─────────────────────────────────────────────
+// ANTENNA (right side, upper)
+// ─────────────────────────────────────────────
+addCyl(0.023, 0.016, 0.52, 12, M.antenna, DW/2+0.036, DH/2-0.3, 0);
+const antTip = addSphere(0.032, 12, M.teal.clone(), DW/2+0.036, DH/2-0.038, 0);
+antTip.material.emissiveIntensity = 3.0;
+
+// Antenna base cap
+addCyl(0.04, 0.04, 0.05, 12, M.mount, DW/2+0.036, DH/2-0.56, 0);
+
+// ─────────────────────────────────────────────
+// MOUNTING BRACKET (left side)
+// ─────────────────────────────────────────────
+addBox(0.11, 0.58, DD+0.07, M.mount, -DW/2-0.055, 0.08, 0);
+// Bracket screws
+[-0.2, 0.22].forEach(y => {
+  addCyl(0.026, 0.026, 0.028, 10, mat(0x2a3038, 0.4, 0.75),
+    -DW/2-0.115, y, 0, 0, 0, Math.PI/2);
+});
+// Bracket edge highlight
+addBox(0.008, 0.58, 0.008, M.lime.clone(), -DW/2-0.112, 0.08, DD/2+0.035);
+
+// ─────────────────────────────────────────────
+// USB-C PORT (bottom edge)
+// ─────────────────────────────────────────────
+addBox(0.16, 0.045, 0.028, mat(0x060a0c, 0.85, 0.2), 0.05, -DH/2-0.002, DD/2-0.07);
+
+// Expansion port covers (right side bottom)
+[0.12, 0.28].forEach(y => {
+  addBox(0.08, 0.045, 0.025, mat(0x1a2028, 0.7, 0.3), DW/2+0.0, -DH/2+y, DD/2-0.08);
+});
+
+// ─────────────────────────────────────────────
+// CABLE GLAND (left side, lower)
+// ─────────────────────────────────────────────
+addCyl(0.042, 0.038, 0.09, 14, M.rubber, -DW/2-0.045, -DH/2+0.3, 0, 0, 0, Math.PI/2);
+addCyl(0.028, 0.028, 0.12, 10, mat(0x0a0e10, 0.95, 0.0), -DW/2-0.06, -DH/2+0.3, 0, 0, 0, Math.PI/2);
+
+// ─────────────────────────────────────────────
+// POLE + MOUNT
+// ─────────────────────────────────────────────
+addCyl(0.042, 0.042, 3.8, 14, M.pole, 0, -DH/2-2.02, 0);
+// Mount collar
+addCyl(0.13, 0.10, 0.20, 18, M.mount, 0, -DH/2-0.11, 0);
+// Collar ring detail
+addCyl(0.135, 0.135, 0.015, 18, M.lime.clone(), 0, -DH/2-0.02, 0);
+// Ground plate
+addBox(0.44, 0.065, 0.44, M.mount, 0, -DH/2-3.93, 0);
+// Ground spike
+addCyl(0.025, 0.008, 0.4, 8, M.pole, 0, -DH/2-4.22, 0);
+
+// ─────────────────────────────────────────────
+// ATMOSPHERE
+// ─────────────────────────────────────────────
+// Ground shadow
+{
+  const m = new THREE.Mesh(
+    new THREE.CircleGeometry(1.1, 64),
+    new THREE.MeshBasicMaterial({ color:0x000000, transparent:true, opacity:0.4, depthWrite:false })
+  );
+  m.rotation.x = -Math.PI/2;
+  m.position.set(0, -DH/2-4.0, 0);
+  scene.add(m);
+}
+// Ground lime glow
+{
+  const m = new THREE.Mesh(
+    new THREE.CircleGeometry(1.6, 64),
+    new THREE.MeshBasicMaterial({ color:0xb8f02a, transparent:true, opacity:0.035, depthWrite:false })
+  );
+  m.rotation.x = -Math.PI/2;
+  m.position.set(0, -DH/2-3.98, 0);
+  scene.add(m);
+}
+
+// Particles
+{
+  const n = 200;
+  const pos = new Float32Array(n*3);
+  for (let i=0;i<n;i++){
+    pos[i*3]   = (Math.random()-0.5)*16;
+    pos[i*3+1] = (Math.random()-0.5)*12;
+    pos[i*3+2] = (Math.random()-0.5)*16;
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  const pts = new THREE.Points(geo, new THREE.PointsMaterial({
+    color:0xb8f02a, size:0.018, transparent:true, opacity:0.22, sizeAttenuation:true
+  }));
+  scene.add(pts);
+  window._particles = pts;
+}
+
+// ─────────────────────────────────────────────
+// LIGHTING
+// ─────────────────────────────────────────────
+const kl = new THREE.DirectionalLight(0xfff6ee, 3.0);
+kl.position.set(-3.5, 6, 5);
+kl.castShadow = true;
+kl.shadow.mapSize.set(2048,2048);
+Object.assign(kl.shadow.camera,{near:0.1,far:30,left:-5,right:5,top:5,bottom:-5});
+scene.add(kl);
+
+const fl = new THREE.DirectionalLight(0xddeeff, 0.9);
+fl.position.set(5, 0.5, -2);
+scene.add(fl);
+
+const rl = new THREE.DirectionalLight(0xb8f02a, 0.55);
+rl.position.set(0, 4, -6);
+scene.add(rl);
+
+scene.add(new THREE.AmbientLight(0x1a1e24, 2.2));
+
+// LED point lights
+const pl1 = new THREE.PointLight(0xb8f02a, 1.0, 2.0);
+pl1.position.set(-0.24, -0.525, DD/2+0.3); g.add(pl1);
+const pl2 = new THREE.PointLight(0x2af0c8, 0.8, 1.5);
+pl2.position.set(0.08, -0.525, DD/2+0.3); g.add(pl2);
+const plAnt = new THREE.PointLight(0x2af0c8, 1.2, 1.2);
+plAnt.position.set(DW/2+0.036, DH/2-0.04, 0.15); g.add(plAnt);
+const plLogo = new THREE.PointLight(0xb8f02a, 0.7, 1.2);
+plLogo.position.set(0, 0.38, DD/2+0.35); g.add(plLogo);
+const plScreen = new THREE.PointLight(0x0d3010, 0.5, 0.8);
+plScreen.position.set(0, -0.15, DD/2+0.4); g.add(plScreen);
+
+// ─────────────────────────────────────────────
+// CONTROLS
+// ─────────────────────────────────────────────
+let dragging=false, prev={x:0,y:0};
+let rotY=0.3, rotX=0.06, tRotY=0.3, tRotX=0.06;
+let autoRot=true, autoTimer=null;
+let camD=7.0, tCamD=7.0;
+const cvs = renderer.domElement;
+
+cvs.addEventListener('mousedown', e=>{
+  dragging=true; autoRot=false; clearTimeout(autoTimer);
+  prev={x:e.clientX,y:e.clientY}; cvs.style.cursor='grabbing';
+});
+cvs.addEventListener('mousemove', e=>{
+  if(!dragging) return;
+  tRotY += (e.clientX-prev.x)*0.008;
+  tRotX += (e.clientY-prev.y)*0.006;
+  tRotX = Math.max(-1.2, Math.min(1.2, tRotX));
+  prev={x:e.clientX,y:e.clientY};
+});
+cvs.addEventListener('mouseup', ()=>{ dragging=false; cvs.style.cursor='grab'; autoTimer=setTimeout(()=>autoRot=true,3000); });
+cvs.addEventListener('mouseleave',()=>{ dragging=false; cvs.style.cursor='grab'; });
+cvs.addEventListener('wheel', e=>{ e.preventDefault(); tCamD=Math.max(2.5,Math.min(13,tCamD+e.deltaY*0.007)); },{passive:false});
+cvs.addEventListener('touchstart', e=>{ dragging=true; autoRot=false; clearTimeout(autoTimer); prev={x:e.touches[0].clientX,y:e.touches[0].clientY}; },{passive:true});
+cvs.addEventListener('touchmove', e=>{
+  if(!dragging)return;
+  tRotY+=(e.touches[0].clientX-prev.x)*0.008;
+  tRotX+=(e.touches[0].clientY-prev.y)*0.006;
+  tRotX=Math.max(-1.2,Math.min(1.2,tRotX));
+  prev={x:e.touches[0].clientX,y:e.touches[0].clientY};
+},{passive:true});
+cvs.addEventListener('touchend',()=>{ dragging=false; autoTimer=setTimeout(()=>autoRot=true,3000); });
+
+// ─────────────────────────────────────────────
+// ANIMATE
+// ─────────────────────────────────────────────
+let t=0;
+const clock=new THREE.Clock();
+
+function animate(){
+  requestAnimationFrame(animate);
+  const dt=clock.getDelta(); t+=dt;
+
+  if(autoRot) tRotY += dt*0.25;
+
+  rotY += (tRotY-rotY)*0.08;
+  rotX += (tRotX-rotX)*0.08;
+  camD += (tCamD-camD)*0.08;
+
+  g.rotation.y = rotY;
+  g.rotation.x = rotX;
+  camera.position.set(0, 0.5+Math.sin(t*0.1)*0.03, camD);
+  camera.lookAt(0, 0.1, 0);
+
+  // LED pulse
+  leds[0].material.emissiveIntensity = 1.6 + Math.sin(t*1.3)*0.7;
+  leds[1].material.emissiveIntensity = 1.2 + Math.sin(t*4.1+1)*0.9;
+  leds[2].material.emissiveIntensity = 1.8 + Math.sin(t*7.2+2)*1.1;
+  pl1.intensity = 0.7 + Math.sin(t*1.3)*0.4;
+  pl2.intensity = 0.6 + Math.sin(t*7.2+2)*0.5;
+
+  // Antenna pulse
+  antTip.material.emissiveIntensity = 2.0 + Math.sin(t*2.6)*1.2;
+  plAnt.intensity = 0.8 + Math.sin(t*2.6)*0.5;
+
+  // Logo pulse
+  plLogo.intensity = 0.5 + Math.sin(t*0.85)*0.25;
+
+  // Screen subtle flicker
+  plScreen.intensity = 0.3 + Math.sin(t*0.5)*0.12;
+
+  // Particles drift
+  if(window._particles){ _particles.rotation.y=t*0.016; _particles.rotation.x=t*0.007; }
+
+  renderer.render(scene, camera);
+}
+animate();
+
+window.addEventListener('resize',()=>{
+  camera.aspect = innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+</script>
+</body>
+</html>
