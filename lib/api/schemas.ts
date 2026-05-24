@@ -54,12 +54,48 @@ export const AlertSchema = z
     description: z.string().optional(),
     severity: z.string().optional(),
     active: z.boolean().optional(),
+    status: z.string().optional(),
     location: z.string().optional(),
+    region: z.string().optional(),
+    risk_score: z.number().or(z.string()).optional(),
+    sent: z.boolean().optional(),
+    delivery_status: z.string().optional(),
+    send_attempts: z.number().or(z.string()).optional(),
     created_at: timestampUnion,
     updated_at: timestampUnion,
     timestamp: timestampUnion,
   })
   .passthrough();
+
+export const AlertContactSchema = z
+  .object({
+    id: z.union([z.string(), z.number()]).optional(),
+    name: z.string().optional(),
+    phone_e164: z.string().optional(),
+    channel: z.string().optional(),
+    role: z.string().optional(),
+    locations: z.array(z.string()).optional(),
+    enabled: z.boolean().optional(),
+  })
+  .passthrough();
+
+export const AlertContactsSchema = z.preprocess(
+  (input) => extractListPayload(input),
+  z.array(JsonObject),
+);
+
+export const AlertNotifySchema = z
+  .object({
+    ok: z.boolean().optional(),
+    alert_id: z.union([z.string(), z.number()]).optional(),
+    provider: z.string().optional(),
+    region: z.string().optional(),
+    sent: z.boolean().optional(),
+    deliveries: z.array(JsonObject).optional(),
+  })
+  .passthrough();
+
+export const AlertDeliveryInfoSchema = z.record(z.string(), z.unknown());
 
 export const AlertsSchema = z.preprocess(
   (input) => extractListPayload(input),
@@ -100,6 +136,10 @@ export type FeaturesLatest = z.infer<typeof FeaturesLatestSchema>;
 export type Risk = z.infer<typeof RiskSchema>;
 export type RiskMap = z.infer<typeof RiskMapSchema>;
 export type Alert = z.infer<typeof AlertSchema>;
+export type AlertContact = z.infer<typeof AlertContactSchema>;
+export type AlertContacts = z.infer<typeof AlertContactsSchema>;
+export type AlertNotify = z.infer<typeof AlertNotifySchema>;
+export type AlertDeliveryInfo = z.infer<typeof AlertDeliveryInfoSchema>;
 export type Alerts = z.infer<typeof AlertsSchema>;
 export type Replay = z.infer<typeof ReplaySchema>;
 export type ReplayRun = z.infer<typeof ReplayRunSchema>;

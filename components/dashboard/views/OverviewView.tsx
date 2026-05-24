@@ -15,6 +15,7 @@ import {
 } from 'recharts';
 import { Play, RefreshCw } from 'lucide-react';
 import { api } from '@/lib/api/endpoints';
+import { getAlertId, getAlertRegion, isAlertOpen } from '@/lib/api/alerts';
 import { extractNumericSeries } from '@/lib/api/coerce';
 import { formatScalar } from '@/lib/api/payload';
 import { POLLING_INTERVALS, withJitter } from '@/lib/config';
@@ -23,6 +24,7 @@ import StatusLed from '@/components/dashboard/StatusLed';
 import KpiRibbon, { type Kpi } from '@/components/dashboard/KpiRibbon';
 import RiskMapPanel from '@/components/dashboard/RiskMapPanel';
 import RegionChips from '@/components/dashboard/RegionChips';
+import SendAlertButton from '@/components/dashboard/alerts/SendAlertButton';
 import { useMission } from '@/components/dashboard/MissionContext';
 import { ScoreBar, Telemetry, Legend, ErrorBlock, EmptyBlock } from '@/components/dashboard/Atoms';
 import { numOrNull, num, severityToTone, relTime, toArray } from '@/components/dashboard/util';
@@ -47,7 +49,7 @@ export default function OverviewView() {
 
   const riskMapList = toArray<Record<string, unknown>>(riskMap.data);
   const alertsList = useMemo(
-    () => toArray<Record<string, unknown>>(alerts.data).sort((a, b) => Number(Boolean(b.active)) - Number(Boolean(a.active))),
+    () => toArray<Record<string, unknown>>(alerts.data).sort((a, b) => Number(isAlertOpen(b)) - Number(isAlertOpen(a))),
     [alerts.data],
   );
   const mlList = toArray<Record<string, unknown>>(mlLogs.data);
@@ -64,7 +66,7 @@ export default function OverviewView() {
     const sev = String(r.severity ?? r.level ?? '').toLowerCase();
     return sev === 'high' || sev === 'critical';
   }).length;
-  const activeAlerts = alertsList.filter((a) => Boolean(a.active)).length;
+  const activeAlerts = alertsList.filter((a) => isAlertOpen(a)).length;
 
   const mlLastFinal = numOrNull(mlList[0]?.final_score);
   const mlLastRule = numOrNull(mlList[0]?.rule_score);
@@ -324,13 +326,15 @@ export default function OverviewView() {
                 {alertsList.map((item, idx) => {
                   const tone = severityToTone(item.severity);
                   const sev = String(item.severity ?? 'unknown');
+                  const alertId = getAlertId(item);
+                  const open = isAlertOpen(item);
                   return (
-                    <div key={String(item.id ?? idx)} className="grid grid-cols-[18px_1fr_auto_auto] items-center gap-2 rounded-sm border border-white/5 bg-slate-950/50 px-2 py-1.5 transition hover:border-cyan-400/25 hover:bg-cyan-500/[0.04]">
+                    <div key={String(item.id ?? idx)} className="grid grid-cols-[18px_1fr_auto_auto_auto] items-center gap-2 rounded-sm border border-white/5 bg-slate-950/50 px-2 py-1.5 transition hover:border-cyan-400/25 hover:bg-cyan-500/[0.04]">
                       <StatusLed tone={tone} size={6} pulse={tone === 'critical'} />
                       <div className="min-w-0">
-                        <p className="truncate text-xs text-slate-100">{String(item.title ?? item.message ?? 'Untitled')}</p>
+                        <p className="truncate text-xs text-slate-100">{String(item.message ?? item.title ?? 'Untitled')}</p>
                         <p className="truncate font-mono text-[10px] uppercase tracking-widest text-slate-500">
-                          {String(item.location ?? '—')} · {relTime(item.created_at ?? item.timestamp)}
+                          {getAlertRegion(item)} · {relTime(item.timestamp ?? item.created_at)}
                         </p>
                       </div>
                       <span
@@ -345,8 +349,13 @@ export default function OverviewView() {
                         {sev}
                       </span>
                       <span className="shrink-0 font-mono text-[9px] uppercase tracking-widest text-slate-500">
-                        {item.active ? 'OPEN' : 'CLOSED'}
+                        {typeof item.status === 'string' ? String(item.status).toUpperCase() : open ? 'OPEN' : 'CLOSED'}
                       </span>
+                      {alertId !== null && open ? (
+                        <SendAlertButton alertId={alertId} compact />
+                      ) : (
+                        <span className="w-12 shrink-0" />
+                      )}
                     </div>
                   );
                 })}

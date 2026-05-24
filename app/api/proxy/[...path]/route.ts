@@ -27,6 +27,7 @@ async function proxy(request: NextRequest, method: 'GET' | 'POST') {
   });
 
   const targetStr = target.toString();
+  const body = method === 'POST' ? await request.text() : undefined;
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), API_UPSTREAM_TIMEOUT_MS);
@@ -38,6 +39,7 @@ async function proxy(request: NextRequest, method: 'GET' | 'POST') {
         'Content-Type': 'application/json',
         'User-Agent': 'EarthStack-NextProxy/1.0',
       },
+      body: body && body.length > 0 ? body : undefined,
       cache: 'no-store',
       signal: controller.signal,
     });

@@ -8,6 +8,7 @@ import { LOCATIONS, MAPBOX_TOKEN, POLLING_INTERVALS, STALE_THRESHOLDS_MS, withJi
 import { useMission } from '@/components/dashboard/MissionContext';
 import HudFrame from '@/components/dashboard/HudFrame';
 import StatusLed from '@/components/dashboard/StatusLed';
+import AlertDeliverySettings from '@/components/dashboard/alerts/AlertDeliverySettings';
 import { PageTitle, Telemetry } from '@/components/dashboard/Atoms';
 import { formatScalar } from '@/lib/api/payload';
 
@@ -62,6 +63,8 @@ export default function SettingsView() {
           <RefreshCw size={11} /> RUN DIAGNOSTICS
         </button>
       </PageTitle>
+
+      <AlertDeliverySettings />
 
       <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
         <HudFrame label="OPERATOR PREFERENCES" subtitle="local · persisted to localStorage" status="info" statusText="LIVE">

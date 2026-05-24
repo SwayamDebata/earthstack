@@ -1,5 +1,10 @@
 import { apiRequest } from '@/lib/api/client';
+import type { CreateAlertContactPayload, NotifyAlertPayload, TestWhatsAppPayload } from '@/lib/api/alerts';
 import {
+  AlertContactSchema,
+  AlertContactsSchema,
+  AlertDeliveryInfoSchema,
+  AlertNotifySchema,
   AlertsSchema,
   FeaturesLatestSchema,
   ForecastSchema,
@@ -25,6 +30,27 @@ export const api = {
   riskMap: (signal?: AbortSignal) => apiRequest('/risk/map', RiskMapSchema, { signal }),
   alerts: (activeOnly = true, limit = 20, signal?: AbortSignal) =>
     apiRequest(`/alerts?limit=${limit}&active_only=${activeOnly}`, AlertsSchema, { signal }),
+  alertContacts: (signal?: AbortSignal) => apiRequest('/alert-contacts', AlertContactsSchema, { signal }),
+  createAlertContact: (payload: CreateAlertContactPayload, signal?: AbortSignal) =>
+    apiRequest('/alert-contacts', AlertContactSchema, { signal, method: 'POST', body: payload }),
+  notifyAlert: (
+    alertId: number | string,
+    payload: NotifyAlertPayload = { provider: 'twilio_whatsapp' },
+    signal?: AbortSignal,
+  ) =>
+    apiRequest(`/alerts/${encodeURIComponent(String(alertId))}/notify`, AlertNotifySchema, {
+      signal,
+      method: 'POST',
+      body: payload,
+    }),
+  alertDeliveryInfo: (signal?: AbortSignal) =>
+    apiRequest('/alerts/delivery/info', AlertDeliveryInfoSchema, { signal }),
+  testWhatsAppDelivery: (payload: TestWhatsAppPayload, signal?: AbortSignal) =>
+    apiRequest('/alerts/delivery/test-whatsapp', AlertDeliveryInfoSchema, {
+      signal,
+      method: 'POST',
+      body: payload,
+    }),
   replay: (location: string, signal?: AbortSignal) => apiRequest(`/replay/${encodeURIComponent(location)}`, ReplaySchema, { signal }),
   replayRun: (location: string, signal?: AbortSignal) =>
     apiRequest(`/replay/run?location=${encodeURIComponent(location)}`, ReplayRunSchema, {

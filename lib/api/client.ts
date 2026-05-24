@@ -17,6 +17,7 @@ export type RequestOptions = {
   cache?: RequestCache;
   next?: NextFetchRequestConfig;
   method?: 'GET' | 'POST';
+  body?: unknown;
 };
 
 function getRuntimeApiBase() {
@@ -42,9 +43,15 @@ export async function apiRequest<T>(
   const startedAt = performance.now();
 
   try {
+    const headers: Record<string, string> = { Accept: 'application/json' };
+    if (options.body !== undefined) {
+      headers['Content-Type'] = 'application/json';
+    }
+
     const response = await fetch(url, {
       method: options.method ?? 'GET',
-      headers: { Accept: 'application/json' },
+      headers,
+      body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
       signal: options.signal,
       cache: options.cache,
       next: options.next,
@@ -62,6 +69,24 @@ export async function apiRequest<T>(
           const code = j.code !== undefined ? ` [${String(j.code)}]` : '';
           const hint = j.hint !== undefined ? ` — ${String(j.hint)}` : '';
           msg = `Proxy could not reach API${code}: ${String(j.message ?? 'fetch failed')}. Target: ${String(j.target ?? 'unknown')}${hint}`;
+          details = j;
+        } else if (j.detail !== undefined) {
+          if (typeof j.detail === 'string') {
+            msg = j.detail;
+          } else if (Array.isArray(j.detail)) {
+            msg =
+              j.detail
+                .map((item: unknown) => {
+                  if (!item || typeof item !== 'object' || !('msg' in item)) return null;
+                  const row = item as { loc?: unknown[]; msg?: unknown };
+                  const path = Array.isArray(row.loc) ? row.loc.join('.') : '';
+                  return path ? `${path}: ${String(row.msg)}` : String(row.msg);
+                })
+                .filter(Boolean)
+                .join(' · ') || 'Validation failed';
+          } else {
+            msg = JSON.stringify(j.detail);
+          }
           details = j;
         }
       } catch {

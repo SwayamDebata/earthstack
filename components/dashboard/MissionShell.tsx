@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useQueries } from '@tanstack/react-query';
 import { Wifi, WifiOff } from 'lucide-react';
 import { api } from '@/lib/api/endpoints';
+import { isAlertOpen } from '@/lib/api/alerts';
 import { POLLING_INTERVALS, withJitter } from '@/lib/config';
 import { formatScalar } from '@/lib/api/payload';
 import StatusLed from '@/components/dashboard/StatusLed';
@@ -73,7 +74,7 @@ export default function MissionShell({ children }: { children: ReactNode }) {
     const sev = String(r.severity ?? r.level ?? '').toLowerCase();
     return sev === 'high' || sev === 'critical';
   }).length;
-  const activeAlerts = alertsList.filter((a) => Boolean(a.active)).length;
+  const activeAlerts = alertsList.filter((a) => isAlertOpen(a)).length;
 
   const healthStatus = formatScalar((health.data as Record<string, unknown> | undefined)?.status);
   const healthTone: Tone = health.isError ? 'critical' : 'nominal';
@@ -87,7 +88,7 @@ export default function MissionShell({ children }: { children: ReactNode }) {
     alertsList.slice(0, 5).forEach((a) => {
       items.push({
         channel: 'INC',
-        text: `${String(a.title ?? a.message ?? 'event')} · ${String(a.location ?? '')}`,
+        text: `${String(a.message ?? a.title ?? 'event')} · ${String(a.region ?? a.location ?? '')}`,
         tone: severityToTone(a.severity),
       });
     });
