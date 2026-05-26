@@ -10,6 +10,7 @@ import { useMission } from '@/components/dashboard/MissionContext';
 import HudFrame from '@/components/dashboard/HudFrame';
 import StatusLed from '@/components/dashboard/StatusLed';
 import RegionChips from '@/components/dashboard/RegionChips';
+import BacktestCard from '@/components/dashboard/ml/BacktestCard';
 import { PageTitle, ErrorBlock, EmptyBlock, Telemetry, Legend } from '@/components/dashboard/Atoms';
 import { num, numOrNull, relTime, toArray } from '@/components/dashboard/util';
 
@@ -85,6 +86,8 @@ export default function MlView() {
           <RefreshCw size={11} /> RESYNC
         </button>
       </PageTitle>
+
+      <BacktestCard />
 
       {/* Summary tiles */}
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">

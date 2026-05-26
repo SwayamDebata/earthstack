@@ -129,6 +129,55 @@ export const MlInferenceLogsSchema = z.preprocess(
   z.array(JsonObject),
 );
 
+const BacktestByCity = z.record(
+  z.string(),
+  z
+    .object({
+      scored: z.number().optional(),
+      triggered: z.number().optional(),
+      recall: z.number().nullable().optional(),
+    })
+    .passthrough(),
+);
+
+const BacktestLeadTime = z
+  .object({
+    lead_hours: z.number().optional(),
+    scored_events: z.number().optional(),
+    skipped_events: z.number().optional(),
+    triggered_medium_plus: z.number().optional(),
+    recall: z.number().optional(),
+    recall_pct: z.number().optional(),
+    alert_threshold: z.number().optional(),
+    by_city: BacktestByCity.optional(),
+  })
+  .passthrough();
+
+export const MlBacktestSummarySchema = z
+  .object({
+    available: z.boolean().optional(),
+    generated_at: z.string().optional(),
+    headline: z.string().optional(),
+    pilot_cities: z.array(z.string()).optional(),
+    total_pilot_events: z.number().optional(),
+    methodology: z.record(z.string(), z.unknown()).optional(),
+    lead_time_24h: BacktestLeadTime.optional(),
+    lead_time_48h: BacktestLeadTime.optional(),
+    caveats: z.array(z.string()).optional(),
+    flood_events_coverage: z
+      .object({
+        available: z.boolean().optional(),
+        total_events: z.number().optional(),
+        odisha_events: z.number().optional(),
+        pilot_city_mapped: z.number().optional(),
+        by_source: z.record(z.string(), z.number()).optional(),
+        pilot_city_counts: z.record(z.string(), z.number()).optional(),
+      })
+      .passthrough()
+      .optional(),
+  })
+  .passthrough();
+
 export type Health = z.infer<typeof HealthSchema>;
 export type WeatherLatest = z.infer<typeof WeatherLatestSchema>;
 export type RiversLatest = z.infer<typeof RiversLatestSchema>;
@@ -147,3 +196,4 @@ export type RainfallStats = z.infer<typeof RainfallStatsSchema>;
 export type RainfallLocation = z.infer<typeof RainfallLocationSchema>;
 export type Forecast = z.infer<typeof ForecastSchema>;
 export type MlInferenceLogs = z.infer<typeof MlInferenceLogsSchema>;
+export type MlBacktestSummary = z.infer<typeof MlBacktestSummarySchema>;

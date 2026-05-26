@@ -9,6 +9,7 @@ import {
   FeaturesLatestSchema,
   ForecastSchema,
   HealthSchema,
+  MlBacktestSummarySchema,
   MlInferenceLogsSchema,
   RainfallLocationSchema,
   RainfallStatsSchema,
@@ -66,4 +67,6 @@ export const api = {
     if (location) params.set('location', location);
     return apiRequest(`/ml/inference/logs?${params.toString()}`, MlInferenceLogsSchema, { signal });
   },
+  mlBacktestSummary: (signal?: AbortSignal) =>
+    apiRequest('/ml/backtest/summary', MlBacktestSummarySchema, { signal }),
 };
