@@ -11,6 +11,7 @@ import StatusLed from '@/components/dashboard/StatusLed';
 import RegionChips from '@/components/dashboard/RegionChips';
 import { PageTitle, Telemetry } from '@/components/dashboard/Atoms';
 import { useStagger } from '@/components/dashboard/useStagger';
+import HistoricalReplayPanel from '@/components/dashboard/replay/HistoricalReplayPanel';
 import { formatScalar } from '@/lib/api/payload';
 import { relTime } from '@/components/dashboard/util';
 
@@ -93,6 +94,9 @@ export default function ReplayView() {
           REPLAY ALL REGIONS
         </button>
       </PageTitle>
+
+      {/* Historical replay (verified flood events with rule-engine simulation) */}
+      <HistoricalReplayPanel />
 
       {/* Dispatch summary */}
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">

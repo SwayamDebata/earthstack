@@ -106,6 +106,66 @@ export const ReplaySchema = z.record(z.string(), z.unknown());
 
 export const ReplayRunSchema = z.record(z.string(), z.unknown());
 
+const ReplayHistoricalEventInfoSchema = z
+  .object({
+    source: z.string().optional(),
+    event_id: z.string(),
+    region: z.string().optional(),
+    state: z.string().optional(),
+    river_name: z.string().optional(),
+    start_timestamp: z.string().optional(),
+    end_timestamp: z.string().optional(),
+    peak_water_level: z.number().nullable().optional(),
+    peak_discharge: z.number().nullable().optional(),
+    severity: z.string().optional(),
+    flood_type: z.string().nullable().optional(),
+    description: z.string().nullable().optional(),
+    gauge_id: z.string().nullable().optional(),
+    has_precip_proxy: z.boolean().optional(),
+  })
+  .passthrough();
+
+const ReplayHistoricalFrameSchema = z
+  .object({
+    hours_before_event: z.number(),
+    simulated_at: z.string().optional(),
+    rule_score: z.number().optional(),
+    risk_level: z.string().optional(),
+    triggered: z.boolean().optional(),
+    next_24h_rain_mm: z.number().optional(),
+    past_24h_rain_mm: z.number().optional(),
+    water_level_m: z.number().optional(),
+    flood_threshold_m: z.number().optional(),
+    narrative: z.string().optional(),
+  })
+  .passthrough();
+
+export const ReplayHistoricalDemoSchema = z
+  .object({
+    ok: z.boolean().optional(),
+    event: ReplayHistoricalEventInfoSchema.optional(),
+    methodology: z.record(z.string(), z.unknown()).optional(),
+    lead_hours: z.array(z.number()).optional(),
+    first_alert_hours_before: z.number().nullable().optional(),
+    frames: z.array(ReplayHistoricalFrameSchema).optional(),
+    demo: z.boolean().optional(),
+    selection_mode: z.string().optional(),
+    requested_event_id: z.string().nullable().optional(),
+    requested_source: z.string().nullable().optional(),
+    recommended_event: ReplayHistoricalEventInfoSchema.optional(),
+    is_recommended: z.boolean().optional(),
+    /** Legacy: pre-2026-05-26 backend used `recommended: boolean` */
+    recommended: z.boolean().optional(),
+  })
+  .passthrough();
+
+export const ReplayHistoricalEventsSchema = z
+  .object({
+    events: z.array(ReplayHistoricalEventInfoSchema),
+    default_region: z.string().optional(),
+  })
+  .passthrough();
+
 export const RainfallStatsSchema = z.record(z.string(), z.unknown());
 
 export const RainfallLocationSchema = z.record(z.string(), z.unknown());
@@ -192,6 +252,10 @@ export type AlertDeliveryInfo = z.infer<typeof AlertDeliveryInfoSchema>;
 export type Alerts = z.infer<typeof AlertsSchema>;
 export type Replay = z.infer<typeof ReplaySchema>;
 export type ReplayRun = z.infer<typeof ReplayRunSchema>;
+export type ReplayHistoricalDemo = z.infer<typeof ReplayHistoricalDemoSchema>;
+export type ReplayHistoricalEvents = z.infer<typeof ReplayHistoricalEventsSchema>;
+export type ReplayHistoricalEventInfo = z.infer<typeof ReplayHistoricalEventInfoSchema>;
+export type ReplayHistoricalFrame = z.infer<typeof ReplayHistoricalFrameSchema>;
 export type RainfallStats = z.infer<typeof RainfallStatsSchema>;
 export type RainfallLocation = z.infer<typeof RainfallLocationSchema>;
 export type Forecast = z.infer<typeof ForecastSchema>;

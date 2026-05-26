@@ -13,6 +13,8 @@ import {
   MlInferenceLogsSchema,
   RainfallLocationSchema,
   RainfallStatsSchema,
+  ReplayHistoricalDemoSchema,
+  ReplayHistoricalEventsSchema,
   ReplayRunSchema,
   ReplaySchema,
   RiskMapSchema,
@@ -58,6 +60,26 @@ export const api = {
       signal,
       method: 'POST',
     }),
+  replayHistoricalDemo: (
+    selection?: { eventId?: string; source?: string } | string,
+    signal?: AbortSignal,
+  ) => {
+    const params = new URLSearchParams();
+    if (typeof selection === 'string') {
+      if (selection) params.set('event_id', selection);
+    } else if (selection) {
+      if (selection.eventId) params.set('event_id', selection.eventId);
+      if (selection.source) params.set('source', selection.source);
+    }
+    const qs = params.toString();
+    return apiRequest(
+      `/replay/historical/demo${qs ? `?${qs}` : ''}`,
+      ReplayHistoricalDemoSchema,
+      { signal },
+    );
+  },
+  replayHistoricalEvents: (signal?: AbortSignal) =>
+    apiRequest('/replay/historical/events', ReplayHistoricalEventsSchema, { signal }),
   rainfallStats: (signal?: AbortSignal) => apiRequest('/rainfall/stats', RainfallStatsSchema, { signal }),
   rainfallLocation: (location: string, signal?: AbortSignal) =>
     apiRequest(`/rainfall/${encodeURIComponent(location)}`, RainfallLocationSchema, { signal }),
