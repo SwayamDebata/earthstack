@@ -37,7 +37,7 @@ export default function AlertsView() {
     const set = new Set<string>();
     alerts.forEach((a) => {
       const loc = getAlertRegion(a);
-      if (loc && loc !== '—') set.add(loc);
+      if (loc && loc !== 'n/a') set.add(loc);
     });
     return Array.from(set).sort();
   }, [alerts]);
@@ -180,8 +180,8 @@ export default function AlertsView() {
                         <StatusLed tone={tone} size={6} pulse={tone === 'critical'} />
                       </td>
                       <td className="max-w-[220px] border-y border-white/5 px-2 py-1.5">
-                        <p className="truncate text-cyan-100">{formatScalar(a.message ?? a.title ?? '—')}</p>
-                        <p className="truncate text-[10px] text-slate-600">#{alertId ?? '—'}</p>
+                        <p className="truncate text-cyan-100">{formatScalar(a.message ?? a.title ?? 'n/a')}</p>
+                        <p className="truncate text-[10px] text-slate-600">#{alertId ?? 'n/a'}</p>
                       </td>
                       <td className="border-y border-white/5 px-2 py-1.5 text-cyan-200">{getAlertRegion(a)}</td>
                       <td className="border-y border-white/5 px-2 py-1.5">
@@ -198,7 +198,7 @@ export default function AlertsView() {
                         </span>
                       </td>
                       <td className="border-y border-white/5 px-2 py-1.5 text-cyan-100/80">
-                        {risk !== null ? risk.toFixed(1) : '—'}
+                        {risk !== null ? risk.toFixed(1) : 'n/a'}
                       </td>
                       <td className="border-y border-white/5 px-2 py-1.5">
                         <span className={open ? 'text-amber-200' : 'text-slate-500'}>
@@ -213,7 +213,7 @@ export default function AlertsView() {
                         {alertId !== null && open ? (
                           <SendAlertButton alertId={alertId} compact />
                         ) : (
-                          <span className="font-mono text-[9px] uppercase tracking-widest text-slate-600">—</span>
+                          <span className="font-mono text-[9px] uppercase tracking-widest text-slate-600">-</span>
                         )}
                       </td>
                     </tr>

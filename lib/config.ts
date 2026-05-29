@@ -21,7 +21,7 @@ export const API_BASE_URL = firstNonEmptyBaseUrl(
 export const API_UPSTREAM_TIMEOUT_MS = Number(process.env.API_UPSTREAM_TIMEOUT_MS ?? '45000');
 /**
  * Mapbox public token. Must be provided via env (NEXT_PUBLIC_MAPBOX_TOKEN).
- * Never hardcode tokens in source — GitHub push protection will block the commit.
+ * Never hardcode tokens in source - GitHub push protection will block the commit.
  * Set in .env.local for dev and in your hosting provider's env for prod.
  */
 export const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? '';

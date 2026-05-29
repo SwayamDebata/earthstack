@@ -85,7 +85,7 @@ export default function BacktestCard() {
         <div className="space-y-4">
           {/* HERO + BY-CITY */}
           <div className="grid grid-cols-1 gap-3 md:grid-cols-[1.4fr_1fr]">
-            {/* Hero — 24h recall */}
+            {/* Hero - 24h recall */}
             <div className="relative overflow-hidden rounded-md border border-emerald-400/25 bg-gradient-to-br from-emerald-950/30 via-slate-950/60 to-slate-950/80 p-4">
               <span className="hud-bracket hud-bracket-tl" />
               <span className="hud-bracket hud-bracket-br" />
@@ -97,10 +97,10 @@ export default function BacktestCard() {
               </div>
               <div className="mt-2 flex items-end gap-3">
                 <p className="font-mono text-5xl font-semibold tabular-nums text-emerald-200">
-                  {recall24 !== undefined ? `${recall24.toFixed(1)}%` : '—'}
+                  {recall24 !== undefined ? `${recall24.toFixed(1)}%` : 'n/a'}
                 </p>
                 <p className="mb-1.5 font-mono text-[11px] uppercase tracking-widest text-slate-400">
-                  {triggered24 ?? '—'} / {scored ?? '—'} scored · {total ?? '—'} total events
+                  {triggered24 ?? 'n/a'} / {scored ?? 'n/a'} scored · {total ?? 'n/a'} total events
                 </p>
               </div>
               {data?.headline ? (
@@ -113,10 +113,10 @@ export default function BacktestCard() {
                   48h Lead Time
                 </span>
                 <span className="font-mono text-base font-semibold tabular-nums text-cyan-200">
-                  {recall48 !== undefined ? `${recall48.toFixed(1)}%` : '—'}
+                  {recall48 !== undefined ? `${recall48.toFixed(1)}%` : 'n/a'}
                 </span>
                 <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">
-                  {triggered48 ?? '—'} / {scored ?? '—'}
+                  {triggered48 ?? 'n/a'} / {scored ?? 'n/a'}
                 </span>
                 <span className="ml-auto font-mono text-[10px] uppercase tracking-widest text-slate-500">
                   threshold ≥ {data?.lead_time_24h?.alert_threshold ?? '0.40'}
@@ -171,7 +171,7 @@ export default function BacktestCard() {
                                 : 'text-amber-200'
                         }`}
                       >
-                        {recallPct === null ? '—' : `${recallPct.toFixed(1)}%`}
+                        {recallPct === null ? 'n/a' : `${recallPct.toFixed(1)}%`}
                       </span>
                     </div>
                   );
@@ -185,7 +185,7 @@ export default function BacktestCard() {
             <span>
               <span className="text-slate-500">Coverage · </span>
               <span className="text-cyan-200">
-                {totalEvents ?? '—'} events
+                {totalEvents ?? 'n/a'} events
               </span>{' '}
               across <span className="text-cyan-200">{pilotCount}</span> pilot cities
             </span>
@@ -205,7 +205,7 @@ export default function BacktestCard() {
             </button>
           </div>
 
-          {/* Caveats — collapsible for honesty */}
+          {/* Caveats - collapsible for honesty */}
           {caveats.length > 0 ? (
             <div className="rounded-sm border border-amber-500/20 bg-amber-500/[0.04] px-3 py-2">
               <button

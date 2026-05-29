@@ -93,7 +93,7 @@ export default function ForecastView() {
       </PageTitle>
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <SumTile label="HORIZON" value={horizon ? `${horizon}u` : '—'} tone="info" />
+        <SumTile label="HORIZON" value={horizon ? `${horizon}u` : 'n/a'} tone="info" />
         <SumTile label="REGIONS" value={String(LOCATIONS.length)} tone="info" />
         <SumTile label="FOCUS" value={location.toUpperCase()} tone="info" />
         <SumTile label="POLL" value={`${POLLING_INTERVALS.forecast / 1000}s`} tone="info" />
@@ -193,10 +193,10 @@ export default function ForecastView() {
                   </div>
                 ) : (
                   <div className="mt-3 grid grid-cols-2 gap-1.5">
-                    <Telemetry label="HORIZON" value={p.horizon ? `${p.horizon}u` : '—'} />
-                    <Telemetry label="MAX" value={p.max !== null ? `${p.max.toFixed(1)} mm` : '—'} />
-                    <Telemetry label="AVG" value={p.avg !== null ? `${p.avg.toFixed(1)} mm` : '—'} />
-                    <Telemetry label="TOTAL" value={p.total !== null ? `${p.total.toFixed(0)} mm` : '—'} />
+                    <Telemetry label="HORIZON" value={p.horizon ? `${p.horizon}u` : 'n/a'} />
+                    <Telemetry label="MAX" value={p.max !== null ? `${p.max.toFixed(1)} mm` : 'n/a'} />
+                    <Telemetry label="AVG" value={p.avg !== null ? `${p.avg.toFixed(1)} mm` : 'n/a'} />
+                    <Telemetry label="TOTAL" value={p.total !== null ? `${p.total.toFixed(0)} mm` : 'n/a'} />
                   </div>
                 )}
               </div>

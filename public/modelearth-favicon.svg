@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <!-- Hex grid favicon — works at 16px, 32px, 64px -->
+  <!-- Hex grid favicon - works at 16px, 32px, 64px -->
   <g transform="translate(32, 32)">
     <!-- Center hex -->
     <polygon points="0,-14 12,-7 12,7 0,14 -12,7 -12,-7" fill="#0f2840" stroke="#3B82F6" stroke-width="1.5"/>

@@ -21,7 +21,7 @@ export function ScoreBar({
       <div className="flex items-baseline justify-between">
         <span className="font-mono text-[10px] uppercase tracking-widest text-slate-400">{label}</span>
         <span className={`font-mono ${highlight ? 'text-base font-semibold text-cyan-100' : 'text-xs text-cyan-200'}`}>
-          {value !== null ? value.toFixed(3) : '—'}
+          {value !== null ? value.toFixed(3) : 'n/a'}
         </span>
       </div>
       <div className="mt-1 h-1.5 w-full overflow-hidden rounded-sm bg-white/5">
@@ -58,7 +58,7 @@ export function Telemetry({
   return (
     <div className="rounded-sm border border-white/5 bg-slate-950/50 px-2 py-1.5">
       <p className="font-mono text-[9px] uppercase tracking-widest text-slate-500">{label}</p>
-      <p className={`mt-0.5 truncate font-mono text-xs ${valueColor}`}>{value || '—'}</p>
+      <p className={`mt-0.5 truncate font-mono text-xs ${valueColor}`}>{value || 'n/a'}</p>
     </div>
   );
 }

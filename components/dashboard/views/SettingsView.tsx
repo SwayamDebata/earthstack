@@ -50,7 +50,7 @@ export default function SettingsView() {
   };
 
   const mapboxOk = Boolean(MAPBOX_TOKEN && MAPBOX_TOKEN.length > 10);
-  const maskedMapbox = MAPBOX_TOKEN ? `${MAPBOX_TOKEN.slice(0, 8)}…${MAPBOX_TOKEN.slice(-6)}` : '— not set —';
+  const maskedMapbox = MAPBOX_TOKEN ? `${MAPBOX_TOKEN.slice(0, 8)}…${MAPBOX_TOKEN.slice(-6)}` : 'not set';
 
   return (
     <div className="space-y-3 p-3">
@@ -180,7 +180,7 @@ export default function SettingsView() {
             {ENDPOINTS.map((ep, i) => {
               const q = queries[i];
               const tone = q.isError ? 'critical' : q.isLoading ? 'warning' : 'nominal';
-              const updatedAt = q.dataUpdatedAt ? new Date(q.dataUpdatedAt).toLocaleTimeString() : '—';
+              const updatedAt = q.dataUpdatedAt ? new Date(q.dataUpdatedAt).toLocaleTimeString() : 'n/a';
               const status = formatScalar((q.data as Record<string, unknown> | undefined)?.status);
               return (
                 <div key={ep.id} className="grid grid-cols-[18px_1fr_1fr_auto] items-center gap-2 rounded-sm border border-white/5 bg-slate-950/50 px-2 py-1.5">
@@ -205,11 +205,11 @@ export default function SettingsView() {
             />
             <Telemetry
               label="USER AGENT"
-              value={typeof navigator !== 'undefined' ? navigator.userAgent.slice(0, 40) : '—'}
+              value={typeof navigator !== 'undefined' ? navigator.userAgent.slice(0, 40) : 'n/a'}
             />
             <Telemetry
               label="VIEWPORT"
-              value={typeof window !== 'undefined' ? `${window.innerWidth}×${window.innerHeight}` : '—'}
+              value={typeof window !== 'undefined' ? `${window.innerWidth}×${window.innerHeight}` : 'n/a'}
             />
             <Telemetry label="THEME" value="mission-control · dark" />
           </div>

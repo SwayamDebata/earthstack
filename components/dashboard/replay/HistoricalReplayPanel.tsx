@@ -23,7 +23,7 @@ import { ErrorBlock, EmptyBlock, Telemetry } from '@/components/dashboard/Atoms'
 const FRAME_MS = 1500;
 
 function fmtDate(iso?: string) {
-  if (!iso) return '—';
+  if (!iso) return 'n/a';
   try {
     return new Date(iso).toLocaleDateString(undefined, {
       year: 'numeric',
@@ -36,7 +36,7 @@ function fmtDate(iso?: string) {
 }
 
 function fmtDateTime(iso?: string) {
-  if (!iso) return '—';
+  if (!iso) return 'n/a';
   try {
     const d = new Date(iso);
     return `${d.toLocaleDateString(undefined, {
@@ -315,9 +315,9 @@ function EventHeader({
             Verified Flood Event · {event.source ?? 'INDOFLOODS'}
           </p>
           <h3 className="mt-1 text-xl font-semibold tracking-tight text-white md:text-2xl">
-            {event.region ?? '—'}
+            {event.region ?? 'n/a'}
             <span className="text-slate-400"> · </span>
-            <span className="text-cyan-200">{event.river_name ?? '—'} River</span>
+            <span className="text-cyan-200">{event.river_name ?? 'n/a'} River</span>
           </h3>
           <p className="mt-1 font-mono text-[11px] uppercase tracking-widest text-slate-400">
             {fmtDate(event.start_timestamp)}
@@ -363,16 +363,16 @@ function EventHeader({
           label="PEAK WATER"
           value={event.peak_water_level !== null && event.peak_water_level !== undefined
             ? `${event.peak_water_level.toFixed(2)} m`
-            : '—'}
+            : 'n/a'}
         />
         <Telemetry
           label="PEAK DISCHARGE"
           value={event.peak_discharge !== null && event.peak_discharge !== undefined
             ? `${event.peak_discharge.toFixed(0)} m³/s`
-            : '—'}
+            : 'n/a'}
         />
-        <Telemetry label="STATE" value={event.state ?? '—'} />
-        <Telemetry label="GAUGE" value={event.gauge_id ?? '—'} />
+        <Telemetry label="STATE" value={event.state ?? 'n/a'} />
+        <Telemetry label="GAUGE" value={event.gauge_id ?? 'n/a'} />
       </div>
 
       {/* First-alert callout */}
@@ -479,7 +479,7 @@ function FrameDisplay({
             />
           </div>
           <p className="mt-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-500">
-            Risk level · <span style={{ color: riskColor }}>{frame.risk_level ?? '—'}</span>
+            Risk level · <span style={{ color: riskColor }}>{frame.risk_level ?? 'n/a'}</span>
           </p>
         </div>
 
@@ -639,7 +639,7 @@ function RecommendedBanner({
   onUseRecommended: () => void;
 }) {
   const recDesc =
-    recommended.description ?? `${recommended.region ?? '—'} · ${recommended.river_name ?? '—'}`;
+    recommended.description ?? `${recommended.region ?? 'n/a'} · ${recommended.river_name ?? 'n/a'}`;
   return (
     <div className="flex flex-wrap items-center justify-between gap-2 rounded-sm border border-amber-400/30 bg-amber-500/5 px-3 py-2">
       <p className="font-mono text-[10px] uppercase tracking-widest text-amber-200/90">
@@ -721,12 +721,12 @@ function EventPicker({
                       : 'bg-cyan-500/15 text-cyan-200 ring-1 ring-cyan-500/30'
                 }`}
               >
-                {ev.severity ?? '—'}
+                {ev.severity ?? 'n/a'}
               </span>
               <span className="shrink-0 text-slate-400 tabular-nums">
                 {ev.peak_water_level !== null && ev.peak_water_level !== undefined
                   ? `${ev.peak_water_level.toFixed(1)} m`
-                  : '—'}
+                  : 'n/a'}
               </span>
             </button>
           );

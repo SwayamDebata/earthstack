@@ -43,7 +43,7 @@ export default function AlertDeliverySettings() {
   });
 
   const info = infoQ.data as Record<string, unknown> | undefined;
-  const provider = formatScalar(info?.provider ?? info?.active_provider ?? '—');
+  const provider = formatScalar(info?.provider ?? info?.active_provider ?? 'n/a');
   const configured = info?.configured ?? info?.whatsapp_configured;
 
   return (

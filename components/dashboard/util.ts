@@ -29,7 +29,7 @@ export function severityToTone(s: unknown): SeverityTone {
 
 export function relTime(ts: unknown): string {
   const d = ts ? new Date(String(ts)) : null;
-  if (!d || Number.isNaN(d.getTime())) return '—';
+  if (!d || Number.isNaN(d.getTime())) return 'n/a';
   const diff = Date.now() - d.getTime();
   if (diff < 0) return 'now';
   const s = Math.floor(diff / 1000);

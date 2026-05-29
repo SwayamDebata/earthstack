@@ -5,6 +5,10 @@ import { LOCATIONS, type Location } from '@/lib/config';
 
 const LOC_KEY = 'modelearth:location';
 const FILTER_KEY = 'modelearth:active-only';
+const PROFILE_KEY = 'modelearth:mission-profile';
+
+/** Operational = decision workflows; Analytics = existing telemetry dashboard (unchanged). */
+export type MissionProfile = 'operational' | 'analytics';
 
 type MissionContextValue = {
   location: string;
@@ -12,6 +16,8 @@ type MissionContextValue = {
   activeOnly: boolean;
   setActiveOnly: (v: boolean) => void;
   latencyMs: number;
+  missionProfile: MissionProfile;
+  setMissionProfile: (profile: MissionProfile) => void;
 };
 
 const MissionContext = createContext<MissionContextValue | null>(null);
@@ -20,6 +26,7 @@ export function MissionProvider({ children }: { children: ReactNode }) {
   const [location, setLocationState] = useState<string>(LOCATIONS[0]);
   const [activeOnly, setActiveOnlyState] = useState<boolean>(true);
   const [latencyMs, setLatencyMs] = useState(0);
+  const [missionProfile, setMissionProfileState] = useState<MissionProfile>('operational');
 
   // Hydrate from localStorage after mount (avoids SSR/CSR mismatch).
   useEffect(() => {
@@ -31,6 +38,10 @@ export function MissionProvider({ children }: { children: ReactNode }) {
     const storedFilter = window.localStorage.getItem(FILTER_KEY);
     if (storedFilter !== null) {
       setActiveOnlyState(storedFilter === '1');
+    }
+    const storedProfile = window.localStorage.getItem(PROFILE_KEY);
+    if (storedProfile === 'operational' || storedProfile === 'analytics') {
+      setMissionProfileState(storedProfile);
     }
   }, []);
 
@@ -55,8 +66,23 @@ export function MissionProvider({ children }: { children: ReactNode }) {
     if (typeof window !== 'undefined') window.localStorage.setItem(FILTER_KEY, v ? '1' : '0');
   };
 
+  const setMissionProfile = (profile: MissionProfile) => {
+    setMissionProfileState(profile);
+    if (typeof window !== 'undefined') window.localStorage.setItem(PROFILE_KEY, profile);
+  };
+
   return (
-    <MissionContext.Provider value={{ location, setLocation, activeOnly, setActiveOnly, latencyMs }}>
+    <MissionContext.Provider
+      value={{
+        location,
+        setLocation,
+        activeOnly,
+        setActiveOnly,
+        latencyMs,
+        missionProfile,
+        setMissionProfile,
+      }}
+    >
       {children}
     </MissionContext.Provider>
   );

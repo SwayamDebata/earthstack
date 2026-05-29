@@ -67,7 +67,7 @@ export async function apiRequest<T>(
         const j = JSON.parse(errText) as Record<string, unknown>;
         if (j && typeof j === 'object' && j.error === 'UPSTREAM_UNAVAILABLE') {
           const code = j.code !== undefined ? ` [${String(j.code)}]` : '';
-          const hint = j.hint !== undefined ? ` — ${String(j.hint)}` : '';
+          const hint = j.hint !== undefined ? ` - ${String(j.hint)}` : '';
           msg = `Proxy could not reach API${code}: ${String(j.message ?? 'fetch failed')}. Target: ${String(j.target ?? 'unknown')}${hint}`;
           details = j;
         } else if (j.detail !== undefined) {

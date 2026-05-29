@@ -12,7 +12,7 @@ export function getAlertId(alert: Record<string, unknown>): number | null {
 
 export function getAlertRegion(alert: Record<string, unknown>): string {
   const raw = alert.region ?? alert.location;
-  return raw !== undefined && raw !== null ? String(raw) : '—';
+  return raw !== undefined && raw !== null ? String(raw) : 'n/a';
 }
 
 export function isAlertOpen(alert: Record<string, unknown>): boolean {
@@ -26,7 +26,7 @@ export function getAlertDeliveryStatus(alert: Record<string, unknown>): string {
     return String(alert.delivery_status);
   }
   if (typeof alert.sent === 'boolean') return alert.sent ? 'sent' : 'pending';
-  return '—';
+  return 'n/a';
 }
 
 export type NotifyProvider = 'twilio_whatsapp' | 'telegram' | 'simulation';

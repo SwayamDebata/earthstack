@@ -80,7 +80,7 @@ export default function AlertContactsPanel() {
       return;
     }
     if (form.phone_e164.trim().length < 11) {
-      setFormError('Phone looks too short — include country code (e.g. +91 for India)');
+      setFormError('Phone looks too short - include country code (e.g. +91 for India)');
       return;
     }
     createMutation.mutate();
@@ -110,9 +110,9 @@ export default function AlertContactsPanel() {
                 >
                   <StatusLed tone={enabled ? 'nominal' : 'idle'} size={6} />
                   <div className="min-w-0">
-                    <p className="truncate text-cyan-100">{String(c.name ?? '—')}</p>
+                    <p className="truncate text-cyan-100">{String(c.name ?? 'n/a')}</p>
                     <p className="truncate text-[10px] text-slate-500">
-                      {String(c.phone_e164 ?? '—')} · {String(c.channel ?? '—')} · {String(c.role ?? '—')}
+                      {String(c.phone_e164 ?? 'n/a')} · {String(c.channel ?? 'n/a')} · {String(c.role ?? 'n/a')}
                     </p>
                     <p className="truncate text-[10px] text-slate-600">
                       {locs.length === 0 ? 'all regions' : locs.join(', ')}

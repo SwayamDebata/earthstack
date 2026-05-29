@@ -40,8 +40,8 @@ export default function RiskView() {
           rule: numOrNull(data?.rule_score),
           ml: numOrNull(data?.ml_score),
           final: numOrNull(data?.final_score),
-          severity: String(data?.severity ?? '—'),
-          trend: String(data?.trend ?? '—'),
+          severity: String(data?.severity ?? 'n/a'),
+          trend: String(data?.trend ?? 'n/a'),
         };
       }),
     [perRegion],
@@ -79,8 +79,8 @@ export default function RiskView() {
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         <SumTile label="REGIONS TRACKED" value={String(riskMap.length)} tone="info" />
-        <SumTile label="AVG FINAL" value={avg !== null ? avg.toFixed(2) : '—'} tone={avg !== null && avg >= 0.7 ? 'critical' : avg !== null && avg >= 0.4 ? 'warning' : 'nominal'} />
-        <SumTile label="MAX FINAL" value={max !== null ? max.toFixed(2) : '—'} tone={max !== null && max >= 0.7 ? 'critical' : max !== null && max >= 0.4 ? 'warning' : 'nominal'} />
+        <SumTile label="AVG FINAL" value={avg !== null ? avg.toFixed(2) : 'n/a'} tone={avg !== null && avg >= 0.7 ? 'critical' : avg !== null && avg >= 0.4 ? 'warning' : 'nominal'} />
+        <SumTile label="MAX FINAL" value={max !== null ? max.toFixed(2) : 'n/a'} tone={max !== null && max >= 0.7 ? 'critical' : max !== null && max >= 0.4 ? 'warning' : 'nominal'} />
         <SumTile label="HIGH-RISK ZONES" value={String(high)} tone={high > 0 ? 'critical' : 'nominal'} />
       </div>
 
@@ -181,7 +181,7 @@ export default function RiskView() {
               </thead>
               <tbody>
                 {riskMap.map((r, idx) => {
-                  const sev = String(r.severity ?? r.level ?? '—');
+                  const sev = String(r.severity ?? r.level ?? 'n/a');
                   const tone = severityToTone(sev);
                   const rule = numOrNull(r.rule_score);
                   const ml = numOrNull(r.ml_score);
@@ -190,7 +190,7 @@ export default function RiskView() {
                   const lng = numOrNull(r.lng ?? r.lon ?? r.longitude);
                   return (
                     <tr key={String(r.location ?? r.id ?? idx)} className="bg-slate-950/50">
-                      <td className="rounded-l-sm border-y border-l border-white/5 px-2 py-1.5 text-cyan-200">{String(r.location ?? r.district ?? r.name ?? '—')}</td>
+                      <td className="rounded-l-sm border-y border-l border-white/5 px-2 py-1.5 text-cyan-200">{String(r.location ?? r.district ?? r.name ?? 'n/a')}</td>
                       <td className="border-y border-white/5 px-2 py-1.5">
                         <span
                           className={`rounded-sm px-1.5 py-0.5 text-[9px] uppercase tracking-widest ${
@@ -204,11 +204,11 @@ export default function RiskView() {
                           {sev}
                         </span>
                       </td>
-                      <td className="border-y border-white/5 px-2 py-1.5 text-right text-cyan-100/80">{rule !== null ? rule.toFixed(2) : '—'}</td>
-                      <td className="border-y border-white/5 px-2 py-1.5 text-right text-cyan-100/80">{ml !== null ? ml.toFixed(2) : '—'}</td>
-                      <td className="border-y border-white/5 px-2 py-1.5 text-right font-semibold text-cyan-100">{final !== null ? final.toFixed(2) : '—'}</td>
-                      <td className="border-y border-white/5 px-2 py-1.5 text-right text-slate-400">{lat !== null ? lat.toFixed(2) : '—'}</td>
-                      <td className="rounded-r-sm border-y border-r border-white/5 px-2 py-1.5 text-right text-slate-400">{lng !== null ? lng.toFixed(2) : '—'}</td>
+                      <td className="border-y border-white/5 px-2 py-1.5 text-right text-cyan-100/80">{rule !== null ? rule.toFixed(2) : 'n/a'}</td>
+                      <td className="border-y border-white/5 px-2 py-1.5 text-right text-cyan-100/80">{ml !== null ? ml.toFixed(2) : 'n/a'}</td>
+                      <td className="border-y border-white/5 px-2 py-1.5 text-right font-semibold text-cyan-100">{final !== null ? final.toFixed(2) : 'n/a'}</td>
+                      <td className="border-y border-white/5 px-2 py-1.5 text-right text-slate-400">{lat !== null ? lat.toFixed(2) : 'n/a'}</td>
+                      <td className="rounded-r-sm border-y border-r border-white/5 px-2 py-1.5 text-right text-slate-400">{lng !== null ? lng.toFixed(2) : 'n/a'}</td>
                     </tr>
                   );
                 })}

@@ -129,7 +129,7 @@ samp {
 }
 
 /* ========================================================================
-   MISSION CONTROL — HUD utilities
+   MISSION CONTROL - HUD utilities
    ======================================================================== */
 
 /* Faint grid overlay used inside HUD panels */
@@ -151,7 +151,7 @@ samp {
   );
 }
 
-/* LED pulse — opacity only, GPU cheap */
+/* LED pulse - opacity only, GPU cheap */
 @keyframes led-pulse {
   0%,
   100% {
@@ -170,7 +170,7 @@ samp {
   }
 }
 
-/* Map radar sweep — single rotating conic gradient */
+/* Map radar sweep - single rotating conic gradient */
 @keyframes radar-sweep {
   from {
     transform: rotate(0deg);
@@ -198,7 +198,7 @@ samp {
 
 /* Bottom telemetry ticker uses the same marquee keyframes */
 
-/* Tiny corner bracket helper — used as decorative pseudo */
+/* Tiny corner bracket helper - used as decorative pseudo */
 .hud-bracket {
   position: absolute;
   width: 14px;

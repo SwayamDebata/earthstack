@@ -12,10 +12,13 @@ import {
   Settings,
   Radio,
   Satellite,
+  Shield,
+  History,
 } from 'lucide-react';
+import { useMission } from '@/components/dashboard/MissionContext';
 
-const items = [
-  { href: '/dashboard', label: 'Theatre', icon: MapIcon },
+const analyticsItems = [
+  { href: '/dashboard', label: 'Theatre', icon: MapIcon, match: 'exact' as const },
   { href: '/dashboard/risk', label: 'Risk', icon: Activity },
   { href: '/dashboard/alerts', label: 'Alerts', icon: AlertTriangle },
   { href: '/dashboard/rainfall', label: 'Rainfall', icon: CloudRain },
@@ -25,10 +28,20 @@ const items = [
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ] as const;
 
+const operationalItems = [
+  { href: '/dashboard/ops', label: 'Command', icon: Shield, match: 'exact' as const },
+  { href: '/dashboard/ops/replay', label: 'Replay', icon: History },
+  { href: '/dashboard/alerts', label: 'Alerts', icon: AlertTriangle },
+] as const;
+
 export default function MissionNav() {
   const pathname = usePathname();
+  const { missionProfile } = useMission();
 
-  const isActive = (href: string) => {
+  const items = missionProfile === 'operational' ? operationalItems : analyticsItems;
+
+  const isActive = (href: string, match?: 'exact') => {
+    if (match === 'exact') return pathname === href;
     if (href === '/dashboard') return pathname === '/dashboard';
     return pathname.startsWith(href);
   };
@@ -45,7 +58,7 @@ export default function MissionNav() {
       <div className="my-1 h-px w-8 bg-cyan-400/15" />
       {items.map((item) => {
         const Icon = item.icon;
-        const active = isActive(item.href);
+        const active = isActive(item.href, 'match' in item ? item.match : undefined);
         return (
           <Link
             key={item.href}
@@ -53,12 +66,20 @@ export default function MissionNav() {
             title={item.label}
             className={`group relative flex h-10 w-10 items-center justify-center rounded-md border transition ${
               active
-                ? 'border-cyan-400/45 bg-cyan-500/10 text-cyan-200 shadow-[0_0_18px_rgba(34,211,238,0.18)]'
+                ? missionProfile === 'operational'
+                  ? 'border-emerald-400/45 bg-emerald-500/10 text-emerald-200 shadow-[0_0_18px_rgba(16,185,129,0.18)]'
+                  : 'border-cyan-400/45 bg-cyan-500/10 text-cyan-200 shadow-[0_0_18px_rgba(34,211,238,0.18)]'
                 : 'border-transparent text-slate-500 hover:border-cyan-400/25 hover:bg-white/5 hover:text-cyan-200'
             }`}
           >
             <Icon size={16} strokeWidth={1.5} />
-            {active ? <span className="absolute -right-px top-2 h-6 w-0.5 rounded-l-sm bg-cyan-400" /> : null}
+            {active ? (
+              <span
+                className={`absolute -right-px top-2 h-6 w-0.5 rounded-l-sm ${
+                  missionProfile === 'operational' ? 'bg-emerald-400' : 'bg-cyan-400'
+                }`}
+              />
+            ) : null}
             <span className="pointer-events-none absolute left-12 z-50 whitespace-nowrap rounded-sm border border-cyan-400/25 bg-slate-950/95 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-cyan-200 opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100">
               {item.label}
             </span>

@@ -92,9 +92,9 @@ export default function MlView() {
       {/* Summary tiles */}
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
         <SumTile label="LOGS" value={String(summary.total)} tone="info" />
-        <SumTile label="AVG RULE" value={summary.rule !== null ? summary.rule.toFixed(2) : '—'} tone="info" />
-        <SumTile label="AVG ML" value={summary.ml !== null ? summary.ml.toFixed(2) : '—'} tone="info" />
-        <SumTile label="AVG FINAL" value={summary.final !== null ? summary.final.toFixed(2) : '—'} tone="info" />
+        <SumTile label="AVG RULE" value={summary.rule !== null ? summary.rule.toFixed(2) : 'n/a'} tone="info" />
+        <SumTile label="AVG ML" value={summary.ml !== null ? summary.ml.toFixed(2) : 'n/a'} tone="info" />
+        <SumTile label="AVG FINAL" value={summary.final !== null ? summary.final.toFixed(2) : 'n/a'} tone="info" />
         <SumTile label="AGREE" value={String(summary.agree)} tone="nominal" />
         <SumTile label="DIVERGENT" value={String(summary.divergent)} tone={summary.divergent > 0 ? 'warning' : 'idle'} />
         <SumTile label="SHADOW" value={String(summary.shadow)} tone="info" />
@@ -157,9 +157,9 @@ export default function MlView() {
                     <div key={String(l.id ?? idx)} className="grid grid-cols-[44px_1fr_auto_auto] items-center gap-2 rounded-sm border border-white/5 bg-slate-950/50 px-2 py-1">
                       <span className="text-slate-500">#{String(idx + 1).padStart(3, '0')}</span>
                       <div className="flex flex-wrap items-center gap-2 text-cyan-100/80">
-                        <span><span className="text-slate-500">rule</span>={r !== null ? r.toFixed(2) : '—'}</span>
-                        <span><span className="text-slate-500">ml</span>={m !== null ? m.toFixed(2) : '—'}</span>
-                        <span><span className="text-slate-500">final</span>={f !== null ? f.toFixed(2) : '—'}</span>
+                        <span><span className="text-slate-500">rule</span>={r !== null ? r.toFixed(2) : 'n/a'}</span>
+                        <span><span className="text-slate-500">ml</span>={m !== null ? m.toFixed(2) : 'n/a'}</span>
+                        <span><span className="text-slate-500">final</span>={f !== null ? f.toFixed(2) : 'n/a'}</span>
                         <span className="text-slate-500">{relTime(l.timestamp ?? l.created_at)}</span>
                       </div>
                       {divergent ? (

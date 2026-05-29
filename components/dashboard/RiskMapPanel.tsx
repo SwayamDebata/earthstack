@@ -39,6 +39,22 @@ function rowLocation(row: RiskMapRow): string {
   return String(raw ?? '');
 }
 
+function normalizeLocationKey(location: string): string {
+  return location.toLowerCase().replace(/\s+/g, '');
+}
+
+function displayLocationName(location: string): string {
+  if (!location) return 'Unknown';
+  return location.charAt(0).toUpperCase() + location.slice(1).toLowerCase();
+}
+
+/** Skip state-level or unknown rows that would duplicate or misplace pins. */
+function isMappableLocation(location: string): boolean {
+  const key = normalizeLocationKey(location);
+  if (!key || key === 'odisha' || key === 'orissa') return false;
+  return Boolean(LOCATION_COORDS[displayLocationName(location)] ?? NORMALIZED_LOCATION_COORDS[key]);
+}
+
 function rowSeverity(row: RiskMapRow): string | undefined {
   const s = row.severity ?? row.level ?? row.risk_level;
   return s !== undefined && s !== null ? String(s) : undefined;
@@ -65,7 +81,6 @@ export default function RiskMapPanel({
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
-  const markersRef = useRef<mapboxgl.Marker[]>([]);
   const [mapReady, setMapReady] = useState(false);
   const [mapLoadError, setMapLoadError] = useState<string | null>(null);
   const [center, setCenter] = useState<[number, number]>([85.5, 20.5]);
@@ -73,17 +88,41 @@ export default function RiskMapPanel({
   const [bearing, setBearing] = useState<number>(-14);
   const tokenMissing = !MAPBOX_TOKEN;
 
-  const enrichedRows = useMemo(() => {
-    return rows
-      .map((row) => {
-        const location = rowLocation(row);
-        const normalizedLocation = location.toLowerCase().replace(/\s+/g, '');
-        const fallback = LOCATION_COORDS[location] ?? NORMALIZED_LOCATION_COORDS[normalizedLocation];
-        const lat = asNumber(row.lat ?? row.latitude) ?? (fallback ? fallback[1] : null);
-        const lng = asNumber(row.lng ?? row.lon ?? row.longitude) ?? (fallback ? fallback[0] : null);
-        return { row, location, severity: rowSeverity(row), lat, lng };
-      })
-      .filter((r) => r.lat !== null && r.lng !== null);
+  const mapPoints = useMemo(() => {
+    const byKey = new Map<
+      string,
+      { row: RiskMapRow; location: string; severity: string | undefined; lat: number; lng: number; score: number }
+    >();
+
+    rows.forEach((row) => {
+      const location = rowLocation(row);
+      if (!isMappableLocation(location)) return;
+
+      const normalizedLocation = normalizeLocationKey(location);
+      const displayName = displayLocationName(location);
+      const fallback =
+        LOCATION_COORDS[displayName] ??
+        LOCATION_COORDS[location] ??
+        NORMALIZED_LOCATION_COORDS[normalizedLocation];
+      const lat = asNumber(row.lat ?? row.latitude) ?? (fallback ? fallback[1] : null);
+      const lng = asNumber(row.lng ?? row.lon ?? row.longitude) ?? (fallback ? fallback[0] : null);
+      if (lat === null || lng === null) return;
+
+      const score = asNumber(row.final_score ?? row.risk_score) ?? 0;
+      const existing = byKey.get(normalizedLocation);
+      if (!existing || score >= existing.score) {
+        byKey.set(normalizedLocation, {
+          row,
+          location: displayName,
+          severity: rowSeverity(row),
+          lat,
+          lng,
+          score,
+        });
+      }
+    });
+
+    return Array.from(byKey.values());
   }, [rows]);
 
   useEffect(() => {
@@ -122,58 +161,141 @@ export default function RiskMapPanel({
     });
 
     return () => {
-      markersRef.current.forEach((marker) => marker.remove());
-      markersRef.current = [];
-      map.remove();
+      const map = mapRef.current;
+      if (map) {
+        if (map.getLayer('risk-labels')) map.removeLayer('risk-labels');
+        if (map.getLayer('risk-circles')) map.removeLayer('risk-circles');
+        if (map.getLayer('risk-circles-active')) map.removeLayer('risk-circles-active');
+        if (map.getSource('risk-points')) map.removeSource('risk-points');
+      }
+      map?.remove();
       mapRef.current = null;
       setMapReady(false);
     };
   }, [tokenMissing]);
 
-  // Markers
+  // GeoJSON layers - pins stay locked to coordinates at every zoom level
   useEffect(() => {
-    if (!mapRef.current || !mapReady) return;
+    const map = mapRef.current;
+    if (!map || !mapReady) return;
 
-    markersRef.current.forEach((marker) => marker.remove());
-    markersRef.current = [];
+    const activeKey = activeLocation ? normalizeLocationKey(activeLocation) : '';
 
-    enrichedRows.forEach(({ row, location, severity, lat, lng }) => {
-      const wrap = document.createElement('div');
-      wrap.style.position = 'relative';
-      wrap.style.width = '20px';
-      wrap.style.height = '20px';
+    const geojson: GeoJSON.FeatureCollection = {
+      type: 'FeatureCollection',
+      features: mapPoints.map(({ location, severity, lat, lng, row, score }) => ({
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [lng, lat] },
+        properties: {
+          location,
+          severity: severity ?? 'low',
+          score,
+          isActive: normalizeLocationKey(location) === activeKey ? 1 : 0,
+          popupHtml: `<div style="font-family:ui-monospace,monospace;color:#0f172a;min-width:140px">
+            <p style="font-weight:700;margin:0 0 4px 0">${location}</p>
+            <p style="font-size:11px;margin:0">Severity: ${severity ?? 'N/A'}</p>
+            <p style="font-size:11px;margin:0">Score: ${String(row.final_score ?? row.risk_score ?? 'N/A')}</p>
+          </div>`,
+        },
+      })),
+    };
 
-      const ring = document.createElement('div');
-      ring.style.cssText = `position:absolute;inset:0;border-radius:9999px;border:1px solid ${getSeverityColor(severity)};opacity:0.45;`;
+    const severityColorExpr: mapboxgl.Expression = [
+      'match',
+      ['downcase', ['get', 'severity']],
+      'critical',
+      '#ef4444',
+      'high',
+      '#ef4444',
+      'medium',
+      '#f59e0b',
+      'warning',
+      '#f59e0b',
+      '#10b981',
+    ];
 
-      const dot = document.createElement('div');
-      const color = getSeverityColor(severity);
-      dot.style.cssText = `position:absolute;left:50%;top:50%;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:9999px;background:${color};box-shadow:0 0 12px ${color};`;
+    const upsert = () => {
+      const existing = map.getSource('risk-points') as mapboxgl.GeoJSONSource | undefined;
+      if (existing) {
+        existing.setData(geojson);
+        return;
+      }
 
-      const tag = document.createElement('div');
-      tag.textContent = location || 'unknown';
-      tag.style.cssText = `position:absolute;left:14px;top:-6px;font:600 9px/1 ui-monospace,monospace;letter-spacing:0.12em;text-transform:uppercase;color:#a5f3fc;background:rgba(2,6,23,0.85);padding:3px 5px;border:1px solid rgba(34,211,238,0.25);border-radius:2px;white-space:nowrap;`;
+      map.addSource('risk-points', { type: 'geojson', data: geojson });
 
-      wrap.appendChild(ring);
-      wrap.appendChild(dot);
-      wrap.appendChild(tag);
+      map.addLayer({
+        id: 'risk-circles',
+        type: 'circle',
+        source: 'risk-points',
+        paint: {
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 4, 5, 8, 9, 12, 12],
+          'circle-color': severityColorExpr,
+          'circle-opacity': 0.92,
+          'circle-stroke-width': 2,
+          'circle-stroke-color': 'rgba(34, 211, 238, 0.55)',
+        },
+      });
 
-      const marker = new mapboxgl.Marker({ element: wrap, anchor: 'center' })
-        .setLngLat([lng as number, lat as number])
-        .setPopup(
-          new mapboxgl.Popup({ closeButton: false, offset: 14 }).setHTML(
-            `<div style="font-family:ui-monospace,monospace;color:#0f172a;min-width:140px">
-              <p style="font-weight:700;margin:0 0 4px 0">${location || 'Unknown'}</p>
-              <p style="font-size:11px;margin:0">Severity: ${severity ?? 'N/A'}</p>
-              <p style="font-size:11px;margin:0">Score: ${String(row.final_score ?? row.risk_score ?? 'N/A')}</p>
-            </div>`,
-          ),
-        )
-        .addTo(mapRef.current as mapboxgl.Map);
+      map.addLayer({
+        id: 'risk-circles-active',
+        type: 'circle',
+        source: 'risk-points',
+        filter: ['==', ['get', 'isActive'], 1],
+        paint: {
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 4, 10, 8, 14, 12, 18],
+          'circle-color': 'transparent',
+          'circle-stroke-width': 2,
+          'circle-stroke-color': '#22d3ee',
+          'circle-stroke-opacity': 0.9,
+        },
+      });
 
-      markersRef.current.push(marker);
-    });
-  }, [enrichedRows, mapReady]);
+      map.addLayer({
+        id: 'risk-labels',
+        type: 'symbol',
+        source: 'risk-points',
+        layout: {
+          'text-field': ['upcase', ['get', 'location']],
+          'text-font': ['DIN Pro Medium', 'Arial Unicode MS Bold'],
+          'text-size': 10,
+          'text-offset': [0, 1.35],
+          'text-anchor': 'top',
+          'text-letter-spacing': 0.08,
+          'text-max-width': 12,
+        },
+        paint: {
+          'text-color': '#a5f3fc',
+          'text-halo-color': 'rgba(2, 6, 23, 0.92)',
+          'text-halo-width': 1.2,
+        },
+      });
+
+      map.on('click', 'risk-circles', (e) => {
+        const feature = e.features?.[0];
+        if (!feature?.geometry || feature.geometry.type !== 'Point') return;
+        const coords = feature.geometry.coordinates.slice() as [number, number];
+        const html = feature.properties?.popupHtml;
+        if (typeof html !== 'string') return;
+        new mapboxgl.Popup({ closeButton: true, offset: 12 })
+          .setLngLat(coords)
+          .setHTML(html)
+          .addTo(map);
+      });
+
+      map.on('mouseenter', 'risk-circles', () => {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+      map.on('mouseleave', 'risk-circles', () => {
+        map.getCanvas().style.cursor = '';
+      });
+    };
+
+    if (map.isStyleLoaded()) {
+      upsert();
+    } else {
+      map.once('idle', upsert);
+    }
+  }, [mapPoints, mapReady, activeLocation]);
 
   // Fly to active location when it changes
   useEffect(() => {
@@ -218,14 +340,14 @@ export default function RiskMapPanel({
       {/* Grid overlay */}
       <div className="pointer-events-none absolute inset-0 z-10 opacity-[0.06] hud-grid-overlay" />
 
-      {/* Coordinate readout — bottom left */}
+      {/* Coordinate readout - bottom left */}
       <div className="pointer-events-none absolute bottom-3 left-3 z-20 rounded-sm border border-cyan-400/25 bg-black/60 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-cyan-200">
         <p>LAT {fmtCoord(center[1], 'lat')}</p>
         <p>LNG {fmtCoord(center[0], 'lng')}</p>
         <p className="text-slate-500">ZOOM {zoom.toFixed(2)} · BRG {bearing.toFixed(0)}°</p>
       </div>
 
-      {/* Severity legend — bottom right */}
+      {/* Severity legend - bottom right */}
       <div className="pointer-events-none absolute bottom-3 right-3 z-20 flex gap-2 rounded-sm border border-cyan-400/25 bg-black/60 px-2 py-1 font-mono text-[10px] uppercase tracking-widest">
         <span className="flex items-center gap-1 text-emerald-300">
           <span className="h-2 w-2 rounded-full bg-emerald-400" /> Low
@@ -238,7 +360,7 @@ export default function RiskMapPanel({
         </span>
       </div>
 
-      {/* Active region label — top left */}
+      {/* Active region label - top left */}
       {activeLocation ? (
         <div className="pointer-events-none absolute left-3 top-3 z-20 rounded-sm border border-cyan-400/25 bg-black/60 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-cyan-200">
           <p className="text-slate-500">TARGET</p>
@@ -276,7 +398,7 @@ export default function RiskMapPanel({
         </div>
       ) : null}
 
-      {!isLoading && !isError && enrichedRows.length === 0 && mapReady ? (
+      {!isLoading && !isError && mapPoints.length === 0 && mapReady ? (
         <div className="pointer-events-none absolute left-3 top-16 z-20 max-w-sm rounded-sm border border-white/15 bg-slate-950/85 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-slate-300">
           BASEMAP LIVE · NO MAPPABLE ROWS IN PAYLOAD
         </div>

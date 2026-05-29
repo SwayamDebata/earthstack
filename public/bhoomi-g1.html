@@ -50,7 +50,7 @@ function makeCanvasTexture(w, h, drawFn) {
 
 // ── FRONT FACE TEXTURE ───────────────────────
 const frontTex = makeCanvasTexture(1024, 2048, (ctx, W, H) => {
-  // Background — dark body
+  // Background - dark body
   ctx.fillStyle = '#111518';
   ctx.fillRect(0, 0, W, H);
 
@@ -477,7 +477,7 @@ function addRounded(w,h,d,radius,segs,mat,px=0,py=0,pz=0) {
 }
 
 // ─────────────────────────────────────────────
-// DEVICE BODY — 6 separate faces with textures
+// DEVICE BODY - 6 separate faces with textures
 // Right=+x, Left=-x, Top=+y, Bottom=-y, Front=+z, Back=-z
 // BoxGeometry face order: px,nx,py,ny,pz,nz
 // ─────────────────────────────────────────────

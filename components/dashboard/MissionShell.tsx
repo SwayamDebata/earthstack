@@ -10,6 +10,7 @@ import { formatScalar } from '@/lib/api/payload';
 import StatusLed from '@/components/dashboard/StatusLed';
 import MissionClock from '@/components/dashboard/MissionClock';
 import MissionNav from '@/components/dashboard/MissionNav';
+import MissionProfileSwitcher from '@/components/dashboard/MissionProfileSwitcher';
 import LiveTicker, { type TickItem } from '@/components/dashboard/LiveTicker';
 import { useMission } from '@/components/dashboard/MissionContext';
 
@@ -108,35 +109,61 @@ export default function MissionShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden bg-[#03070f] text-slate-100">
-      {/* TOP COMMAND STRIP */}
-      <header className="relative z-30 flex h-14 shrink-0 items-center justify-between gap-4 border-b border-cyan-400/15 bg-gradient-to-b from-[#0a1224] to-[#04080f] px-4">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-cyan-400/40 bg-cyan-500/10 font-mono text-[10px] font-bold tracking-widest text-cyan-300">
-              ME
+      {/* TOP COMMAND STRIP - brand | mission profile (center) | system telemetry (right) */}
+      <header className="relative z-30 shrink-0 border-b border-cyan-400/15 bg-gradient-to-b from-[#0a1224] to-[#04080f] px-3 py-2 md:px-4">
+        <div className="grid grid-cols-1 items-center gap-3 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:gap-4">
+          {/* Brand + clock */}
+          <div className="flex items-center justify-between gap-3 md:justify-start">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm border border-cyan-400/40 bg-cyan-500/10 font-mono text-[10px] font-bold tracking-widest text-cyan-300">
+                ME
+              </div>
+              <div className="leading-none">
+                <p className="text-sm font-semibold tracking-wide text-white">ModelEarth · MCC</p>
+                <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-cyan-400/70">
+                  Mission Control · v1.0
+                </p>
+              </div>
             </div>
-            <div className="leading-none">
-              <p className="text-sm font-semibold tracking-wide text-white">ModelEarth · MCC</p>
-              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-cyan-400/70">Mission Control · v1.0</p>
+            <div className="hidden h-6 w-px bg-white/10 lg:block" />
+            <div className="hidden lg:block">
+              <MissionClock />
             </div>
           </div>
-          <div className="hidden h-6 w-px bg-white/10 md:block" />
-          <div className="hidden md:block">
-            <MissionClock />
-          </div>
-        </div>
 
-        <div className="flex flex-wrap items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em]">
-          <Indicator label="HEALTH" value={health.isError ? 'unknown' : healthStatus} tone={healthTone} />
-          <Indicator label="LAT" value={`${latencyMs}ms`} tone={latencyMs > 800 ? 'critical' : latencyMs > 300 ? 'warning' : 'nominal'} />
-          <Indicator
-            label="LINK"
-            value={online ? 'online' : 'offline'}
-            tone={online ? 'nominal' : 'critical'}
-            icon={online ? Wifi : WifiOff}
-          />
-          <Indicator label="ZONES" value={`${highRiskCount} hi`} tone={highRiskCount > 0 ? 'critical' : 'nominal'} />
-          <Indicator label="ALERTS" value={`${activeAlerts} act`} tone={activeAlerts > 0 ? 'warning' : 'nominal'} />
+          {/* Mission profile - isolated from telemetry */}
+          <div className="flex justify-center border-y border-cyan-400/10 py-2 md:border-y-0 md:py-0">
+            <MissionProfileSwitcher />
+          </div>
+
+          {/* System telemetry only */}
+          <div className="flex flex-wrap items-center justify-end gap-1.5 font-mono text-[10px] uppercase tracking-[0.2em] md:gap-2">
+            <p className="mr-1 hidden w-full text-right font-mono text-[9px] uppercase tracking-[0.22em] text-slate-600 sm:block md:w-auto">
+              System
+            </p>
+            <Indicator label="HEALTH" value={health.isError ? 'unknown' : healthStatus} tone={healthTone} />
+            <Indicator
+              label="LAT"
+              value={`${latencyMs}ms`}
+              tone={latencyMs > 800 ? 'critical' : latencyMs > 300 ? 'warning' : 'nominal'}
+            />
+            <Indicator
+              label="LINK"
+              value={online ? 'online' : 'offline'}
+              tone={online ? 'nominal' : 'critical'}
+              icon={online ? Wifi : WifiOff}
+            />
+            <Indicator
+              label="ZONES"
+              value={`${highRiskCount} hi`}
+              tone={highRiskCount > 0 ? 'critical' : 'nominal'}
+            />
+            <Indicator
+              label="ALERTS"
+              value={`${activeAlerts} act`}
+              tone={activeAlerts > 0 ? 'warning' : 'nominal'}
+            />
+          </div>
         </div>
       </header>
 

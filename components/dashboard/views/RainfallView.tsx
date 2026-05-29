@@ -91,7 +91,7 @@ export default function RainfallView() {
       </PageTitle>
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <SumTile label="BASELINE" value={Number.isFinite(baseline) ? `${baseline.toFixed(1)} mm` : '—'} tone="info" />
+        <SumTile label="BASELINE" value={Number.isFinite(baseline) ? `${baseline.toFixed(1)} mm` : 'n/a'} tone="info" />
         <SumTile label="REGIONS" value={String(LOCATIONS.length)} tone="info" />
         <SumTile label="OBS POINTS" value={String(observed.length)} tone="info" />
         <SumTile label="FCST POINTS" value={String(forecast.length)} tone="info" />
@@ -167,10 +167,10 @@ export default function RainfallView() {
                   {isCurrent ? <span className="rounded-sm border border-cyan-400/30 bg-black/40 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-cyan-200">FOCUS</span> : null}
                 </div>
                 <div className="mt-3 grid grid-cols-2 gap-1.5">
-                  <Telemetry label="OBS AVG" value={p.obsAvg !== null ? `${p.obsAvg.toFixed(1)} mm` : '—'} />
-                  <Telemetry label="OBS MAX" value={p.obsMax !== null ? `${p.obsMax.toFixed(1)} mm` : '—'} />
-                  <Telemetry label="FCST AVG" value={p.fcstAvg !== null ? `${p.fcstAvg.toFixed(1)} mm` : '—'} />
-                  <Telemetry label="FCST MAX" value={p.fcstMax !== null ? `${p.fcstMax.toFixed(1)} mm` : '—'} />
+                  <Telemetry label="OBS AVG" value={p.obsAvg !== null ? `${p.obsAvg.toFixed(1)} mm` : 'n/a'} />
+                  <Telemetry label="OBS MAX" value={p.obsMax !== null ? `${p.obsMax.toFixed(1)} mm` : 'n/a'} />
+                  <Telemetry label="FCST AVG" value={p.fcstAvg !== null ? `${p.fcstAvg.toFixed(1)} mm` : 'n/a'} />
+                  <Telemetry label="FCST MAX" value={p.fcstMax !== null ? `${p.fcstMax.toFixed(1)} mm` : 'n/a'} />
                 </div>
                 <div className="mt-2">
                   <Telemetry

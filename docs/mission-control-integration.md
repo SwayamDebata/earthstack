@@ -28,14 +28,14 @@
 - Rendering faults: top-level UI error boundary prevents full white-screen failure.
 
 ## Mapbox
-- **Risk theater** uses Mapbox GL. Set `NEXT_PUBLIC_MAPBOX_TOKEN` in your env (`.env.local` for dev). Never hardcode tokens — GitHub push protection will block the commit.
+- **Risk theater** uses Mapbox GL. Set `NEXT_PUBLIC_MAPBOX_TOKEN` in your env (`.env.local` for dev). Never hardcode tokens - GitHub push protection will block the commit.
 - The basemap stays mounted even when `/risk/map` fails; API errors show as an overlay, not a blank card.
 
 ## Deployment / Env Setup
 - Public env (optional): `NEXT_PUBLIC_API_BASE_URL=https://api.modelearth.in`
-- **Server proxy** (recommended): `API_BASE_URL=https://api.modelearth.in` — used by `/api/proxy/*` on the Node server; overrides public URL when set.
+- **Server proxy** (recommended): `API_BASE_URL=https://api.modelearth.in` - used by `/api/proxy/*` on the Node server; overrides public URL when set.
 - Optional: `API_UPSTREAM_TIMEOUT_MS` (default `45000`) for slow upstreams.
-- If the browser shows **`502` on `/api/proxy/...`**, open the response body: it now includes `message`, `code` (e.g. `ENOTFOUND`, `ETIMEDOUT`), and `target` — meaning **Node could not complete `fetch` to the API** (not a CORS issue).
+- If the browser shows **`502` on `/api/proxy/...`**, open the response body: it now includes `message`, `code` (e.g. `ENOTFOUND`, `ETIMEDOUT`), and `target` - meaning **Node could not complete `fetch` to the API** (not a CORS issue).
 - Do not expose secrets in frontend env.
 - Build: `npm run build`
 - Start: `npm run start`

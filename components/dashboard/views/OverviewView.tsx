@@ -79,13 +79,13 @@ export default function OverviewView() {
   const riskRuleScore = numOrNull(currentRisk?.rule_score);
   const riskMlScore = numOrNull(currentRisk?.ml_score);
   const riskSeverity = String(currentRisk?.severity ?? 'unknown');
-  const riskTrend = String(currentRisk?.trend ?? '—');
+  const riskTrend = String(currentRisk?.trend ?? 'n/a');
 
   const kpis: Kpi[] = useMemo(
     () => [
       {
         label: 'AVG RISK',
-        value: avgRiskScore !== null ? avgRiskScore.toFixed(2) : '—',
+        value: avgRiskScore !== null ? avgRiskScore.toFixed(2) : 'n/a',
         unit: 'score',
         tone: avgRiskScore === null ? 'idle' : avgRiskScore >= 0.7 ? 'critical' : avgRiskScore >= 0.4 ? 'warning' : 'nominal',
         spark: riskScores.slice(-12),
@@ -107,7 +107,7 @@ export default function OverviewView() {
       },
       {
         label: 'ML FINAL',
-        value: mlLastFinal !== null ? mlLastFinal.toFixed(2) : '—',
+        value: mlLastFinal !== null ? mlLastFinal.toFixed(2) : 'n/a',
         unit: 'score',
         tone: mlLastFinal === null ? 'idle' : mlLastFinal >= 0.7 ? 'critical' : mlLastFinal >= 0.4 ? 'warning' : 'nominal',
         spark: mlList.slice(0, 12).map((l) => num(l.final_score)).filter(Number.isFinite).reverse(),
@@ -122,7 +122,7 @@ export default function OverviewView() {
       },
       {
         label: 'BASELINE',
-        value: Number.isFinite(rainfallBaseline) ? rainfallBaseline.toFixed(1) : '—',
+        value: Number.isFinite(rainfallBaseline) ? rainfallBaseline.toFixed(1) : 'n/a',
         unit: 'mm',
         tone: 'info',
         hint: '/rainfall/stats',
@@ -286,7 +286,7 @@ export default function OverviewView() {
             subtitle={`/forecast/${location}`}
             status={forecast.isError ? 'critical' : 'info'}
             statusText={forecast.isLoading ? 'SYNC' : 'LIVE'}
-            meta={[{ label: 'POINTS', value: String(forecastSeries.length) }, { label: 'HORIZON', value: forecastSeries.length ? `${forecastSeries.length}u` : '—' }]}
+            meta={[{ label: 'POINTS', value: String(forecastSeries.length) }, { label: 'HORIZON', value: forecastSeries.length ? `${forecastSeries.length}u` : 'n/a' }]}
           >
             {forecast.isError ? (
               <ErrorBlock onRetry={() => void forecast.refetch()} message="forecast endpoint failed" />
@@ -372,9 +372,9 @@ export default function OverviewView() {
             status={mlLogs.isError ? 'critical' : 'info'}
             statusText={mlLogs.isLoading ? 'SYNC' : `${mlList.length}`}
             meta={[
-              { label: 'RULE', value: mlLastRule !== null ? mlLastRule.toFixed(2) : '—' },
-              { label: 'ML', value: mlLastMl !== null ? mlLastMl.toFixed(2) : '—' },
-              { label: 'FINAL', value: mlLastFinal !== null ? mlLastFinal.toFixed(2) : '—' },
+              { label: 'RULE', value: mlLastRule !== null ? mlLastRule.toFixed(2) : 'n/a' },
+              { label: 'ML', value: mlLastMl !== null ? mlLastMl.toFixed(2) : 'n/a' },
+              { label: 'FINAL', value: mlLastFinal !== null ? mlLastFinal.toFixed(2) : 'n/a' },
             ]}
           >
             {mlLogs.isError ? (
@@ -392,9 +392,9 @@ export default function OverviewView() {
                     <div key={String(log.id ?? idx)} className="grid grid-cols-[44px_1fr_auto] items-center gap-2 rounded-sm border border-white/5 bg-slate-950/50 px-2 py-1">
                       <span className="text-slate-500">#{String(idx + 1).padStart(3, '0')}</span>
                       <div className="flex flex-wrap items-center gap-2 text-cyan-100/80">
-                        <span><span className="text-slate-500">rule</span>={rule !== null ? rule.toFixed(2) : '—'}</span>
-                        <span><span className="text-slate-500">ml</span>={ml !== null ? ml.toFixed(2) : '—'}</span>
-                        <span><span className="text-slate-500">final</span>={final !== null ? final.toFixed(2) : '—'}</span>
+                        <span><span className="text-slate-500">rule</span>={rule !== null ? rule.toFixed(2) : 'n/a'}</span>
+                        <span><span className="text-slate-500">ml</span>={ml !== null ? ml.toFixed(2) : 'n/a'}</span>
+                        <span><span className="text-slate-500">final</span>={final !== null ? final.toFixed(2) : 'n/a'}</span>
                       </div>
                       <span className={`shrink-0 rounded-sm px-1 py-0.5 text-[9px] uppercase tracking-widest ${shadow ? 'bg-violet-500/15 text-violet-200 ring-1 ring-violet-500/30' : 'bg-cyan-500/15 text-cyan-200 ring-1 ring-cyan-500/30'}`}>
                         {shadow ? 'shadow' : 'live'}

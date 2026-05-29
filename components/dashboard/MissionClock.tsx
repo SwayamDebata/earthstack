@@ -25,7 +25,7 @@ function formatElapsed(ms: number) {
 
 /**
  * UTC clock + mission elapsed timer (persisted across reloads).
- * One setInterval @ 1s — cheap.
+ * One setInterval @ 1s - cheap.
  */
 export default function MissionClock() {
   const [now, setNow] = useState<Date | null>(null);
