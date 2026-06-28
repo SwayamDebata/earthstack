@@ -66,13 +66,21 @@ export default function PilotRequestModal({
     };
 
     try {
-      await fetch('/api/pilot-request', {
+      const res = await fetch('/api/pilot-request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
+      if (!res.ok) {
+        const data = (await res.json().catch(() => ({}))) as { detail?: string };
+        setError(data.detail ?? 'Could not send request. Try again or email us directly.');
+        setStatus('idle');
+        return;
+      }
     } catch {
-      /* still persist locally */
+      setError('Network error. Check your connection and try again.');
+      setStatus('idle');
+      return;
     }
 
     savePilotRequest(payload);
