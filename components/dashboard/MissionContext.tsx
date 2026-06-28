@@ -1,13 +1,24 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from 'react';
 import { LOCATIONS, type Location } from '@/lib/config';
+import {
+  readPilotAccess,
+  WELCOME_SEEN_KEY,
+  type AccessTier,
+} from '@/lib/access/pilot';
 
 const LOC_KEY = 'modelearth:location';
 const FILTER_KEY = 'modelearth:active-only';
 const PROFILE_KEY = 'modelearth:mission-profile';
 
-/** Operational = decision workflows; Analytics = existing telemetry dashboard (unchanged). */
 export type MissionProfile = 'operational' | 'analytics';
 
 type MissionContextValue = {
@@ -18,6 +29,15 @@ type MissionContextValue = {
   latencyMs: number;
   missionProfile: MissionProfile;
   setMissionProfile: (profile: MissionProfile) => void;
+  accessTier: AccessTier;
+  hasPilotAccess: boolean;
+  refreshPilotAccess: () => void;
+  pilotRequestOpen: boolean;
+  pilotRequestReason: string | null;
+  openPilotRequest: (reason?: string) => void;
+  closePilotRequest: () => void;
+  welcomeOpen: boolean;
+  dismissWelcome: () => void;
 };
 
 const MissionContext = createContext<MissionContextValue | null>(null);
@@ -27,8 +47,16 @@ export function MissionProvider({ children }: { children: ReactNode }) {
   const [activeOnly, setActiveOnlyState] = useState<boolean>(true);
   const [latencyMs, setLatencyMs] = useState(0);
   const [missionProfile, setMissionProfileState] = useState<MissionProfile>('operational');
+  const [hasPilotAccess, setHasPilotAccess] = useState(false);
+  const [pilotRequestOpen, setPilotRequestOpen] = useState(false);
+  const [pilotRequestReason, setPilotRequestReason] = useState<string | null>(null);
+  const [welcomeOpen, setWelcomeOpen] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
 
-  // Hydrate from localStorage after mount (avoids SSR/CSR mismatch).
+  const refreshPilotAccess = useCallback(() => {
+    setHasPilotAccess(readPilotAccess());
+  }, []);
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const storedLoc = window.localStorage.getItem(LOC_KEY);
@@ -43,9 +71,19 @@ export function MissionProvider({ children }: { children: ReactNode }) {
     if (storedProfile === 'operational' || storedProfile === 'analytics') {
       setMissionProfileState(storedProfile);
     }
+    setHasPilotAccess(readPilotAccess());
+    setWelcomeOpen(window.localStorage.getItem(WELCOME_SEEN_KEY) !== '1');
+    setHydrated(true);
   }, []);
 
-  // Listen for API latency events emitted by the API client.
+  useEffect(() => {
+    if (!hydrated) return;
+    if (!hasPilotAccess && missionProfile === 'analytics') {
+      setMissionProfileState('operational');
+      if (typeof window !== 'undefined') window.localStorage.setItem(PROFILE_KEY, 'operational');
+    }
+  }, [hasPilotAccess, missionProfile, hydrated]);
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const listener = (event: Event) => {
@@ -71,6 +109,23 @@ export function MissionProvider({ children }: { children: ReactNode }) {
     if (typeof window !== 'undefined') window.localStorage.setItem(PROFILE_KEY, profile);
   };
 
+  const openPilotRequest = useCallback((reason?: string) => {
+    setPilotRequestReason(reason ?? null);
+    setPilotRequestOpen(true);
+  }, []);
+
+  const closePilotRequest = useCallback(() => {
+    setPilotRequestOpen(false);
+    setPilotRequestReason(null);
+  }, []);
+
+  const dismissWelcome = useCallback(() => {
+    if (typeof window !== 'undefined') window.localStorage.setItem(WELCOME_SEEN_KEY, '1');
+    setWelcomeOpen(false);
+  }, []);
+
+  const accessTier: AccessTier = hasPilotAccess ? 'pilot' : 'preview';
+
   return (
     <MissionContext.Provider
       value={{
@@ -81,6 +136,15 @@ export function MissionProvider({ children }: { children: ReactNode }) {
         latencyMs,
         missionProfile,
         setMissionProfile,
+        accessTier,
+        hasPilotAccess,
+        refreshPilotAccess,
+        pilotRequestOpen,
+        pilotRequestReason,
+        openPilotRequest,
+        closePilotRequest,
+        welcomeOpen,
+        dismissWelcome,
       }}
     >
       {children}

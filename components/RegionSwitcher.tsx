@@ -17,7 +17,7 @@ interface RegionSwitcherProps {
 }
 
 const AVAILABLE_REGIONS: Region[] = [
-  { id: 'odisha', name: 'Odisha, India', coordinates: [85.0985, 20.9517], zoom: 7 },
+  { id: 'odisha', name: 'Pilot region · India', coordinates: [85.0985, 20.9517], zoom: 7 },
   { id: 'assam', name: 'Assam, India', coordinates: [92.9376, 26.2006], zoom: 7 },
   { id: 'netherlands', name: 'Rotterdam, NL', coordinates: [4.4777, 51.9225], zoom: 11 },
   { id: 'california', name: 'Napa Valley, CA', coordinates: [-122.2869, 38.2975], zoom: 10 },

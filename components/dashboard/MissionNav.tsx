@@ -14,6 +14,7 @@ import {
   Satellite,
   Shield,
   History,
+  Lock,
 } from 'lucide-react';
 import { useMission } from '@/components/dashboard/MissionContext';
 
@@ -31,19 +32,36 @@ const analyticsItems = [
 const operationalItems = [
   { href: '/dashboard/ops', label: 'Command', icon: Shield, match: 'exact' as const },
   { href: '/dashboard/ops/replay', label: 'Replay', icon: History },
+] as const;
+
+const operationalPilotItems = [
+  ...operationalItems,
   { href: '/dashboard/alerts', label: 'Alerts', icon: AlertTriangle },
 ] as const;
 
 export default function MissionNav() {
   const pathname = usePathname();
-  const { missionProfile } = useMission();
+  const { missionProfile, hasPilotAccess, openPilotRequest } = useMission();
 
-  const items = missionProfile === 'operational' ? operationalItems : analyticsItems;
+  const items =
+    missionProfile === 'operational'
+      ? hasPilotAccess
+        ? operationalPilotItems
+        : operationalItems
+      : analyticsItems;
 
   const isActive = (href: string, match?: 'exact') => {
     if (match === 'exact') return pathname === href;
     if (href === '/dashboard') return pathname === '/dashboard';
     return pathname.startsWith(href);
+  };
+
+  const onNavClick = (href: string, e: React.MouseEvent) => {
+    if (hasPilotAccess) return;
+    if (href === '/dashboard/alerts') {
+      e.preventDefault();
+      openPilotRequest('Alert coordination and WhatsApp dispatch require district pilot access.');
+    }
   };
 
   return (
@@ -59,11 +77,13 @@ export default function MissionNav() {
       {items.map((item) => {
         const Icon = item.icon;
         const active = isActive(item.href, 'match' in item ? item.match : undefined);
+        const locked = !hasPilotAccess && item.href === '/dashboard/alerts';
         return (
           <Link
             key={item.href}
             href={item.href}
-            title={item.label}
+            onClick={(e) => onNavClick(item.href, e)}
+            title={locked ? `${item.label} (pilot required)` : item.label}
             className={`group relative flex h-10 w-10 items-center justify-center rounded-md border transition ${
               active
                 ? missionProfile === 'operational'
@@ -72,7 +92,7 @@ export default function MissionNav() {
                 : 'border-transparent text-slate-500 hover:border-cyan-400/25 hover:bg-white/5 hover:text-cyan-200'
             }`}
           >
-            <Icon size={16} strokeWidth={1.5} />
+            {locked ? <Lock size={14} /> : <Icon size={16} strokeWidth={1.5} />}
             {active ? (
               <span
                 className={`absolute -right-px top-2 h-6 w-0.5 rounded-l-sm ${
@@ -86,6 +106,16 @@ export default function MissionNav() {
           </Link>
         );
       })}
+      {!hasPilotAccess ? (
+        <button
+          type="button"
+          onClick={() => openPilotRequest()}
+          className="mt-2 flex h-10 w-10 items-center justify-center rounded-md border border-dashed border-emerald-400/30 text-emerald-400/80 hover:bg-emerald-500/10"
+          title="Request district pilot"
+        >
+          <Lock size={14} />
+        </button>
+      ) : null}
     </nav>
   );
 }

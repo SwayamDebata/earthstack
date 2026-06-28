@@ -12,6 +12,12 @@ import MissionClock from '@/components/dashboard/MissionClock';
 import MissionNav from '@/components/dashboard/MissionNav';
 import MissionProfileSwitcher from '@/components/dashboard/MissionProfileSwitcher';
 import LiveTicker, { type TickItem } from '@/components/dashboard/LiveTicker';
+import PilotRouteGuard from '@/components/dashboard/PilotRouteGuard';
+import PilotRequestModal from '@/components/dashboard/PilotRequestModal';
+import PreviewWelcomeModal from '@/components/dashboard/PreviewWelcomeModal';
+import PreviewEngagementPrompt from '@/components/dashboard/PreviewEngagementPrompt';
+import SoundToggle from '@/components/audio/SoundToggle';
+import { grantPilotAccess } from '@/lib/access/pilot';
 import { useMission } from '@/components/dashboard/MissionContext';
 
 const num = (v: unknown) => (typeof v === 'number' ? v : typeof v === 'string' ? Number(v) : Number.NaN);
@@ -44,7 +50,17 @@ type Tone = 'nominal' | 'warning' | 'critical' | 'info' | 'idle';
  * Holds the chrome-level queries (health, risk-map, alerts) and feeds the ticker.
  */
 export default function MissionShell({ children }: { children: ReactNode }) {
-  const { latencyMs } = useMission();
+  const {
+    latencyMs,
+    hasPilotAccess,
+    pilotRequestOpen,
+    pilotRequestReason,
+    openPilotRequest,
+    closePilotRequest,
+    refreshPilotAccess,
+    welcomeOpen,
+    dismissWelcome,
+  } = useMission();
   const [online, setOnline] = useState(true);
 
   useEffect(() => {
@@ -138,6 +154,7 @@ export default function MissionShell({ children }: { children: ReactNode }) {
 
           {/* System telemetry only */}
           <div className="flex flex-wrap items-center justify-end gap-1.5 font-mono text-[10px] uppercase tracking-[0.2em] md:gap-2">
+            <SoundToggle compact className="mr-1" />
             <p className="mr-1 hidden w-full text-right font-mono text-[9px] uppercase tracking-[0.22em] text-slate-600 sm:block md:w-auto">
               System
             </p>
@@ -173,6 +190,23 @@ export default function MissionShell({ children }: { children: ReactNode }) {
         </div>
       ) : null}
 
+      {!hasPilotAccess ? (
+        <div className="z-30 flex flex-wrap items-center justify-between gap-2 border-b border-emerald-400/25 bg-emerald-950/40 px-4 py-2">
+          <p className="font-mono text-[10px] uppercase tracking-widest text-emerald-100/90">
+          Live command preview · read-only coordination
+          </p>
+          <button
+            type="button"
+            onClick={() => openPilotRequest()}
+            className="rounded-sm border border-emerald-400/40 bg-emerald-500/15 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-emerald-100 hover:bg-emerald-500/25"
+          >
+            Request district pilot
+          </button>
+        </div>
+      ) : null}
+
+      <PilotRouteGuard />
+
       <div className="flex min-h-0 flex-1">
         <div className="hidden h-full w-12 shrink-0 md:block">
           <MissionNav />
@@ -181,6 +215,23 @@ export default function MissionShell({ children }: { children: ReactNode }) {
       </div>
 
       <LiveTicker items={ticker} />
+
+      <PreviewWelcomeModal
+        open={welcomeOpen && !hasPilotAccess}
+        onClose={dismissWelcome}
+        onExplore={dismissWelcome}
+      />
+      <PilotRequestModal
+        open={pilotRequestOpen}
+        onClose={closePilotRequest}
+        reason={pilotRequestReason ?? undefined}
+        onGranted={() => {
+          grantPilotAccess();
+          refreshPilotAccess();
+          closePilotRequest();
+        }}
+      />
+      <PreviewEngagementPrompt />
     </div>
   );
 }

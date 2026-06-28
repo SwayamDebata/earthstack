@@ -1,33 +1,36 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Cloud, Flame, Film } from 'lucide-react';
+import { Cloud, Flame, History } from 'lucide-react';
 import { useRef } from 'react';
 
 const platforms = [
   {
     icon: Cloud,
     title: 'ClimateObserve',
-    subtitle: 'Live Rainfall & River Intelligence',
-    description: 'Real-time monitoring of precipitation patterns, river levels, and water flow dynamics across regions.',
+    subtitle: 'Rainfall, rivers, basin context',
+    description:
+      'Live hydrology and precipitation fused for district operations. See what changed before water levels breach thresholds.',
     gradient: 'from-blue-500/20 to-cyan-500/20',
     iconColor: 'text-blue-400',
   },
   {
     icon: Flame,
     title: 'FloodPredict',
-    subtitle: 'AI-Powered Flood Risk Forecast',
-    description: 'Advanced machine learning models predict flood risks with confidence scoring and early warning systems.',
+    subtitle: 'Hybrid rule + ML scoring',
+    description:
+      'Flood risk scored with transparent rule logic and ML shadow mode. Built for briefings where every hour of lead time counts.',
     gradient: 'from-orange-500/20 to-red-500/20',
     iconColor: 'text-orange-400',
   },
   {
-    icon: Film,
-    title: 'Replay Mode',
-    subtitle: 'Time-travel through weather events',
-    description: 'Historical climate data visualization with interactive timeline and event playback capabilities.',
-    gradient: 'from-purple-500/20 to-pink-500/20',
-    iconColor: 'text-purple-400',
+    icon: History,
+    title: 'Replay Proof',
+    subtitle: 'Verified historical flood events',
+    description:
+      'Replay real flood onset against your alert policy. Prove when districts would have been warned, with audit-ready evidence.',
+    gradient: 'from-emerald-500/20 to-teal-500/20',
+    iconColor: 'text-emerald-400',
   },
 ];
 
@@ -46,10 +49,10 @@ export default function PlatformCards() {
       >
         <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.35em] text-cyan-400/80">ModelEarth stack</p>
         <h2 className="mb-6 text-5xl font-bold md:text-6xl">
-          Next-gen <span className="gradient-text">climate intelligence</span>
+          One loop: <span className="gradient-text">observe, score, prove</span>
         </h2>
         <p className="mx-auto max-w-2xl text-xl text-gray-400">
-          Three composable surfaces. Observe, predict, and replay, orchestrated for real operations.
+          Three composable surfaces wired to the same API. From live signals to flood scoring to verified historical replay.
         </p>
       </motion.div>
 

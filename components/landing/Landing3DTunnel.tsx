@@ -121,7 +121,7 @@ export default function Landing3DTunnel() {
           {[
             { k: 'channels', v: 'rainfall · rivers · ml' },
             { k: 'cadence', v: 'live · replay · forecast' },
-            { k: 'scope', v: 'Odisha · expandable' },
+            { k: 'scope', v: 'District · expandable' },
           ].map((it) => (
             <div key={it.k} className="rounded-lg border border-cyan-400/15 bg-slate-950/80 px-3 py-2">
               <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500">{it.k}</p>

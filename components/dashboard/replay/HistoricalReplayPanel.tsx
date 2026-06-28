@@ -19,6 +19,7 @@ import type { ReplayHistoricalEventInfo, ReplayHistoricalFrame } from '@/lib/api
 import HudFrame from '@/components/dashboard/HudFrame';
 import StatusLed from '@/components/dashboard/StatusLed';
 import { ErrorBlock, EmptyBlock, Telemetry } from '@/components/dashboard/Atoms';
+import { useSoundOptional } from '@/components/audio/SoundProvider';
 
 const FRAME_MS = 1500;
 
@@ -66,11 +67,13 @@ function riskToColor(level?: string) {
 
 type EventSelection = { eventId: string; source?: string };
 
-export default function HistoricalReplayPanel() {
+export default function HistoricalReplayPanel({ tourMode = false }: { tourMode?: boolean }) {
+  const sound = useSoundOptional();
   const [selection, setSelection] = useState<EventSelection | null>(null);
   const [frameIdx, setFrameIdx] = useState(0);
   const [playing, setPlaying] = useState(true);
   const [showPicker, setShowPicker] = useState(false);
+  const prevFrameRef = useRef(-1);
 
   const demoQ = useQuery({
     queryKey: [
@@ -104,6 +107,7 @@ export default function HistoricalReplayPanel() {
   // Reset index whenever frames change.
   useEffect(() => {
     setFrameIdx(0);
+    prevFrameRef.current = -1;
   }, [data]);
 
   // Auto-play.
@@ -140,6 +144,24 @@ export default function HistoricalReplayPanel() {
   const isRecommended = data?.is_recommended ?? data?.recommended ?? true;
   const recommendedEvent = data?.recommended_event;
 
+  useEffect(() => {
+    if (!sound?.enabled || frames.length === 0 || !currentFrame) return;
+    const prev = prevFrameRef.current;
+    prevFrameRef.current = frameIdx;
+    if (prev < 0 || prev === frameIdx) return;
+    if (currentFrame.triggered) sound.playReplayAlert();
+    else sound.playReplayTick();
+  }, [frameIdx, currentFrame, frames.length, sound]);
+
+  useEffect(() => {
+    if (!sound?.enabled || !playing || frames.length <= 1) {
+      sound?.stopAmbient();
+      return;
+    }
+    sound.startAmbient();
+    return () => sound.stopAmbient();
+  }, [playing, frames.length, sound]);
+
   const eventsList = eventsQ.data?.events ?? [];
   const activeEventId = event?.event_id;
 
@@ -152,6 +174,7 @@ export default function HistoricalReplayPanel() {
       status={demoQ.isError ? 'critical' : triggeredAny ? 'nominal' : 'info'}
       statusText={demoQ.isLoading ? 'SYNC' : recallStatusText}
       meta={[
+        ...(tourMode ? [{ label: 'MODE', value: 'GUIDED' }] : []),
         ...(event?.region ? [{ label: 'REGION', value: event.region.toUpperCase() }] : []),
         ...(frames.length > 0
           ? [{ label: 'FRAME', value: `${frameIdx + 1} / ${frames.length}` }]
@@ -312,7 +335,13 @@ function EventHeader({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-emerald-300/70">
-            Verified Flood Event · {event.source ?? 'INDOFLOODS'}
+            Verified Flood Event
+            {event.source ? (
+              <span className="text-slate-500">
+                {' '}
+                · source {event.source}
+              </span>
+            ) : null}
           </p>
           <h3 className="mt-1 text-xl font-semibold tracking-tight text-white md:text-2xl">
             {event.region ?? 'n/a'}
@@ -380,7 +409,7 @@ function EventHeader({
         <div className="mt-3 flex items-center gap-2 rounded-sm border border-emerald-400/30 bg-emerald-500/10 px-3 py-1.5">
           <AlertTriangle size={12} className="text-emerald-300" />
           <p className="font-mono text-[11px] uppercase tracking-widest text-emerald-200">
-            First Alert · T−{firstAlertHours}h before onset
+            First Alert · T-{firstAlertHours}h before onset
           </p>
         </div>
       ) : null}
@@ -429,7 +458,7 @@ function FrameDisplay({
           }`}
         >
           <Clock size={11} />
-          {hoursBefore === 0 ? 'T = 0 · FLOOD ONSET' : `T − ${hoursBefore}h`}
+          {hoursBefore === 0 ? 'T = 0 · FLOOD ONSET' : `T - ${hoursBefore}h`}
         </span>
         {triggered ? (
           <span className="flex items-center gap-1.5 rounded-sm border border-emerald-400/35 bg-emerald-500/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-emerald-200">
@@ -602,7 +631,7 @@ function LeadTimeTimeline({
                     active ? 'text-cyan-200' : 'text-slate-500 group-hover:text-cyan-200'
                   }`}
                 >
-                  {f.hours_before_event === 0 ? 'T = 0' : `T − ${f.hours_before_event}h`}
+                  {f.hours_before_event === 0 ? 'T = 0' : `T - ${f.hours_before_event}h`}
                 </span>
                 {isFirst ? (
                   <span className="mt-0.5 font-mono text-[9px] uppercase tracking-widest text-emerald-300">

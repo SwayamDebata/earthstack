@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Bell, Check, Loader2 } from 'lucide-react';
+import { Bell, Check, Loader2, Lock } from 'lucide-react';
 import { api } from '@/lib/api/endpoints';
 import { parseApiErrorMessage, type NotifyProvider } from '@/lib/api/alerts';
+import { useMission } from '@/components/dashboard/MissionContext';
 
 type Props = {
   alertId: number;
@@ -24,6 +25,7 @@ export default function SendAlertButton({
   className = '',
 }: Props) {
   const queryClient = useQueryClient();
+  const { hasPilotAccess, openPilotRequest } = useMission();
   const [feedback, setFeedback] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -49,6 +51,21 @@ export default function SendAlertButton({
   const isPending = mutation.isPending;
   const isSuccess = feedback === 'success';
   const isError = feedback === 'error';
+
+  if (!hasPilotAccess) {
+    return (
+      <button
+        type="button"
+        onClick={() => openPilotRequest('Alert dispatch requires district pilot access.')}
+        className={`inline-flex items-center gap-1 rounded-sm border border-emerald-400/30 bg-emerald-500/5 font-mono uppercase tracking-widest text-emerald-200/90 transition hover:bg-emerald-500/10 ${
+          compact ? 'px-1.5 py-0.5 text-[9px]' : 'px-2 py-1 text-[10px]'
+        } ${className}`}
+      >
+        <Lock size={compact ? 10 : 11} />
+        {compact ? 'Pilot' : 'Pilot access'}
+      </button>
+    );
+  }
 
   return (
     <div className={`flex flex-col items-end gap-0.5 ${className}`}>

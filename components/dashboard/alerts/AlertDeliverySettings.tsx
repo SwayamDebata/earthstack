@@ -11,7 +11,7 @@ import { ErrorBlock, Telemetry } from '@/components/dashboard/Atoms';
 import { formatScalar } from '@/lib/api/payload';
 
 export default function AlertDeliverySettings() {
-  const { location } = useMission();
+  const { location, hasPilotAccess, openPilotRequest } = useMission();
   const [phone, setPhone] = useState('');
   const [details, setDetails] = useState('Heavy rainfall expected in low-lying areas.');
   const [testResult, setTestResult] = useState<string | null>(null);
@@ -76,7 +76,19 @@ export default function AlertDeliverySettings() {
         )}
       </HudFrame>
 
-      <HudFrame label="TEST WHATSAPP" subtitle="POST /alerts/delivery/test-whatsapp · dev only" status="warning" statusText="DEV">
+      <HudFrame label="TEST WHATSAPP" subtitle="POST /alerts/delivery/test-whatsapp · pilot only" status="warning" statusText="DEV">
+        {!hasPilotAccess ? (
+          <div className="rounded-sm border border-emerald-400/25 bg-emerald-500/5 p-4 text-center">
+            <p className="text-sm text-slate-300">WhatsApp test dispatch requires district pilot access.</p>
+            <button
+              type="button"
+              onClick={() => openPilotRequest()}
+              className="mt-3 rounded-sm border border-emerald-400/40 bg-emerald-500/15 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-emerald-100"
+            >
+              Request pilot access
+            </button>
+          </div>
+        ) : (
         <div className="space-y-3">
           <label className="block">
             <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-slate-500">PHONE (E.164)</span>
@@ -117,6 +129,7 @@ export default function AlertDeliverySettings() {
             </pre>
           ) : null}
         </div>
+        )}
       </HudFrame>
     </div>
   );

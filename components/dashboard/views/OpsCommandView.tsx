@@ -112,7 +112,7 @@ export default function OpsCommandView() {
                       Historical replay evidence
                     </p>
                     <p className="text-sm text-slate-300">
-                      T−72h to flood onset · verified IndoFloods simulation
+                      T-72h to flood onset · verified historical simulation
                     </p>
                   </div>
                 </div>

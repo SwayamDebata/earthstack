@@ -34,7 +34,7 @@ export default function LaptopDemo() {
             transition={{ delay: 0.2 }}
             className="text-xl text-gray-400 max-w-2xl mx-auto"
           >
-            Real-time environmental intelligence at your fingertips. Floods, storms, and risk in one glass cockpit.
+            Real-time flood and hydrology intelligence in the command surface your team actually runs during monsoon season.
           </motion.p>
         </div>
 

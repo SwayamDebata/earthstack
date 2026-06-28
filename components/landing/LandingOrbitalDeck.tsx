@@ -7,7 +7,7 @@ const deck = [
   {
     icon: Orbit,
     title: 'Spatial OS',
-    copy: 'Depth, parallax, and a live globe. Your story reads as infrastructure, not a slide.',
+    copy: 'Live globe, district context, and command surfaces that read as operational infrastructure.',
     hue: 'from-cyan-500/25 to-blue-600/10',
     card3d:
       'md:[transform:perspective(1200px)_rotateY(-14deg)_rotateX(5deg)] hover:[transform:perspective(1200px)_rotateY(0)_rotateX(0)]',
@@ -43,9 +43,9 @@ export default function LandingOrbitalDeck() {
           className="mb-14 text-center"
         >
           <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.4em] text-cyan-400/70">Orbital deck</p>
-          <h2 className="text-3xl font-bold text-white md:text-5xl">Depth without the lag</h2>
+          <h2 className="text-3xl font-bold text-white md:text-5xl">Built for real coordination rooms</h2>
           <p className="mx-auto mt-3 max-w-2xl text-slate-400">
-            3D-forward visuals that stay performant. CSS transforms, disciplined WebGL, and motion that respects the main thread.
+            Spatial UI that stays fast on field laptops. Depth where it helps decisions, not where it slows operators down.
           </p>
         </motion.div>
 

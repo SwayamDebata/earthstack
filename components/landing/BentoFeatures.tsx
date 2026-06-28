@@ -7,7 +7,7 @@ const tiles = [
   {
     icon: Orbit,
     title: 'Orbital context',
-    body: 'Scroll-driven depth: hero, command surface, and map demo lock into one continuous narrative.',
+    body: 'District maps, river context, and live telemetry in one spatial view. Built for situation rooms, not slide decks.',
     span: 'md:col-span-2',
     accent: 'from-cyan-500/20 to-blue-600/10',
   },
@@ -35,14 +35,14 @@ const tiles = [
   {
     icon: Radio,
     title: 'Always-on UX',
-    body: 'Micro-interactions, glass telemetry, and 3D focal points tuned for investor-grade demos.',
+    body: 'Glass telemetry, alert streams, and replay panels stay readable under pressure. Designed for 3am coordination calls.',
     span: 'md:col-span-1',
     accent: 'from-sky-500/15 to-cyan-500/10',
   },
   {
     icon: Compass,
     title: 'Navigate faster',
-    body: 'From landing to dashboard: one visual language, zero template fatigue.',
+    body: 'From landing to command center in one click. Same visual language your field team and leadership already trust.',
     span: 'md:col-span-2',
     accent: 'from-rose-500/10 to-indigo-500/15',
   },
@@ -66,7 +66,7 @@ export default function BentoFeatures() {
             Built like a <span className="gradient-text">flight console</span>. Not a slide deck
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-400">
-            Dense, cinematic, and spatial. Every block is designed to sell serious climate infrastructure without shouting.
+            Every surface is built for flood-season operations: fast reads, honest empty states, and evidence you can defend in a briefing.
           </p>
         </motion.div>
 

@@ -193,5 +193,5 @@ export function historicalEvidenceLine(risk: RiskPayload): string | null {
   if (floods !== null && floods > 50) {
     return `Region has ${floods} recorded historical flood events in training corpus - review Historical Replay for pattern match`;
   }
-  return 'Open Historical Replay to compare with verified IndoFloods events';
+  return 'Open Historical Replay to compare with verified historical flood events';
 }

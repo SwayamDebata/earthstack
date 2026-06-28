@@ -4,8 +4,8 @@ import { motion } from 'framer-motion';
 
 const rows = [
   { k: 'Architecture', v: 'API-first · widget-isolated degradation' },
-  { k: 'Surface', v: 'Mission control + marketing-grade storytelling' },
-  { k: 'Geospatial', v: 'Mapbox theatre + district-aware context' },
+  { k: 'Surface', v: 'Operational command + verified historical replay' },
+  { k: 'Geospatial', v: 'District-aware risk maps and basin context' },
   { k: 'Trust', v: 'Explicit empty / loading / retry. No toy metrics' },
 ];
 

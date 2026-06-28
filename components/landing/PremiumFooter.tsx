@@ -2,35 +2,34 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
+import { Github, Twitter, Linkedin, Mail, Instagram } from 'lucide-react';
 import BrandMark from '@/components/landing/BrandMark';
 
 const footerLinks = {
   product: [
-    { name: 'ClimateObserve', href: '/dashboard/climate' },
-    { name: 'FloodPredict', href: '/dashboard/predict' },
-    { name: 'Replay Mode', href: '/dashboard/replay' },
-    { name: 'Pricing', href: '#pricing' },
+    { name: 'Command center', href: '/dashboard/ops' },
+    { name: 'Replay proof', href: '/dashboard/ops/replay?tour=1' },
+    { name: 'Rainfall & rivers', href: '/dashboard/rainfall' },
+    { name: 'Risk surface', href: '/dashboard/risk' },
   ],
   company: [
-    { name: 'About', href: '#about' },
-    { name: 'Careers', href: '#careers' },
-    { name: 'Contact', href: '#contact' },
-    { name: 'Blog', href: '#blog' },
+    { name: 'District pilot', href: '#horizon' },
+    { name: 'Contact', href: 'mailto:swayamdebata2003@gmail.com' },
+    { name: 'Website', href: 'https://www.modelearth.in' },
   ],
   resources: [
-    { name: 'API Docs', href: '#api' },
-    { name: 'Data Sources', href: '#data' },
-    { name: 'Privacy', href: '#privacy' },
-    { name: 'Terms', href: '#terms' },
+    { name: 'API', href: 'https://api.modelearth.in' },
+    { name: 'Capabilities', href: '#capabilities' },
+    { name: 'Platform', href: '#platforms' },
   ],
 };
 
 const socialLinks = [
+  { icon: Instagram, href: 'https://www.instagram.com/modelearth.ai/', label: 'Instagram' },
+  { icon: Mail, href: 'mailto:swayamdebata2003@gmail.com', label: 'Email' },
   { icon: Github, href: '#', label: 'GitHub' },
   { icon: Twitter, href: '#', label: 'Twitter' },
   { icon: Linkedin, href: '#', label: 'LinkedIn' },
-  { icon: Mail, href: '#', label: 'Email' },
 ];
 
 export default function PremiumFooter() {
@@ -51,7 +50,7 @@ export default function PremiumFooter() {
               <span className="text-xl font-bold gradient-text">ModelEarth</span>
             </Link>
             <p className="mt-4 text-gray-400 max-w-sm">
-              The Operating System for a Climate-Resilient Future. Real-time intelligence for rainfall, floods, and extreme weather.
+              Early warning and flood operations for districts that need lead time, not another dashboard. Live command preview with verified historical replay.
             </p>
             
             {/* Social Links */}
@@ -61,6 +60,8 @@ export default function PremiumFooter() {
                   key={social.label}
                   href={social.href}
                   aria-label={social.label}
+                  target={social.href.startsWith('http') ? '_blank' : undefined}
+                  rel={social.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                   className="group relative"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
@@ -132,7 +133,7 @@ export default function PremiumFooter() {
             © {new Date().getFullYear()} ModelEarth. Climate intelligence platform.
           </p>
           <p className="text-sm text-gray-500">
-            Powered by Satellite Data & Advanced AI
+            ModelEarth · verified historical replay · api.modelearth.in
           </p>
         </div>
       </div>

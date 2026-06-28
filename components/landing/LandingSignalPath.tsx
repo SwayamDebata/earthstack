@@ -7,7 +7,7 @@ const phases = [
   { icon: Satellite, label: 'Ingest', detail: 'Multi-orbit & ground truth' },
   { icon: Waves, label: 'Hydrology', detail: 'Rainfall, rivers, basins' },
   { icon: Cpu, label: 'Models', detail: 'Rules + ML + replay' },
-  { icon: Radio, label: 'Ops', detail: 'Alerts & command surface' },
+  { icon: Radio, label: 'Ops', detail: 'Alerts, replay proof & command' },
 ];
 
 export default function LandingSignalPath() {
@@ -26,7 +26,7 @@ export default function LandingSignalPath() {
           <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.4em] text-cyan-400/70">Signal path</p>
           <h2 className="text-3xl font-bold text-white md:text-4xl">From observation to decision</h2>
           <p className="mx-auto mt-3 max-w-xl text-slate-400">
-            A linear narrative your stakeholders understand. No buzzword soup.
+            How rainfall becomes a district briefing. Clear stages, no buzzword soup.
           </p>
         </motion.div>
 

@@ -10,6 +10,7 @@ import HudFrame from '@/components/dashboard/HudFrame';
 import StatusLed from '@/components/dashboard/StatusLed';
 import { EmptyBlock, ErrorBlock } from '@/components/dashboard/Atoms';
 import { toArray } from '@/components/dashboard/util';
+import { useMission } from '@/components/dashboard/MissionContext';
 
 const emptyForm: {
   name: string;
@@ -29,6 +30,7 @@ const emptyForm: {
 
 export default function AlertContactsPanel() {
   const queryClient = useQueryClient();
+  const { hasPilotAccess, openPilotRequest } = useMission();
   const [form, setForm] = useState(emptyForm);
   const [formError, setFormError] = useState('');
 
@@ -142,6 +144,18 @@ export default function AlertContactsPanel() {
       </HudFrame>
 
       <HudFrame label="REGISTER CONTACT" subtitle="POST /alert-contacts · one-time setup" status="info" statusText="READY">
+        {!hasPilotAccess ? (
+          <div className="rounded-sm border border-emerald-400/25 bg-emerald-500/5 p-4 text-center">
+            <p className="text-sm text-slate-300">Contact registration is available with district pilot access.</p>
+            <button
+              type="button"
+              onClick={() => openPilotRequest()}
+              className="mt-3 rounded-sm border border-emerald-400/40 bg-emerald-500/15 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-emerald-100"
+            >
+              Request pilot access
+            </button>
+          </div>
+        ) : (
         <form onSubmit={onSubmit} className="space-y-3">
           <Field label="NAME">
             <input
@@ -222,6 +236,7 @@ export default function AlertContactsPanel() {
             Register contact
           </button>
         </form>
+        )}
       </HudFrame>
     </div>
   );

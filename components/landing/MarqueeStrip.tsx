@@ -2,12 +2,12 @@
 
 const ITEMS = [
   'ModelEarth',
-  'Climate mission control',
-  'API-first intelligence',
+  '72h early warning',
+  'Verified historical replay',
   'Rainfall · Rivers · Risk',
-  'Replay & forecast',
-  'Odisha-scale operations',
-  'Live dashboards',
+  'District command center',
+  'Flood operations',
+  'API-first intelligence',
 ];
 
 export default function MarqueeStrip() {

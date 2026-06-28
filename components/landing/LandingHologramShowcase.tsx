@@ -154,8 +154,7 @@ export default function LandingHologramShowcase() {
             .
           </h2>
           <p className="mt-5 max-w-md text-slate-400">
-            Risk, geospatial, alerts, and forecasts. Composable surfaces driven by a typed API SDK and React Query.
-            Slide between them like a HUD.
+            Risk maps, alert streams, forecasts, and replay proof. Composable surfaces on one typed API, so ops and analytics stay in sync.
           </p>
           <div className="mt-8 flex flex-wrap gap-2 font-mono text-[10px] uppercase tracking-widest text-slate-400">
             {['typed sdk', 'zod validated', 'widget-isolated', 'replayable'].map((t) => (

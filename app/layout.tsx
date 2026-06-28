@@ -21,7 +21,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: 'ModelEarth · Climate intelligence & mission control',
   description:
-    'ModelEarth: planetary-scale resilience intelligence. Flood risk, hydrology, and operations in a unified command experience.',
+    'ModelEarth: flood early warning and operational command for districts. Verified historical replay, live hydrology and risk in one surface.',
   metadataBase: new URL('https://www.modelearth.in'),
   icons: {
     icon: [{ url: '/modelearth-favicon.svg', type: 'image/svg+xml' }],

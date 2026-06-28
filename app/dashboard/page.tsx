@@ -6,20 +6,19 @@ import OverviewView from '@/components/dashboard/views/OverviewView';
 import { useMission } from '@/components/dashboard/MissionContext';
 
 /**
- * Analytics theatre (unchanged view). When mission profile is Operational,
- * redirect to /dashboard/ops without modifying OverviewView.
+ * Analytics theatre (unchanged view). Preview users always land on operational command.
  */
 export default function DashboardPage() {
-  const { missionProfile } = useMission();
+  const { missionProfile, hasPilotAccess } = useMission();
   const router = useRouter();
 
   useEffect(() => {
-    if (missionProfile === 'operational') {
+    if (!hasPilotAccess || missionProfile === 'operational') {
       router.replace('/dashboard/ops');
     }
-  }, [missionProfile, router]);
+  }, [missionProfile, hasPilotAccess, router]);
 
-  if (missionProfile === 'operational') {
+  if (!hasPilotAccess || missionProfile === 'operational') {
     return (
       <div className="flex h-40 items-center justify-center font-mono text-[10px] uppercase tracking-widest text-slate-500">
         Loading operational command…

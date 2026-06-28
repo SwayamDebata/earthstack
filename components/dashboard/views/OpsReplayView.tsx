@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { ChevronLeft } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { ChevronLeft, Film } from 'lucide-react';
 import HistoricalReplayPanel from '@/components/dashboard/replay/HistoricalReplayPanel';
 
 /**
@@ -9,8 +10,17 @@ import HistoricalReplayPanel from '@/components/dashboard/replay/HistoricalRepla
  * Reuses HistoricalReplayPanel; analytics replay console remains at /dashboard/replay.
  */
 export default function OpsReplayView() {
+  const searchParams = useSearchParams();
+  const tour = searchParams.get('tour') === '1';
+
   return (
     <div className="space-y-4 p-3 md:p-4">
+      {tour ? (
+        <div className="flex items-center gap-2 rounded-md border border-emerald-400/30 bg-emerald-500/10 px-3 py-2 font-mono text-[10px] uppercase tracking-widest text-emerald-100">
+          <Film size={14} />
+          Guided replay tour · auto-play through verified flood frames
+        </div>
+      ) : null}
       <header>
         <Link
           href="/dashboard/ops"
@@ -30,7 +40,7 @@ export default function OpsReplayView() {
         </p>
       </header>
 
-      <HistoricalReplayPanel />
+      <HistoricalReplayPanel tourMode={tour} />
     </div>
   );
 }

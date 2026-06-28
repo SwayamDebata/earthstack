@@ -147,12 +147,11 @@ export default function LandingBhoomiG1() {
             </h2>
 
             <p className="mt-5 text-lg font-medium text-emerald-100/90 md:text-xl">
-              A new layer of environmental intelligence is coming.
+              Field-grade sensing for flood basins and river corridors.
             </p>
 
             <p className="mt-4 max-w-lg text-sm leading-relaxed text-slate-400 md:text-base">
-              Designed to interact directly with the real world, capturing signals, understanding conditions,
-              and powering the next generation of climate intelligence.
+              Bhoomi G1 extends ModelEarth to ground truth: local conditions, edge telemetry, and resilient capture when cloud coverage gaps matter most.
             </p>
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -162,11 +161,11 @@ export default function LandingBhoomiG1() {
                 className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full border border-emerald-400/35 bg-emerald-500/10 px-7 py-3.5 text-sm font-semibold text-emerald-50 transition duration-300 hover:border-emerald-300/55 hover:bg-emerald-500/20 hover:shadow-[0_0_40px_rgba(52,211,153,0.25)]"
               >
                 <span className="pointer-events-none absolute inset-0 bg-gradient-to-r from-emerald-400/0 via-emerald-400/15 to-emerald-400/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                <span className="relative">Explore the Future</span>
+                <span className="relative">Request pilot briefing</span>
                 <ArrowRight size={16} className="relative transition-transform duration-300 group-hover:translate-x-0.5" />
               </button>
               <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-slate-500">
-                Prototype 01 · Experimental Interface
+                Hardware roadmap · field deployment trials
               </p>
             </div>
           </motion.div>

@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
+import PilotRequestButton from '@/components/marketing/PilotRequestButton';
 
 export default function LandingHorizonCTA() {
   return (
@@ -22,28 +23,27 @@ export default function LandingHorizonCTA() {
 
         <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.4em] text-cyan-300/80">Horizon</p>
         <h2 className="text-3xl font-bold tracking-tight text-white md:text-5xl">
-          Ship the console your climate program deserves
+          Early warning your program can deploy
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-slate-400">
-          ModelEarth is built for demos that close, and deployments that stay up.
+          Live command preview today. Verified replay for every stakeholder who asks: would you have warned in time?
         </p>
 
-        <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <div className="mt-10 flex flex-col flex-wrap items-center justify-center gap-4 sm:flex-row">
           <Link
-            href="/dashboard"
+            href="/dashboard/ops"
             className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 px-8 py-3.5 text-sm font-semibold text-white shadow-lg shadow-cyan-500/25 transition hover:shadow-cyan-500/40"
           >
-            Open command center
+            Enter live command center
             <ArrowUpRight size={18} />
           </Link>
-          <a
-            href="https://www.modelearth.in"
-            target="_blank"
-            rel="noopener noreferrer"
+          <PilotRequestButton />
+          <Link
+            href="/dashboard/ops/replay?tour=1"
             className="inline-flex items-center gap-2 rounded-full border border-white/15 px-8 py-3.5 text-sm font-medium text-slate-300 transition hover:border-cyan-400/40 hover:text-white"
           >
-            Visit modelearth.in
-          </a>
+            See verified early warning
+          </Link>
         </div>
       </motion.div>
     </section>
