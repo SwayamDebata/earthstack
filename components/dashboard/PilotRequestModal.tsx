@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Loader2, Shield, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { KeyRound, Loader2, Shield, X } from 'lucide-react';
 import {
   grantPilotAccess,
   savePilotRequest,
@@ -18,6 +18,8 @@ type Props = {
   reason?: string;
 };
 
+type Panel = 'request' | 'unlock';
+
 export default function PilotRequestModal({
   open,
   onClose,
@@ -26,6 +28,8 @@ export default function PilotRequestModal({
   reason,
 }: Props) {
   const sound = useSoundOptional();
+  const unlockInputRef = useRef<HTMLInputElement>(null);
+  const [panel, setPanel] = useState<Panel>('request');
   const [name, setName] = useState('');
   const [organization, setOrganization] = useState('');
   const [email, setEmail] = useState('');
@@ -35,9 +39,39 @@ export default function PilotRequestModal({
   const [status, setStatus] = useState<'idle' | 'submitting' | 'submitted' | 'granted'>('idle');
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    if (!open) {
+      setStatus('idle');
+      setError('');
+      setPanel('request');
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (open && panel === 'unlock') {
+      unlockInputRef.current?.focus();
+    }
+  }, [open, panel]);
+
   if (!open) return null;
 
-  const submit = async () => {
+  const tryUnlock = () => {
+    setError('');
+    if (!unlockCode.trim()) {
+      setError('Enter your pilot unlock code.');
+      return;
+    }
+    if (!verifyUnlockCode(unlockCode)) {
+      setError('Invalid pilot unlock code. Contact ModelEarth if you were approved.');
+      return;
+    }
+    grantPilotAccess();
+    setStatus('granted');
+    sound?.playUiConfirm();
+    onGranted?.();
+  };
+
+  const submitRequest = async () => {
     setError('');
     if (!name.trim() || !organization.trim() || !email.trim()) {
       setError('Name, organization, and email are required.');
@@ -45,14 +79,6 @@ export default function PilotRequestModal({
     }
     if (!email.includes('@')) {
       setError('Enter a valid email address.');
-      return;
-    }
-
-    if (unlockCode.trim() && verifyUnlockCode(unlockCode)) {
-      grantPilotAccess();
-      setStatus('granted');
-      sound?.playUiConfirm();
-      onGranted?.();
       return;
     }
 
@@ -108,7 +134,9 @@ export default function PilotRequestModal({
               <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-emerald-300/80">
                 District pilot access
               </p>
-              <h2 className="text-lg font-semibold text-white">Request operational briefing</h2>
+              <h2 className="text-lg font-semibold text-white">
+                {panel === 'unlock' ? 'Enter pilot unlock code' : 'Request operational briefing'}
+              </h2>
             </div>
           </div>
           <button
@@ -133,13 +161,26 @@ export default function PilotRequestModal({
               <p className="text-sm text-slate-400">
                 You can continue exploring the live command preview and historical replay.
               </p>
-              <button
-                type="button"
-                onClick={onClose}
-                className="rounded-sm border border-emerald-400/40 bg-emerald-500/10 px-4 py-2 font-mono text-[10px] uppercase tracking-widest text-emerald-100"
-              >
-                Continue preview
-              </button>
+              <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="rounded-sm border border-emerald-400/40 bg-emerald-500/10 px-4 py-2 font-mono text-[10px] uppercase tracking-widest text-emerald-100"
+                >
+                  Continue preview
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStatus('idle');
+                    setPanel('unlock');
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-sm border border-white/15 px-4 py-2 font-mono text-[10px] uppercase tracking-widest text-slate-300 hover:border-cyan-400/35 hover:text-white"
+                >
+                  <KeyRound size={12} />
+                  I have an unlock code
+                </button>
+              </div>
             </div>
           ) : status === 'granted' ? (
             <div className="space-y-3 py-4 text-center">
@@ -154,78 +195,126 @@ export default function PilotRequestModal({
             </div>
           ) : (
             <>
-              <p className="text-sm text-slate-400">
-                Unlock alert coordination, analytics telemetry, and district configuration. Preview mode stays open for
-                live ops and historical replay.
-              </p>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <label className="block sm:col-span-2">
-                  <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-slate-500">Name</span>
-                  <input value={name} onChange={(e) => setName(e.target.value)} className="input-hud w-full" />
-                </label>
-                <label className="block sm:col-span-2">
-                  <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-slate-500">
-                    Organization
-                  </span>
-                  <input
-                    value={organization}
-                    onChange={(e) => setOrganization(e.target.value)}
-                    className="input-hud w-full"
-                    placeholder="District administration / NGO / agency"
-                  />
-                </label>
-                <label className="block">
-                  <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-slate-500">Email</span>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="input-hud w-full"
-                  />
-                </label>
-                <label className="block">
-                  <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-slate-500">Region</span>
-                  <input
-                    value={region}
-                    onChange={(e) => setRegion(e.target.value)}
-                    className="input-hud w-full"
-                    placeholder="Cuttack, Puri, …"
-                  />
-                </label>
-                <label className="block sm:col-span-2">
-                  <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-slate-500">
-                    Use case
-                  </span>
-                  <textarea
-                    value={useCase}
-                    onChange={(e) => setUseCase(e.target.value)}
-                    rows={2}
-                    className="input-hud w-full resize-none"
-                    placeholder="Flood season coordination, district pilot, investor briefing…"
-                  />
-                </label>
+              <div className="flex gap-2 rounded-sm border border-white/10 bg-black/30 p-1">
+                <button
+                  type="button"
+                  onClick={() => setPanel('request')}
+                  className={`flex-1 rounded-sm py-2 font-mono text-[10px] uppercase tracking-widest transition ${
+                    panel === 'request'
+                      ? 'bg-emerald-500/15 text-emerald-100'
+                      : 'text-slate-500 hover:text-slate-300'
+                  }`}
+                >
+                  Request briefing
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPanel('unlock')}
+                  className={`flex-1 rounded-sm py-2 font-mono text-[10px] uppercase tracking-widest transition ${
+                    panel === 'unlock'
+                      ? 'bg-cyan-500/15 text-cyan-100'
+                      : 'text-slate-500 hover:text-slate-300'
+                  }`}
+                >
+                  Unlock code
+                </button>
               </div>
-              <label className="block">
-                <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-slate-600">
-                  Pilot unlock code (optional, for approved partners)
-                </span>
-                <input
-                  value={unlockCode}
-                  onChange={(e) => setUnlockCode(e.target.value)}
-                  className="input-hud w-full"
-                  placeholder="Provided by ModelEarth team"
-                />
-              </label>
-              {error ? <p className="text-sm text-red-300">{error}</p> : null}
-              <button
-                type="button"
-                disabled={status === 'submitting'}
-                onClick={() => void submit()}
-                className="flex w-full items-center justify-center gap-2 rounded-sm border border-emerald-400/40 bg-emerald-500/15 py-2.5 font-mono text-[10px] uppercase tracking-widest text-emerald-100 hover:bg-emerald-500/25 disabled:opacity-50"
-              >
-                {status === 'submitting' ? <Loader2 size={14} className="animate-spin" /> : null}
-                Submit pilot request
-              </button>
+
+              {panel === 'unlock' ? (
+                <div className="space-y-3 rounded-md border border-cyan-400/25 bg-cyan-500/5 p-4">
+                  <p className="text-sm text-slate-300">
+                    Already approved? Paste the code we sent you after your pilot briefing.
+                  </p>
+                  <label className="block">
+                    <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-cyan-300/80">
+                      Pilot unlock code
+                    </span>
+                    <input
+                      ref={unlockInputRef}
+                      value={unlockCode}
+                      onChange={(e) => setUnlockCode(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') tryUnlock();
+                      }}
+                      className="input-hud w-full"
+                      placeholder="e.g. ME-PILOT-7K9M2X"
+                      autoComplete="off"
+                    />
+                  </label>
+                  {error ? <p className="text-sm text-red-300">{error}</p> : null}
+                  <button
+                    type="button"
+                    onClick={tryUnlock}
+                    className="flex w-full items-center justify-center gap-2 rounded-sm border border-cyan-400/40 bg-cyan-500/15 py-2.5 font-mono text-[10px] uppercase tracking-widest text-cyan-100 hover:bg-cyan-500/25"
+                  >
+                    <KeyRound size={14} />
+                    Unlock pilot access
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <p className="text-sm text-slate-400">
+                    Request a district briefing. Preview mode stays open for live ops and historical replay.
+                  </p>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <label className="block sm:col-span-2">
+                      <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-slate-500">Name</span>
+                      <input value={name} onChange={(e) => setName(e.target.value)} className="input-hud w-full" />
+                    </label>
+                    <label className="block sm:col-span-2">
+                      <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-slate-500">
+                        Organization
+                      </span>
+                      <input
+                        value={organization}
+                        onChange={(e) => setOrganization(e.target.value)}
+                        className="input-hud w-full"
+                        placeholder="District administration / NGO / agency"
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-slate-500">Email</span>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="input-hud w-full"
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-slate-500">Region</span>
+                      <input
+                        value={region}
+                        onChange={(e) => setRegion(e.target.value)}
+                        className="input-hud w-full"
+                        placeholder="Cuttack, Puri, …"
+                      />
+                    </label>
+                    <label className="block sm:col-span-2">
+                      <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-slate-500">
+                        Use case
+                      </span>
+                      <textarea
+                        value={useCase}
+                        onChange={(e) => setUseCase(e.target.value)}
+                        rows={2}
+                        className="input-hud w-full resize-none"
+                        placeholder="Flood season coordination, district pilot, investor briefing…"
+                      />
+                    </label>
+                  </div>
+                  {error ? <p className="text-sm text-red-300">{error}</p> : null}
+                  <button
+                    type="button"
+                    disabled={status === 'submitting'}
+                    onClick={() => void submitRequest()}
+                    className="flex w-full items-center justify-center gap-2 rounded-sm border border-emerald-400/40 bg-emerald-500/15 py-2.5 font-mono text-[10px] uppercase tracking-widest text-emerald-100 hover:bg-emerald-500/25 disabled:opacity-50"
+                  >
+                    {status === 'submitting' ? <Loader2 size={14} className="animate-spin" /> : null}
+                    Submit pilot request
+                  </button>
+                </>
+              )}
             </>
           )}
         </div>
