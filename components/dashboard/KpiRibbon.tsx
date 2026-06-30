@@ -1,6 +1,8 @@
 'use client';
 
 import StatusLed, { type LedTone } from './StatusLed';
+import { useDashboardUiMode } from '@/lib/ui/use-dashboard-ui-mode';
+import { showHudChrome, statTileLabel, statTileShell, statTileValue } from '@/lib/ui/standard-surface';
 
 export type Kpi = {
   label: string;
@@ -11,7 +13,7 @@ export type Kpi = {
   spark?: number[];
 };
 
-function Sparkline({ values, tone = 'info' }: { values: number[]; tone?: LedTone }) {
+function Sparkline({ values, tone = 'info', std }: { values: number[]; tone?: LedTone; std: boolean }) {
   if (!values.length) return <div className="h-7 w-full" />;
   const max = Math.max(...values);
   const min = Math.min(...values);
@@ -27,8 +29,15 @@ function Sparkline({ values, tone = 'info' }: { values: number[]; tone?: LedTone
     })
     .join(' ');
 
-  const stroke =
-    tone === 'critical'
+  const stroke = std
+    ? tone === 'critical'
+      ? '#dc2626'
+      : tone === 'warning'
+        ? '#d97706'
+        : tone === 'nominal'
+          ? '#059669'
+          : '#2563eb'
+    : tone === 'critical'
       ? '#ef4444'
       : tone === 'warning'
         ? '#f59e0b'
@@ -41,35 +50,43 @@ function Sparkline({ values, tone = 'info' }: { values: number[]; tone?: LedTone
   return (
     <svg viewBox={`0 0 ${w} ${h}`} className="h-7 w-full" preserveAspectRatio="none" aria-hidden>
       <polyline points={points} fill="none" stroke={stroke} strokeWidth={1.25} strokeLinejoin="round" strokeLinecap="round" />
-      <polyline
-        points={`0,${h} ${points} ${w},${h}`}
-        fill={stroke}
-        opacity={0.12}
-      />
+      <polyline points={`0,${h} ${points} ${w},${h}`} fill={stroke} opacity={std ? 0.08 : 0.12} />
     </svg>
   );
 }
 
 export default function KpiRibbon({ kpis }: { kpis: Kpi[] }) {
+  const mode = useDashboardUiMode();
+  const std = mode === 'standard';
+
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
       {kpis.map((k) => (
-        <div
-          key={k.label}
-          className="relative overflow-hidden rounded-md border border-cyan-400/15 bg-gradient-to-b from-[#0b1325]/95 to-[#070d1b]/95 p-2.5"
-        >
-          <span className="hud-bracket hud-bracket-tl" />
-          <span className="hud-bracket hud-bracket-br" />
+        <div key={k.label} className={statTileShell(mode, 'sm')}>
+          {showHudChrome(mode) ? (
+            <>
+              <span className="hud-bracket hud-bracket-tl" />
+              <span className="hud-bracket hud-bracket-br" />
+            </>
+          ) : null}
           <div className="flex items-center justify-between">
-            <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-slate-500">{k.label}</p>
-            <StatusLed tone={k.tone ?? 'info'} size={6} />
+            <p className={statTileLabel(mode)}>{k.label}</p>
+            <StatusLed tone={k.tone ?? 'info'} size={6} pulse={!std} />
           </div>
           <p className="mt-1.5 flex items-baseline gap-1">
-            <span className="font-mono text-xl font-semibold text-cyan-100 tabular-nums tracking-tight">{k.value}</span>
-            {k.unit ? <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{k.unit}</span> : null}
+            <span className={statTileValue(mode, 'lg')}>{k.value}</span>
+            {k.unit ? (
+              <span className={std ? 'text-xs text-slate-500' : 'font-mono text-[10px] uppercase tracking-widest text-slate-500'}>
+                {k.unit}
+              </span>
+            ) : null}
           </p>
-          {k.spark && k.spark.length > 1 ? <Sparkline values={k.spark} tone={k.tone} /> : <div className="h-7" />}
-          {k.hint ? <p className="font-mono text-[9px] uppercase tracking-widest text-slate-500">{k.hint}</p> : null}
+          {k.spark && k.spark.length > 1 ? <Sparkline values={k.spark} tone={k.tone} std={std} /> : <div className="h-7" />}
+          {k.hint ? (
+            <p className={std ? 'text-xs text-slate-500' : 'font-mono text-[9px] uppercase tracking-widest text-slate-500'}>
+              {k.hint}
+            </p>
+          ) : null}
         </div>
       ))}
     </div>

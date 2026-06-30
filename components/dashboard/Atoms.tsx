@@ -14,24 +14,34 @@ export function ScoreBar({
   max?: number;
   highlight?: boolean;
 }) {
+  const mode = useDashboardUiMode();
+  const std = mode === 'standard';
   const v = value ?? 0;
   const pct = Math.min(100, Math.max(0, (v / max) * 100));
-  const color = v >= 0.7 ? '#ef4444' : v >= 0.4 ? '#f59e0b' : '#10b981';
+  const color = v >= 0.7 ? '#dc2626' : v >= 0.4 ? '#d97706' : '#059669';
   return (
     <div>
       <div className="flex items-baseline justify-between">
-        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-400">{label}</span>
-        <span className={`font-mono ${highlight ? 'text-base font-semibold text-cyan-100' : 'text-xs text-cyan-200'}`}>
+        <span className={std ? 'text-xs font-medium text-slate-600' : 'font-mono text-[10px] uppercase tracking-widest text-slate-400'}>
+          {label}
+        </span>
+        <span
+          className={
+            std
+              ? `text-sm font-semibold tabular-nums text-slate-900 ${highlight ? 'text-base' : ''}`
+              : `font-mono ${highlight ? 'text-base font-semibold text-cyan-100' : 'text-xs text-cyan-200'}`
+          }
+        >
           {value !== null ? value.toFixed(3) : 'n/a'}
         </span>
       </div>
-      <div className="mt-1 h-1.5 w-full overflow-hidden rounded-sm bg-white/5">
+      <div className={`mt-1 h-1.5 w-full overflow-hidden rounded-sm ${std ? 'bg-slate-200' : 'bg-white/5'}`}>
         <div
           className="h-full rounded-sm transition-[width] duration-500"
           style={{
             width: `${pct}%`,
-            background: `linear-gradient(90deg, ${color}88, ${color})`,
-            boxShadow: `0 0 8px ${color}66`,
+            background: std ? color : `linear-gradient(90deg, ${color}88, ${color})`,
+            boxShadow: std ? 'none' : `0 0 8px ${color}66`,
           }}
         />
       </div>
@@ -120,20 +130,36 @@ export function ErrorBlock({ message, onRetry }: { message: string; onRetry: () 
 }
 
 export function EmptyBlock({ message }: { message: string }) {
+  const mode = useDashboardUiMode();
+  const std = mode === 'standard';
   return (
-    <div className="flex h-20 flex-col items-center justify-center rounded-sm border border-white/5 bg-slate-950/40 p-3 text-center">
-      <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">CHANNEL CLEAR</p>
-      <p className="mt-0.5 font-mono text-[10px] uppercase tracking-widest text-slate-600">{message}</p>
+    <div
+      className={
+        std
+          ? 'flex h-20 flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 p-3 text-center'
+          : 'flex h-20 flex-col items-center justify-center rounded-sm border border-white/5 bg-slate-950/40 p-3 text-center'
+      }
+    >
+      <p className={std ? 'text-xs font-medium text-slate-500' : 'font-mono text-[10px] uppercase tracking-widest text-slate-500'}>
+        {std ? 'No data' : 'CHANNEL CLEAR'}
+      </p>
+      <p className={`mt-0.5 ${std ? 'text-sm text-slate-600' : 'font-mono text-[10px] uppercase tracking-widest text-slate-600'}`}>
+        {message}
+      </p>
     </div>
   );
 }
 
 export function PageTitle({ eyebrow, title, children }: { eyebrow: string; title: string; children?: React.ReactNode }) {
+  const mode = useDashboardUiMode();
+  const std = mode === 'standard';
   return (
     <div className="flex flex-wrap items-end justify-between gap-3">
       <div>
-        <p className="font-mono text-[10px] uppercase tracking-[0.4em] text-cyan-400/80">{eyebrow}</p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight text-white">{title}</h1>
+        <p className={std ? 'text-xs font-semibold uppercase tracking-wide text-blue-800' : 'font-mono text-[10px] uppercase tracking-[0.4em] text-cyan-400/80'}>
+          {eyebrow}
+        </p>
+        <h1 className={`mt-1 text-2xl font-semibold tracking-tight ${std ? 'text-slate-900' : 'text-white'}`}>{title}</h1>
       </div>
       {children ? <div className="flex items-center gap-2">{children}</div> : null}
     </div>

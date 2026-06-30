@@ -134,7 +134,7 @@ export default function MissionShell({ children }: { children: ReactNode }) {
       }`}
     >
       {/* TOP COMMAND STRIP - brand | mission profile (center) | system telemetry (right) */}
-      <header className="mission-header relative z-30 shrink-0 border-b border-cyan-400/15 bg-gradient-to-b from-[#0a1224] to-[#04080f] px-3 py-2 md:px-4">
+      <header className={`mission-header relative z-30 shrink-0 border-b px-3 py-2 md:px-4 ${std ? 'border-slate-200 bg-white' : 'border-cyan-400/15 bg-gradient-to-b from-[#0a1224] to-[#04080f]'}`}>
         <div className="grid grid-cols-1 items-center gap-3 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:gap-4">
           {/* Brand + clock */}
           <div className="flex items-center justify-between gap-3 md:justify-start">

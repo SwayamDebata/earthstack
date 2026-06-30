@@ -8,11 +8,26 @@ import { api } from '@/lib/api/endpoints';
 import { LOCATIONS, POLLING_INTERVALS, withJitter } from '@/lib/config';
 import HudFrame from '@/components/dashboard/HudFrame';
 import StatusLed from '@/components/dashboard/StatusLed';
+import StatTile from '@/components/dashboard/StatTile';
 import { PageTitle, ScoreBar, Telemetry, ErrorBlock } from '@/components/dashboard/Atoms';
+import { useDashboardUiMode } from '@/lib/ui/use-dashboard-ui-mode';
+import {
+  btnSecondary,
+  chartAxisStroke,
+  chartGridStroke,
+  chartTooltip,
+  panelCard,
+  severityBadge,
+  showHudChrome,
+  tableCell,
+  tableRow,
+} from '@/lib/ui/standard-surface';
 import { useStagger } from '@/components/dashboard/useStagger';
 import { num, numOrNull, severityToTone, toArray } from '@/components/dashboard/util';
 
 export default function RiskView() {
+  const mode = useDashboardUiMode();
+  const std = mode === 'standard';
   const riskMapQ = useQuery({ queryKey: ['risk-map'], queryFn: () => api.riskMap(), refetchInterval: () => withJitter(POLLING_INTERVALS.map) });
 
   // Stagger the initial mount fetches and rely on jittered polling thereafter
@@ -71,17 +86,17 @@ export default function RiskView() {
             void riskMapQ.refetch();
             perRegion.forEach((q) => void q.refetch());
           }}
-          className="flex items-center gap-1.5 rounded-sm border border-cyan-400/40 bg-cyan-500/10 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-cyan-200 hover:bg-cyan-500/20"
+          className={btnSecondary(mode)}
         >
           <RefreshCw size={11} /> RESYNC ALL
         </button>
       </PageTitle>
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <SumTile label="REGIONS TRACKED" value={String(riskMap.length)} tone="info" />
-        <SumTile label="AVG FINAL" value={avg !== null ? avg.toFixed(2) : 'n/a'} tone={avg !== null && avg >= 0.7 ? 'critical' : avg !== null && avg >= 0.4 ? 'warning' : 'nominal'} />
-        <SumTile label="MAX FINAL" value={max !== null ? max.toFixed(2) : 'n/a'} tone={max !== null && max >= 0.7 ? 'critical' : max !== null && max >= 0.4 ? 'warning' : 'nominal'} />
-        <SumTile label="HIGH-RISK ZONES" value={String(high)} tone={high > 0 ? 'critical' : 'nominal'} />
+        <StatTile label="REGIONS TRACKED" value={String(riskMap.length)} tone="info" size="sm" />
+        <StatTile label="AVG FINAL" value={avg !== null ? avg.toFixed(2) : 'n/a'} tone={avg !== null && avg >= 0.7 ? 'critical' : avg !== null && avg >= 0.4 ? 'warning' : 'nominal'} size="sm" />
+        <StatTile label="MAX FINAL" value={max !== null ? max.toFixed(2) : 'n/a'} tone={max !== null && max >= 0.7 ? 'critical' : max !== null && max >= 0.4 ? 'warning' : 'nominal'} size="sm" />
+        <StatTile label="HIGH-RISK ZONES" value={String(high)} tone={high > 0 ? 'critical' : 'nominal'} size="sm" />
       </div>
 
       <HudFrame
@@ -94,13 +109,10 @@ export default function RiskView() {
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 6, right: 8, left: -16, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="2 4" stroke="#1e293b" />
-                <XAxis dataKey="name" stroke="#475569" tick={{ fontSize: 10, fontFamily: 'monospace' }} />
-                <YAxis stroke="#475569" tick={{ fontSize: 10, fontFamily: 'monospace' }} width={32} domain={[0, 1]} />
-                <Tooltip
-                  contentStyle={{ background: '#020617', border: '1px solid #22d3ee55', fontFamily: 'monospace', fontSize: 11 }}
-                  labelStyle={{ color: '#67e8f9' }}
-                />
+                <CartesianGrid strokeDasharray="2 4" stroke={chartGridStroke(mode)} />
+                <XAxis dataKey="name" stroke={chartAxisStroke(mode)} tick={{ fontSize: 10, fontFamily: std ? 'inherit' : 'monospace' }} />
+                <YAxis stroke={chartAxisStroke(mode)} tick={{ fontSize: 10, fontFamily: std ? 'inherit' : 'monospace' }} width={32} domain={[0, 1]} />
+                <Tooltip {...chartTooltip(mode)} />
                 <Bar dataKey="rule" fill="#22d3ee" radius={[2, 2, 0, 0]} />
                 <Bar dataKey="ml" fill="#a78bfa" radius={[2, 2, 0, 0]} />
                 <Bar dataKey="final" fill="#f59e0b" radius={[2, 2, 0, 0]} />
@@ -115,25 +127,21 @@ export default function RiskView() {
           {matrix.map((m) => {
             const tone = severityToTone(m.severity);
             return (
-              <div key={m.location} className="relative overflow-hidden rounded-md border border-cyan-400/15 bg-[#060b18]/95 p-3">
-                <span className="hud-bracket hud-bracket-tl" />
-                <span className="hud-bracket hud-bracket-br" />
+              <div key={m.location} className={panelCard(mode)}>
+                {showHudChrome(mode) ? (
+                  <>
+                    <span className="hud-bracket hud-bracket-tl" />
+                    <span className="hud-bracket hud-bracket-br" />
+                  </>
+                ) : null}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <StatusLed tone={tone} size={7} pulse={tone === 'critical'} />
-                    <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-100">{m.location}</p>
+                    <StatusLed tone={tone} size={7} pulse={!std && tone === 'critical'} />
+                    <p className={std ? 'text-sm font-semibold text-slate-900' : 'font-mono text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-100'}>
+                      {m.location}
+                    </p>
                   </div>
-                  <span
-                    className={`rounded-sm px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest ${
-                      tone === 'critical'
-                        ? 'bg-red-500/15 text-red-200 ring-1 ring-red-500/30'
-                        : tone === 'warning'
-                          ? 'bg-amber-500/15 text-amber-200 ring-1 ring-amber-500/30'
-                          : 'bg-emerald-500/15 text-emerald-200 ring-1 ring-emerald-500/30'
-                    }`}
-                  >
-                    {m.severity}
-                  </span>
+                  <span className={severityBadge(tone, mode)}>{m.severity}</span>
                 </div>
 
                 {m.isError ? (
@@ -162,14 +170,14 @@ export default function RiskView() {
         {riskMapQ.isError ? (
           <ErrorBlock onRetry={() => void riskMapQ.refetch()} message="risk-map endpoint failed" />
         ) : riskMap.length === 0 ? (
-          <p className="rounded-sm border border-white/5 bg-slate-950/40 p-3 font-mono text-[10px] uppercase tracking-widest text-slate-500">
-            NO REGIONS RETURNED
+          <p className={std ? 'rounded-lg border border-dashed border-slate-300 bg-slate-50 p-3 text-sm text-slate-600' : 'rounded-sm border border-white/5 bg-slate-950/40 p-3 font-mono text-[10px] uppercase tracking-widest text-slate-500'}>
+            {std ? 'No regions returned' : 'NO REGIONS RETURNED'}
           </p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full border-separate border-spacing-y-1 font-mono text-[11px]">
+            <table className={`w-full border-separate border-spacing-y-1 ${std ? 'text-sm' : 'font-mono text-[11px]'}`}>
               <thead>
-                <tr className="text-left font-mono text-[9px] uppercase tracking-[0.22em] text-slate-500">
+                <tr className={std ? 'text-left text-xs font-semibold uppercase tracking-wide text-slate-500' : 'text-left font-mono text-[9px] uppercase tracking-[0.22em] text-slate-500'}>
                   <th className="px-2">REGION</th>
                   <th className="px-2">SEV</th>
                   <th className="px-2 text-right">RULE</th>
@@ -189,26 +197,18 @@ export default function RiskView() {
                   const lat = numOrNull(r.lat ?? r.latitude);
                   const lng = numOrNull(r.lng ?? r.lon ?? r.longitude);
                   return (
-                    <tr key={String(r.location ?? r.id ?? idx)} className="bg-slate-950/50">
-                      <td className="rounded-l-sm border-y border-l border-white/5 px-2 py-1.5 text-cyan-200">{String(r.location ?? r.district ?? r.name ?? 'n/a')}</td>
-                      <td className="border-y border-white/5 px-2 py-1.5">
-                        <span
-                          className={`rounded-sm px-1.5 py-0.5 text-[9px] uppercase tracking-widest ${
-                            tone === 'critical'
-                              ? 'bg-red-500/15 text-red-200 ring-1 ring-red-500/30'
-                              : tone === 'warning'
-                                ? 'bg-amber-500/15 text-amber-200 ring-1 ring-amber-500/30'
-                                : 'bg-emerald-500/15 text-emerald-200 ring-1 ring-emerald-500/30'
-                          }`}
-                        >
-                          {sev}
-                        </span>
+                    <tr key={String(r.location ?? r.id ?? idx)} className={tableRow(mode)}>
+                      <td className={`rounded-l-md border-y border-l px-2 py-1.5 ${tableCell(mode)} ${std ? 'font-medium' : 'text-cyan-200'}`}>
+                        {String(r.location ?? r.district ?? r.name ?? 'n/a')}
                       </td>
-                      <td className="border-y border-white/5 px-2 py-1.5 text-right text-cyan-100/80">{rule !== null ? rule.toFixed(2) : 'n/a'}</td>
-                      <td className="border-y border-white/5 px-2 py-1.5 text-right text-cyan-100/80">{ml !== null ? ml.toFixed(2) : 'n/a'}</td>
-                      <td className="border-y border-white/5 px-2 py-1.5 text-right font-semibold text-cyan-100">{final !== null ? final.toFixed(2) : 'n/a'}</td>
-                      <td className="border-y border-white/5 px-2 py-1.5 text-right text-slate-400">{lat !== null ? lat.toFixed(2) : 'n/a'}</td>
-                      <td className="rounded-r-sm border-y border-r border-white/5 px-2 py-1.5 text-right text-slate-400">{lng !== null ? lng.toFixed(2) : 'n/a'}</td>
+                      <td className={`border-y px-2 py-1.5 ${tableCell(mode)}`}>
+                        <span className={severityBadge(tone, mode)}>{sev}</span>
+                      </td>
+                      <td className={`border-y px-2 py-1.5 text-right tabular-nums ${tableCell(mode)}`}>{rule !== null ? rule.toFixed(2) : 'n/a'}</td>
+                      <td className={`border-y px-2 py-1.5 text-right tabular-nums ${tableCell(mode)}`}>{ml !== null ? ml.toFixed(2) : 'n/a'}</td>
+                      <td className={`border-y px-2 py-1.5 text-right font-semibold tabular-nums ${tableCell(mode)}`}>{final !== null ? final.toFixed(2) : 'n/a'}</td>
+                      <td className={`border-y px-2 py-1.5 text-right tabular-nums ${std ? 'text-slate-500' : 'text-slate-400'}`}>{lat !== null ? lat.toFixed(2) : 'n/a'}</td>
+                      <td className={`rounded-r-md border-y border-r px-2 py-1.5 text-right tabular-nums ${std ? 'text-slate-500' : 'text-slate-400'}`}>{lng !== null ? lng.toFixed(2) : 'n/a'}</td>
                     </tr>
                   );
                 })}
@@ -217,20 +217,6 @@ export default function RiskView() {
           </div>
         )}
       </HudFrame>
-    </div>
-  );
-}
-
-function SumTile({ label, value, tone }: { label: string; value: string; tone: 'nominal' | 'warning' | 'critical' | 'info' }) {
-  return (
-    <div className="relative overflow-hidden rounded-md border border-cyan-400/15 bg-gradient-to-b from-[#0b1325]/95 to-[#070d1b]/95 p-3">
-      <span className="hud-bracket hud-bracket-tl" />
-      <span className="hud-bracket hud-bracket-br" />
-      <div className="flex items-center justify-between">
-        <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-slate-500">{label}</p>
-        <StatusLed tone={tone} size={6} />
-      </div>
-      <p className="mt-1.5 font-mono text-2xl font-semibold tabular-nums text-cyan-100">{value}</p>
     </div>
   );
 }

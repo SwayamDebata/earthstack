@@ -54,13 +54,13 @@ export default function ActionRecommendations({ actions }: { actions: Operationa
           return (
             <li
               key={action.text}
-              className={`flex items-start gap-2.5 rounded-md border px-3 py-2 ${
+              className={`flex items-start gap-2.5 rounded-md border px-3 py-2.5 ${
                 std
                   ? action.priority === 'immediate'
-                    ? 'border-red-200 bg-red-50'
+                    ? 'border-l-4 border-l-red-600 border-slate-200 bg-white'
                     : action.priority === 'prepare'
-                      ? 'border-amber-200 bg-amber-50'
-                      : 'border-slate-200 bg-slate-50'
+                      ? 'border-l-4 border-l-amber-500 border-slate-200 bg-white'
+                      : 'border-l-4 border-l-blue-600 border-slate-200 bg-white'
                   : `bg-black/30 ${meta.border}`
               }`}
             >
@@ -70,11 +70,7 @@ export default function ActionRecommendations({ actions }: { actions: Operationa
                 strokeWidth={1.8}
               />
               <p className={`text-sm leading-snug ${std ? 'text-slate-800' : 'text-slate-200'}`}>
-                <span
-                  className={`mr-1.5 text-[10px] font-semibold uppercase tracking-wide ${
-                    std ? 'text-slate-500' : meta.text
-                  }`}
-                >
+                <span className={`mr-1.5 text-xs font-bold uppercase ${std ? 'text-slate-600' : meta.text}`}>
                   {meta.label}:
                 </span>
                 {action.text}

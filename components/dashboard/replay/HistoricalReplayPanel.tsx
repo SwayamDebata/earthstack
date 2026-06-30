@@ -20,6 +20,8 @@ import HudFrame from '@/components/dashboard/HudFrame';
 import StatusLed from '@/components/dashboard/StatusLed';
 import { ErrorBlock, EmptyBlock, Telemetry } from '@/components/dashboard/Atoms';
 import { useSoundOptional } from '@/components/audio/SoundProvider';
+import { useDashboardUiMode } from '@/lib/ui/use-dashboard-ui-mode';
+import { panelCard, severityBadge, showHudChrome } from '@/lib/ui/standard-surface';
 import { useMission } from '@/components/dashboard/MissionContext';
 
 const FRAME_MS = 1500;
@@ -473,6 +475,8 @@ function FrameDisplay({
   frame: ReplayHistoricalFrame;
   firstAlertHours: number | null;
 }) {
+  const mode = useDashboardUiMode();
+  const std = mode === 'standard';
   const hoursBefore = frame.hours_before_event;
   const triggered = Boolean(frame.triggered);
   const isFirstAlert = firstAlertHours !== null && hoursBefore === firstAlertHours;
@@ -488,56 +492,62 @@ function FrameDisplay({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-md border p-4 transition-colors ${
-        triggered
-          ? 'border-emerald-400/35 bg-gradient-to-br from-emerald-950/25 to-slate-950/80 shadow-[0_0_28px_rgba(16,185,129,0.08)]'
-          : 'border-cyan-400/15 bg-[#060b18]/95'
-      }`}
+      className={
+        std
+          ? `rounded-lg border p-4 ${triggered ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200 bg-white'} shadow-sm`
+          : `relative overflow-hidden rounded-md border p-4 transition-colors ${
+              triggered
+                ? 'border-emerald-400/35 bg-gradient-to-br from-emerald-950/25 to-slate-950/80 shadow-[0_0_28px_rgba(16,185,129,0.08)]'
+                : 'border-cyan-400/15 bg-[#060b18]/95'
+            }`
+      }
     >
-      <span className="hud-bracket hud-bracket-tl" />
-      <span className="hud-bracket hud-bracket-br" />
+      {showHudChrome(mode) ? (
+        <>
+          <span className="hud-bracket hud-bracket-tl" />
+          <span className="hud-bracket hud-bracket-br" />
+        </>
+      ) : null}
 
-      {/* Lead-time pill row */}
       <div className="flex flex-wrap items-center gap-2">
         <span
-          className={`flex items-center gap-1.5 rounded-sm border px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest ${
-            hoursBefore === 0
-              ? 'border-red-400/40 bg-red-500/10 text-red-200'
-              : 'border-cyan-400/30 bg-cyan-500/10 text-cyan-200'
-          }`}
+          className={
+            std
+              ? `flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-semibold ${
+                  hoursBefore === 0 ? 'border-red-300 bg-red-50 text-red-900' : 'border-blue-200 bg-blue-50 text-blue-900'
+                }`
+              : `flex items-center gap-1.5 rounded-sm border px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest ${
+                  hoursBefore === 0
+                    ? 'border-red-400/40 bg-red-500/10 text-red-200'
+                    : 'border-cyan-400/30 bg-cyan-500/10 text-cyan-200'
+                }`
+          }
         >
           <Clock size={11} />
-          {hoursBefore === 0 ? 'T = 0 · FLOOD ONSET' : `T - ${hoursBefore}h`}
+          {hoursBefore === 0 ? (std ? 'Flood onset' : 'T = 0 · FLOOD ONSET') : `T - ${hoursBefore}h`}
         </span>
         {triggered ? (
-          <span className="flex items-center gap-1.5 rounded-sm border border-emerald-400/35 bg-emerald-500/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-emerald-200">
-            <StatusLed tone="nominal" size={6} pulse />
-            Triggered · would have alerted
+          <span className={severityBadge('nominal', mode) + ' inline-flex items-center gap-1.5'}>
+            {!std ? <StatusLed tone="nominal" size={6} pulse /> : null}
+            {std ? 'Would have alerted' : 'Triggered · would have alerted'}
           </span>
         ) : (
-          <span className="flex items-center gap-1.5 rounded-sm border border-white/10 bg-black/40 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-slate-400">
-            Not triggered
-          </span>
+          <span className={severityBadge('idle', mode)}>{std ? 'Not triggered' : 'Not triggered'}</span>
         )}
         {isFirstAlert ? (
-          <span className="rounded-sm border border-emerald-300/55 bg-emerald-500/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-emerald-100">
-            ★ First alert
-          </span>
+          <span className={severityBadge('nominal', mode)}>{std ? 'First alert' : '★ First alert'}</span>
         ) : null}
-        <span className="ml-auto font-mono text-[10px] uppercase tracking-widest text-slate-500">
+        <span className={`ml-auto ${std ? 'text-xs text-slate-500' : 'font-mono text-[10px] uppercase tracking-widest text-slate-500'}`}>
           {fmtDateTime(frame.simulated_at)}
         </span>
       </div>
 
-      {/* Narrative */}
       {frame.narrative ? (
-        <p className="mt-3 text-sm leading-relaxed text-slate-300">{frame.narrative}</p>
+        <p className={`mt-3 text-sm leading-relaxed ${std ? 'text-slate-700' : 'text-slate-300'}`}>{frame.narrative}</p>
       ) : null}
 
-      {/* Metrics grid */}
       <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
-        {/* Rule score */}
-        <div className="rounded-sm border border-white/5 bg-slate-950/50 p-3">
+        <div className={std ? 'rounded-lg border border-slate-200 bg-slate-50 p-3' : 'rounded-sm border border-white/5 bg-slate-950/50 p-3'}>
           <div className="flex items-baseline justify-between">
             <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">
               Rule Score
@@ -546,7 +556,7 @@ function FrameDisplay({
               {rule.toFixed(3)}
             </span>
           </div>
-          <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-sm bg-white/5">
+          <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-sm bg-slate-200">
             <div
               className="h-full rounded-sm transition-[width] duration-500"
               style={{
@@ -561,19 +571,18 @@ function FrameDisplay({
           </p>
         </div>
 
-        {/* Water level vs threshold */}
-        <div className="rounded-sm border border-white/5 bg-slate-950/50 p-3">
+        <div className={std ? 'rounded-lg border border-slate-200 bg-slate-50 p-3' : 'rounded-sm border border-white/5 bg-slate-950/50 p-3'}>
           <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-500">
+            <span className={`flex items-center gap-1.5 ${std ? 'text-xs font-medium text-slate-600' : 'font-mono text-[10px] uppercase tracking-widest text-slate-500'}`}>
               <Waves size={11} /> Water Level
             </span>
-            <span className="font-mono text-xs tabular-nums text-cyan-100">
+            <span className={`text-xs tabular-nums ${std ? 'font-semibold text-slate-900' : 'font-mono text-cyan-100'}`}>
               {wl.toFixed(2)} m
-              <span className="text-slate-600"> / </span>
-              <span className="text-amber-200">{thr.toFixed(2)} m</span>
+              <span className="text-slate-400"> / </span>
+              <span className={std ? 'text-amber-700' : 'text-amber-200'}>{thr.toFixed(2)} m</span>
             </span>
           </div>
-          <div className="relative mt-1.5 h-1.5 w-full overflow-hidden rounded-sm bg-white/5">
+          <div className={`relative mt-1.5 h-1.5 w-full overflow-hidden rounded-sm ${std ? 'bg-slate-200' : 'bg-white/5'}`}>
             <div
               className="h-full rounded-sm bg-cyan-400/70 transition-[width] duration-500"
               style={{ width: `${Math.min(100, wlPct)}%`, boxShadow: '0 0 8px rgba(34,211,238,0.4)' }}
@@ -589,14 +598,13 @@ function FrameDisplay({
           </p>
         </div>
 
-        {/* Rainfall */}
-        <div className="rounded-sm border border-white/5 bg-slate-950/50 p-3 md:col-span-2">
-          <div className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-500">
+        <div className={`${std ? 'rounded-lg border border-slate-200 bg-slate-50 p-3' : 'rounded-sm border border-white/5 bg-slate-950/50 p-3'} md:col-span-2`}>
+          <div className={`flex items-center gap-1.5 ${std ? 'text-xs font-medium text-slate-600' : 'font-mono text-[10px] uppercase tracking-widest text-slate-500'}`}>
             <Droplets size={11} /> Rainfall · 24h windows
           </div>
           <div className="mt-2 grid grid-cols-2 gap-2">
-            <RainBar label="Past 24h" value={frame.past_24h_rain_mm ?? 0} max={250} />
-            <RainBar label="Next 24h" value={frame.next_24h_rain_mm ?? 0} max={250} />
+            <RainBar label="Past 24h" value={frame.past_24h_rain_mm ?? 0} max={250} std={std} />
+            <RainBar label="Next 24h" value={frame.next_24h_rain_mm ?? 0} max={250} std={std} />
           </div>
         </div>
       </div>
@@ -604,22 +612,22 @@ function FrameDisplay({
   );
 }
 
-function RainBar({ label, value, max }: { label: string; value: number; max: number }) {
+function RainBar({ label, value, max, std = false }: { label: string; value: number; max: number; std?: boolean }) {
   const pct = Math.min(100, Math.max(0, (value / max) * 100));
-  const color = value >= 100 ? '#3b82f6' : value >= 50 ? '#22d3ee' : '#67e8f9';
+  const color = value >= 100 ? '#2563eb' : value >= 50 ? '#0ea5e9' : '#38bdf8';
   return (
     <div>
       <div className="flex items-baseline justify-between">
-        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{label}</span>
-        <span className="font-mono text-xs tabular-nums text-cyan-100">{value.toFixed(1)} mm</span>
+        <span className={std ? 'text-xs text-slate-600' : 'font-mono text-[10px] uppercase tracking-widest text-slate-500'}>{label}</span>
+        <span className={`text-xs tabular-nums ${std ? 'font-semibold text-slate-900' : 'font-mono text-cyan-100'}`}>{value.toFixed(1)} mm</span>
       </div>
-      <div className="mt-1 h-1.5 w-full overflow-hidden rounded-sm bg-white/5">
+      <div className={`mt-1 h-1.5 w-full overflow-hidden rounded-sm ${std ? 'bg-slate-200' : 'bg-white/5'}`}>
         <div
           className="h-full rounded-sm transition-[width] duration-500"
           style={{
             width: `${pct}%`,
-            background: `linear-gradient(90deg, ${color}88, ${color})`,
-            boxShadow: `0 0 8px ${color}55`,
+            background: std ? color : `linear-gradient(90deg, ${color}88, ${color})`,
+            boxShadow: std ? 'none' : `0 0 8px ${color}55`,
           }}
         />
       </div>

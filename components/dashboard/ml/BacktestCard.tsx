@@ -8,6 +8,8 @@ import HudFrame from '@/components/dashboard/HudFrame';
 import StatusLed from '@/components/dashboard/StatusLed';
 import { ErrorBlock, EmptyBlock } from '@/components/dashboard/Atoms';
 import { relTime } from '@/components/dashboard/util';
+import { useDashboardUiMode } from '@/lib/ui/use-dashboard-ui-mode';
+import { listRow, listRowMeta, listRowPrimary, panelCard, showHudChrome } from '@/lib/ui/standard-surface';
 
 /**
  * Historical Backtest / Validation card.
@@ -23,6 +25,8 @@ import { relTime } from '@/components/dashboard/util';
  */
 export default function BacktestCard() {
   const [showCaveats, setShowCaveats] = useState(false);
+  const mode = useDashboardUiMode();
+  const std = mode === 'standard';
 
   const q = useQuery({
     queryKey: ['ml-backtest-summary'],
@@ -76,8 +80,8 @@ export default function BacktestCard() {
         <ErrorBlock onRetry={() => void q.refetch()} message="backtest summary endpoint failed" />
       ) : q.isLoading ? (
         <div className="grid grid-cols-1 gap-3 md:grid-cols-[1.4fr_1fr]">
-          <div className="h-32 animate-pulse rounded-md border border-white/5 bg-slate-950/40" />
-          <div className="h-32 animate-pulse rounded-md border border-white/5 bg-slate-950/40" />
+          <div className="h-32 animate-pulse rounded-lg border border-slate-200 bg-slate-100" />
+          <div className="h-32 animate-pulse rounded-lg border border-slate-200 bg-slate-100" />
         </div>
       ) : !available ? (
         <EmptyBlock message="backtest report not available yet" />
@@ -86,48 +90,60 @@ export default function BacktestCard() {
           {/* HERO + BY-CITY */}
           <div className="grid grid-cols-1 gap-3 md:grid-cols-[1.4fr_1fr]">
             {/* Hero - 24h recall */}
-            <div className="relative overflow-hidden rounded-md border border-emerald-400/25 bg-gradient-to-br from-emerald-950/30 via-slate-950/60 to-slate-950/80 p-4">
-              <span className="hud-bracket hud-bracket-tl" />
-              <span className="hud-bracket hud-bracket-br" />
+            <div
+              className={
+                std
+                  ? 'rounded-lg border border-emerald-200 bg-emerald-50 p-4'
+                  : 'relative overflow-hidden rounded-md border border-emerald-400/25 bg-gradient-to-br from-emerald-950/30 via-slate-950/60 to-slate-950/80 p-4'
+              }
+            >
+              {showHudChrome(mode) ? (
+                <>
+                  <span className="hud-bracket hud-bracket-tl" />
+                  <span className="hud-bracket hud-bracket-br" />
+                </>
+              ) : null}
               <div className="flex items-center gap-2">
-                <ShieldCheck size={14} className="text-emerald-300" />
-                <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-emerald-300/80">
+                <ShieldCheck size={14} className={std ? 'text-emerald-700' : 'text-emerald-300'} />
+                <p className={std ? 'text-xs font-semibold uppercase tracking-wide text-emerald-800' : 'font-mono text-[10px] uppercase tracking-[0.28em] text-emerald-300/80'}>
                   24h Lead-Time Recall
                 </p>
               </div>
               <div className="mt-2 flex items-end gap-3">
-                <p className="font-mono text-5xl font-semibold tabular-nums text-emerald-200">
+                <p className={std ? 'text-5xl font-bold tabular-nums text-emerald-900' : 'font-mono text-5xl font-semibold tabular-nums text-emerald-200'}>
                   {recall24 !== undefined ? `${recall24.toFixed(1)}%` : 'n/a'}
                 </p>
-                <p className="mb-1.5 font-mono text-[11px] uppercase tracking-widest text-slate-400">
+                <p className={std ? 'mb-1.5 text-sm text-slate-600' : 'mb-1.5 font-mono text-[11px] uppercase tracking-widest text-slate-400'}>
                   {triggered24 ?? 'n/a'} / {scored ?? 'n/a'} scored · {total ?? 'n/a'} total events
                 </p>
               </div>
               {data?.headline ? (
-                <p className="mt-3 max-w-3xl text-sm leading-relaxed text-slate-300">{data.headline}</p>
+                <p className={`mt-3 max-w-3xl text-sm leading-relaxed ${std ? 'text-slate-700' : 'text-slate-300'}`}>{data.headline}</p>
               ) : null}
 
-              {/* 48h row */}
-              <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-white/5 pt-3">
-                <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-slate-500">
+              <div className={`mt-4 flex flex-wrap items-center gap-3 border-t pt-3 ${std ? 'border-emerald-200' : 'border-white/5'}`}>
+                <span className={std ? 'text-xs font-medium text-slate-600' : 'font-mono text-[10px] uppercase tracking-[0.28em] text-slate-500'}>
                   48h Lead Time
                 </span>
-                <span className="font-mono text-base font-semibold tabular-nums text-cyan-200">
+                <span className={std ? 'text-base font-semibold tabular-nums text-slate-900' : 'font-mono text-base font-semibold tabular-nums text-cyan-200'}>
                   {recall48 !== undefined ? `${recall48.toFixed(1)}%` : 'n/a'}
                 </span>
-                <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">
+                <span className={std ? 'text-xs text-slate-500' : 'font-mono text-[10px] uppercase tracking-widest text-slate-500'}>
                   {triggered48 ?? 'n/a'} / {scored ?? 'n/a'}
                 </span>
-                <span className="ml-auto font-mono text-[10px] uppercase tracking-widest text-slate-500">
+                <span className={`ml-auto ${std ? 'text-xs text-slate-500' : 'font-mono text-[10px] uppercase tracking-widest text-slate-500'}`}>
                   threshold ≥ {data?.lead_time_24h?.alert_threshold ?? '0.40'}
                 </span>
               </div>
             </div>
 
-            {/* Per-city breakdown */}
-            <div className="relative overflow-hidden rounded-md border border-cyan-400/15 bg-[#060b18]/95 p-3">
-              <span className="hud-bracket hud-bracket-tl" />
-              <span className="hud-bracket hud-bracket-br" />
+            <div className={panelCard(mode)}>
+              {showHudChrome(mode) ? (
+                <>
+                  <span className="hud-bracket hud-bracket-tl" />
+                  <span className="hud-bracket hud-bracket-br" />
+                </>
+              ) : null}
               <div className="mb-2 flex items-center justify-between">
                 <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-slate-500">
                   Per City · 24h
@@ -151,24 +167,22 @@ export default function BacktestCard() {
                   return (
                     <div
                       key={c.name}
-                      className={`grid grid-cols-[18px_1fr_auto_auto] items-center gap-2 rounded-sm border border-white/5 bg-slate-950/50 px-2 py-1.5 font-mono text-[11px] ${
-                        inactive ? 'opacity-50' : ''
-                      }`}
+                      className={`grid grid-cols-[18px_1fr_auto_auto] items-center gap-2 ${listRow(mode)} ${inactive ? 'opacity-50' : ''}`}
                     >
-                      <StatusLed tone={tone} size={6} />
-                      <span className="truncate text-cyan-100">{c.name}</span>
-                      <span className="text-slate-400 tabular-nums">
+                      <StatusLed tone={tone} size={6} pulse={!std} />
+                      <span className={listRowPrimary(mode)}>{c.name}</span>
+                      <span className={`tabular-nums ${listRowMeta(mode)}`}>
                         {c.scored} · {c.triggered}
                       </span>
                       <span
-                        className={`tabular-nums text-[10px] uppercase tracking-widest ${
+                        className={`tabular-nums text-xs font-semibold ${
                           recallPct === null
-                            ? 'text-slate-600'
+                            ? 'text-slate-500'
                             : recallPct >= 99
-                              ? 'text-emerald-200'
+                              ? std ? 'text-emerald-800' : 'text-emerald-200'
                               : recallPct >= 95
-                                ? 'text-cyan-200'
-                                : 'text-amber-200'
+                                ? std ? 'text-blue-800' : 'text-cyan-200'
+                                : std ? 'text-amber-900' : 'text-amber-200'
                         }`}
                       >
                         {recallPct === null ? 'n/a' : `${recallPct.toFixed(1)}%`}

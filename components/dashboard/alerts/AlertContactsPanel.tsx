@@ -11,6 +11,8 @@ import StatusLed from '@/components/dashboard/StatusLed';
 import { EmptyBlock, ErrorBlock } from '@/components/dashboard/Atoms';
 import { toArray } from '@/components/dashboard/util';
 import { useMission } from '@/components/dashboard/MissionContext';
+import { useDashboardUiMode } from '@/lib/ui/use-dashboard-ui-mode';
+import { btnSecondary, fieldLabel, listRow, listRowMeta, listRowPrimary, severityBadge } from '@/lib/ui/standard-surface';
 
 const emptyForm: {
   name: string;
@@ -31,6 +33,8 @@ const emptyForm: {
 export default function AlertContactsPanel() {
   const queryClient = useQueryClient();
   const { hasPilotAccess, openPilotRequest } = useMission();
+  const mode = useDashboardUiMode();
+  const std = mode === 'standard';
   const [form, setForm] = useState(emptyForm);
   const [formError, setFormError] = useState('');
 
@@ -106,29 +110,16 @@ export default function AlertContactsPanel() {
               const enabled = c.enabled !== false;
               const locs = Array.isArray(c.locations) ? (c.locations as string[]) : [];
               return (
-                <div
-                  key={String(c.id ?? idx)}
-                  className="grid grid-cols-[18px_1fr_auto] items-center gap-2 rounded-sm border border-white/5 bg-slate-950/50 px-2 py-1.5"
-                >
-                  <StatusLed tone={enabled ? 'nominal' : 'idle'} size={6} />
+                <div key={String(c.id ?? idx)} className={`grid grid-cols-[18px_1fr_auto] items-center gap-2 ${listRow(mode)}`}>
+                  <StatusLed tone={enabled ? 'nominal' : 'idle'} size={6} pulse={!std} />
                   <div className="min-w-0">
-                    <p className="truncate text-cyan-100">{String(c.name ?? 'n/a')}</p>
-                    <p className="truncate text-[10px] text-slate-500">
+                    <p className={listRowPrimary(mode)}>{String(c.name ?? 'n/a')}</p>
+                    <p className={listRowMeta(mode)}>
                       {String(c.phone_e164 ?? 'n/a')} · {String(c.channel ?? 'n/a')} · {String(c.role ?? 'n/a')}
                     </p>
-                    <p className="truncate text-[10px] text-slate-600">
-                      {locs.length === 0 ? 'all regions' : locs.join(', ')}
-                    </p>
+                    <p className={listRowMeta(mode)}>{locs.length === 0 ? 'all regions' : locs.join(', ')}</p>
                   </div>
-                  <span
-                    className={`shrink-0 rounded-sm px-1.5 py-0.5 text-[9px] uppercase tracking-widest ${
-                      enabled
-                        ? 'bg-emerald-500/15 text-emerald-200 ring-1 ring-emerald-500/30'
-                        : 'bg-slate-500/15 text-slate-400 ring-1 ring-white/10'
-                    }`}
-                  >
-                    {enabled ? 'on' : 'off'}
-                  </span>
+                  <span className={severityBadge(enabled ? 'nominal' : 'idle', mode)}>{enabled ? 'on' : 'off'}</span>
                 </div>
               );
             })}
@@ -137,7 +128,7 @@ export default function AlertContactsPanel() {
         <button
           type="button"
           onClick={() => void contactsQ.refetch()}
-          className="mt-3 flex items-center gap-1.5 rounded-sm border border-white/10 bg-black/40 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-slate-300 hover:border-cyan-400/30 hover:text-cyan-200"
+          className={btnSecondary(mode)}
         >
           <RefreshCw size={10} /> Refresh contacts
         </button>
@@ -157,7 +148,7 @@ export default function AlertContactsPanel() {
           </div>
         ) : (
         <form onSubmit={onSubmit} className="space-y-3">
-          <Field label="NAME">
+          <Field mode={mode} label="NAME">
             <input
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
@@ -165,7 +156,7 @@ export default function AlertContactsPanel() {
               className="input-hud w-full"
             />
           </Field>
-          <Field label="PHONE (E.164)">
+          <Field mode={mode} label="PHONE (E.164)">
             <input
               value={form.phone_e164}
               onChange={(e) => setForm((f) => ({ ...f, phone_e164: e.target.value }))}
@@ -173,7 +164,7 @@ export default function AlertContactsPanel() {
               className="input-hud w-full"
             />
           </Field>
-          <Field label="CHANNEL">
+          <Field mode={mode} label="CHANNEL">
             <select
               value={form.channel}
               onChange={(e) => setForm((f) => ({ ...f, channel: e.target.value as AlertContactChannel }))}
@@ -183,7 +174,7 @@ export default function AlertContactsPanel() {
               <option value="telegram" className="bg-slate-950">Telegram</option>
             </select>
           </Field>
-          <Field label="ROLE">
+          <Field mode={mode} label="ROLE">
             <input
               value={form.role}
               onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))}
@@ -203,10 +194,14 @@ export default function AlertContactsPanel() {
                     key={loc}
                     type="button"
                     onClick={() => toggleLocation(loc)}
-                    className={`rounded-sm px-2 py-1 font-mono text-[10px] uppercase tracking-widest transition ${
+                    className={`rounded-md px-2 py-1 text-xs font-medium uppercase tracking-wide transition ${
                       on
-                        ? 'bg-cyan-500/20 text-cyan-100 shadow-[inset_0_0_0_1px_rgba(34,211,238,0.45)]'
-                        : 'border border-cyan-400/15 bg-black/40 text-slate-400 hover:text-cyan-200'
+                        ? std
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-cyan-500/20 text-cyan-100 shadow-[inset_0_0_0_1px_rgba(34,211,238,0.45)]'
+                        : std
+                          ? 'border border-slate-300 bg-white text-slate-600 hover:bg-slate-50'
+                          : 'border border-cyan-400/15 bg-black/40 text-slate-400 hover:text-cyan-200'
                     }`}
                   >
                     {loc}
@@ -230,7 +225,7 @@ export default function AlertContactsPanel() {
           <button
             type="submit"
             disabled={createMutation.isPending}
-            className="flex items-center gap-1.5 rounded-sm border border-emerald-400/40 bg-emerald-500/10 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-emerald-200 hover:bg-emerald-500/20 disabled:opacity-50"
+            className={std ? 'mt-3 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50' : 'flex items-center gap-1.5 rounded-sm border border-emerald-400/40 bg-emerald-500/10 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-emerald-200 hover:bg-emerald-500/20 disabled:opacity-50'}
           >
             {createMutation.isPending ? <Loader2 size={11} className="animate-spin" /> : <UserPlus size={11} />}
             Register contact
@@ -242,10 +237,11 @@ export default function AlertContactsPanel() {
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, children, mode }: { label: string; children: React.ReactNode; mode?: import('@/lib/access/ui-mode').UiMode }) {
+  const m = mode ?? 'command';
   return (
     <label className="block">
-      <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-slate-500">{label}</span>
+      <span className={`mb-1 block ${fieldLabel(m)}`}>{label}</span>
       {children}
     </label>
   );

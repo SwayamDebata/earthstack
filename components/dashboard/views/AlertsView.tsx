@@ -11,7 +11,10 @@ import HudFrame from '@/components/dashboard/HudFrame';
 import StatusLed from '@/components/dashboard/StatusLed';
 import SendAlertButton from '@/components/dashboard/alerts/SendAlertButton';
 import AlertContactsPanel from '@/components/dashboard/alerts/AlertContactsPanel';
+import StatTile from '@/components/dashboard/StatTile';
 import { PageTitle, ErrorBlock, EmptyBlock } from '@/components/dashboard/Atoms';
+import { useDashboardUiMode } from '@/lib/ui/use-dashboard-ui-mode';
+import { btnSecondary, fieldLabel, selectField, severityBadge, tableCell, tableRow } from '@/lib/ui/standard-surface';
 import { numOrNull, relTime, severityToTone, toArray } from '@/components/dashboard/util';
 import { formatScalar } from '@/lib/api/payload';
 
@@ -20,6 +23,8 @@ type Status = 'all' | 'open' | 'closed';
 
 export default function AlertsView() {
   const { activeOnly, setActiveOnly } = useMission();
+  const mode = useDashboardUiMode();
+  const std = mode === 'standard';
   const [severity, setSeverity] = useState<Severity>('all');
   const [status, setStatus] = useState<Status>('all');
   const [region, setRegion] = useState<string>('all');
@@ -81,20 +86,20 @@ export default function AlertsView() {
         <button
           type="button"
           onClick={() => void alertsQ.refetch()}
-          className="flex items-center gap-1.5 rounded-sm border border-cyan-400/40 bg-cyan-500/10 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-cyan-200 hover:bg-cyan-500/20"
+          className={btnSecondary(mode)}
         >
           <RefreshCw size={11} /> RESYNC
         </button>
       </PageTitle>
 
       <div className="grid grid-cols-3 gap-2 sm:grid-cols-7">
-        <SevTile label="CRITICAL" count={counts.critical} tone="critical" />
-        <SevTile label="HIGH" count={counts.high} tone="critical" />
-        <SevTile label="MEDIUM" count={counts.medium} tone="warning" />
-        <SevTile label="LOW" count={counts.low} tone="nominal" />
-        <SevTile label="OPEN" count={counts.open} tone={counts.open > 0 ? 'warning' : 'nominal'} />
-        <SevTile label="CLOSED" count={counts.closed} tone="info" />
-        <SevTile label="PENDING" count={counts.pending} tone={counts.pending > 0 ? 'warning' : 'idle'} />
+        <StatTile label="CRITICAL" value={String(counts.critical)} tone="critical" size="sm" valueSize="lg" />
+        <StatTile label="HIGH" value={String(counts.high)} tone="critical" size="sm" valueSize="lg" />
+        <StatTile label="MEDIUM" value={String(counts.medium)} tone="warning" size="sm" valueSize="lg" />
+        <StatTile label="LOW" value={String(counts.low)} tone="nominal" size="sm" valueSize="lg" />
+        <StatTile label="OPEN" value={String(counts.open)} tone={counts.open > 0 ? 'warning' : 'nominal'} size="sm" valueSize="lg" />
+        <StatTile label="CLOSED" value={String(counts.closed)} tone="info" size="sm" valueSize="lg" />
+        <StatTile label="PENDING" value={String(counts.pending)} tone={counts.pending > 0 ? 'warning' : 'idle'} size="sm" valueSize="lg" />
       </div>
 
       <AlertContactsPanel />
@@ -111,7 +116,7 @@ export default function AlertsView() {
               className="input-hud w-full py-1.5 pl-7 pr-2"
             />
           </div>
-          <Select value={severity} onChange={(v) => setSeverity(v as Severity)} label="SEVERITY"
+          <Select mode={mode} value={severity} onChange={(v) => setSeverity(v as Severity)} label="SEVERITY"
             options={[
               { value: 'all', label: 'all' },
               { value: 'critical', label: 'critical' },
@@ -120,19 +125,19 @@ export default function AlertsView() {
               { value: 'low', label: 'low' },
             ]}
           />
-          <Select value={status} onChange={(v) => setStatus(v as Status)} label="STATUS"
+          <Select mode={mode} value={status} onChange={(v) => setStatus(v as Status)} label="STATUS"
             options={[
               { value: 'all', label: 'all' },
               { value: 'open', label: 'open' },
               { value: 'closed', label: 'closed' },
             ]}
           />
-          <Select value={region} onChange={setRegion} label="REGION"
+          <Select mode={mode} value={region} onChange={setRegion} label="REGION"
             options={[{ value: 'all', label: 'all' }, ...regions.map((r) => ({ value: r, label: r }))]}
           />
-          <label className="flex cursor-pointer items-center gap-2 rounded-sm border border-cyan-400/20 bg-black/40 px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-300">
-            <input type="checkbox" checked={activeOnly} onChange={() => setActiveOnly(!activeOnly)} className="h-3 w-3 accent-cyan-400" />
-            FETCH ACTIVE ONLY
+          <label className={`flex cursor-pointer items-center gap-2 rounded-md px-2.5 py-1.5 ${std ? 'border border-slate-300 bg-white text-xs font-medium text-slate-700' : 'rounded-sm border border-cyan-400/20 bg-black/40 font-mono text-[10px] uppercase tracking-widest text-slate-300'}`}>
+            <input type="checkbox" checked={activeOnly} onChange={() => setActiveOnly(!activeOnly)} className="h-3 w-3 accent-blue-600" />
+            {std ? 'Active only' : 'FETCH ACTIVE ONLY'}
           </label>
         </div>
       </HudFrame>
@@ -144,9 +149,9 @@ export default function AlertsView() {
           <EmptyBlock message={alerts.length === 0 ? 'no alerts available' : 'no rows match current filters'} />
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full border-separate border-spacing-y-1 font-mono text-[11px]">
+            <table className={`w-full border-separate border-spacing-y-1 ${std ? 'text-sm' : 'font-mono text-[11px]'}`}>
               <thead>
-                <tr className="text-left font-mono text-[9px] uppercase tracking-[0.22em] text-slate-500">
+                <tr className={std ? 'text-left text-xs font-semibold uppercase tracking-wide text-slate-500' : 'text-left font-mono text-[9px] uppercase tracking-[0.22em] text-slate-500'}>
                   <th className="px-2">·</th>
                   <th className="px-2">MESSAGE</th>
                   <th className="px-2">REGION</th>
@@ -165,8 +170,15 @@ export default function AlertsView() {
                   const alertId = getAlertId(a);
                   const risk = numOrNull(a.risk_score);
                   const delivery = getAlertDeliveryStatus(a);
-                  const deliveryTone =
-                    delivery.toLowerCase() === 'sent'
+                  const deliveryTone = std
+                    ? delivery.toLowerCase() === 'sent'
+                      ? 'text-emerald-700 font-medium'
+                      : delivery.toLowerCase() === 'pending'
+                        ? 'text-amber-700 font-medium'
+                        : delivery.toLowerCase() === 'failed'
+                          ? 'text-red-700 font-medium'
+                          : 'text-slate-500'
+                    : delivery.toLowerCase() === 'sent'
                       ? 'text-emerald-200'
                       : delivery.toLowerCase() === 'pending'
                         ? 'text-amber-200'
@@ -175,45 +187,35 @@ export default function AlertsView() {
                           : 'text-slate-400';
 
                   return (
-                    <tr key={String(a.id ?? idx)} className="bg-slate-950/50 transition hover:bg-cyan-500/[0.04]">
-                      <td className="rounded-l-sm border-y border-l border-white/5 px-2 py-1.5">
-                        <StatusLed tone={tone} size={6} pulse={tone === 'critical'} />
+                    <tr key={String(a.id ?? idx)} className={tableRow(mode)}>
+                      <td className={`rounded-l-md border-y border-l px-2 py-1.5 ${tableCell(mode)}`}>
+                        <StatusLed tone={tone} size={6} pulse={!std && tone === 'critical'} />
                       </td>
-                      <td className="max-w-[220px] border-y border-white/5 px-2 py-1.5">
-                        <p className="truncate text-cyan-100">{formatScalar(a.message ?? a.title ?? 'n/a')}</p>
-                        <p className="truncate text-[10px] text-slate-600">#{alertId ?? 'n/a'}</p>
+                      <td className={`max-w-[220px] border-y px-2 py-1.5 ${tableCell(mode)}`}>
+                        <p className={`truncate ${std ? 'font-medium text-slate-900' : 'text-cyan-100'}`}>{formatScalar(a.message ?? a.title ?? 'n/a')}</p>
+                        <p className={`truncate text-xs ${std ? 'text-slate-500' : 'text-[10px] text-slate-600'}`}>#{alertId ?? 'n/a'}</p>
                       </td>
-                      <td className="border-y border-white/5 px-2 py-1.5 text-cyan-200">{getAlertRegion(a)}</td>
-                      <td className="border-y border-white/5 px-2 py-1.5">
-                        <span
-                          className={`rounded-sm px-1.5 py-0.5 text-[9px] uppercase tracking-widest ${
-                            tone === 'critical'
-                              ? 'bg-red-500/15 text-red-200 ring-1 ring-red-500/30'
-                              : tone === 'warning'
-                                ? 'bg-amber-500/15 text-amber-200 ring-1 ring-amber-500/30'
-                                : 'bg-cyan-500/15 text-cyan-200 ring-1 ring-cyan-500/30'
-                          }`}
-                        >
-                          {formatScalar(a.severity)}
-                        </span>
+                      <td className={`border-y px-2 py-1.5 ${std ? 'text-slate-800' : 'text-cyan-200'} ${tableCell(mode)}`}>{getAlertRegion(a)}</td>
+                      <td className={`border-y px-2 py-1.5 ${tableCell(mode)}`}>
+                        <span className={severityBadge(tone, mode)}>{formatScalar(a.severity)}</span>
                       </td>
-                      <td className="border-y border-white/5 px-2 py-1.5 text-cyan-100/80">
+                      <td className={`border-y px-2 py-1.5 tabular-nums ${tableCell(mode)}`}>
                         {risk !== null ? risk.toFixed(1) : 'n/a'}
                       </td>
-                      <td className="border-y border-white/5 px-2 py-1.5">
-                        <span className={open ? 'text-amber-200' : 'text-slate-500'}>
+                      <td className={`border-y px-2 py-1.5 ${tableCell(mode)}`}>
+                        <span className={open ? (std ? 'font-medium text-amber-800' : 'text-amber-200') : std ? 'text-slate-500' : 'text-slate-500'}>
                           {typeof a.status === 'string' ? String(a.status).toUpperCase() : open ? 'OPEN' : 'CLOSED'}
                         </span>
                       </td>
-                      <td className={`border-y border-white/5 px-2 py-1.5 uppercase ${deliveryTone}`}>{delivery}</td>
-                      <td className="border-y border-white/5 px-2 py-1.5 text-right text-slate-400">
+                      <td className={`border-y px-2 py-1.5 uppercase ${deliveryTone} ${tableCell(mode)}`}>{delivery}</td>
+                      <td className={`border-y px-2 py-1.5 text-right ${std ? 'text-slate-500' : 'text-slate-400'} ${tableCell(mode)}`}>
                         {relTime(a.timestamp ?? a.created_at)}
                       </td>
-                      <td className="rounded-r-sm border-y border-r border-white/5 px-2 py-1.5 text-right">
+                      <td className={`rounded-r-md border-y border-r px-2 py-1.5 text-right ${tableCell(mode)}`}>
                         {alertId !== null && open ? (
                           <SendAlertButton alertId={alertId} compact />
                         ) : (
-                          <span className="font-mono text-[9px] uppercase tracking-widest text-slate-600">-</span>
+                          <span className={std ? 'text-xs text-slate-400' : 'font-mono text-[9px] uppercase tracking-widest text-slate-600'}>-</span>
                         )}
                       </td>
                     </tr>
@@ -228,26 +230,14 @@ export default function AlertsView() {
   );
 }
 
-function SevTile({ label, count, tone }: { label: string; count: number; tone: 'nominal' | 'warning' | 'critical' | 'info' | 'idle' }) {
-  return (
-    <div className="relative overflow-hidden rounded-md border border-cyan-400/15 bg-gradient-to-b from-[#0b1325]/95 to-[#070d1b]/95 p-2.5">
-      <span className="hud-bracket hud-bracket-tl" />
-      <span className="hud-bracket hud-bracket-br" />
-      <div className="flex items-center justify-between">
-        <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-slate-500">{label}</p>
-        <StatusLed tone={tone} size={6} />
-      </div>
-      <p className="mt-1 font-mono text-2xl font-semibold tabular-nums text-cyan-100">{count}</p>
-    </div>
-  );
-}
-
 function Select({
+  mode,
   label,
   value,
   onChange,
   options,
 }: {
+  mode: import('@/lib/access/ui-mode').UiMode;
   label: string;
   value: string;
   onChange: (v: string) => void;
@@ -255,14 +245,10 @@ function Select({
 }) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="font-mono text-[9px] uppercase tracking-widest text-slate-500">{label}</span>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="rounded-sm border border-cyan-400/20 bg-black/50 px-2 py-1.5 font-mono text-[11px] uppercase tracking-widest text-cyan-100 focus:border-cyan-400/60 focus:outline-none"
-      >
+      <span className={fieldLabel(mode)}>{label}</span>
+      <select value={value} onChange={(e) => onChange(e.target.value)} className={selectField(mode)}>
         {options.map((o) => (
-          <option key={o.value} value={o.value} className="bg-slate-950 text-cyan-100">
+          <option key={o.value} value={o.value}>
             {o.label}
           </option>
         ))}

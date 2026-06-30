@@ -317,7 +317,8 @@ samp {
 
 [data-ui-mode='standard'] .mission-header {
   border-color: #cbd5e1;
-  background: #ffffff;
+  background: #ffffff !important;
+  background-image: none !important;
   box-shadow: 0 1px 0 #e2e8f0;
 }
 
@@ -392,29 +393,10 @@ samp {
   color: #64748b !important;
 }
 
-[data-ui-mode='standard'] .mission-main .text-white {
-  color: #0f172a !important;
-}
-
-[data-ui-mode='standard'] .mission-main .text-slate-100,
-[data-ui-mode='standard'] .mission-main .text-slate-200,
-[data-ui-mode='standard'] .mission-main .text-slate-300 {
-  color: #334155 !important;
-}
-
-[data-ui-mode='standard'] .mission-main .text-slate-400,
-[data-ui-mode='standard'] .mission-main .text-slate-500 {
-  color: #64748b !important;
-}
-
-[data-ui-mode='standard'] .mission-main .text-cyan-200,
-[data-ui-mode='standard'] .mission-main .text-cyan-300,
-[data-ui-mode='standard'] .mission-main .text-emerald-300 {
-  color: #1d4ed8 !important;
-}
-
-[data-ui-mode='standard'] .mission-main .text-emerald-400\/90 {
-  color: #047857 !important;
+/* Fallback: strip command gradients if a component missed std classes */
+[data-ui-mode='standard'] .mission-main .bg-gradient-to-b,
+[data-ui-mode='standard'] .mission-main .bg-gradient-to-br {
+  background-image: none !important;
 }
 
 [data-ui-mode='standard'] .mission-main .border-white\/5,
@@ -437,17 +419,7 @@ samp {
 [data-ui-mode='standard'] .mission-main .bg-\[\#060b18\]\/95,
 [data-ui-mode='standard'] .mission-main .bg-black\/30,
 [data-ui-mode='standard'] .mission-main .bg-black\/40 {
-  background: #f8fafc !important;
-}
-
-[data-ui-mode='standard'] .mission-main .bg-emerald-500\/10,
-[data-ui-mode='standard'] .mission-main .bg-emerald-950\/30 {
-  background: #ecfdf5 !important;
-}
-
-[data-ui-mode='standard'] .mission-main .bg-cyan-500\/5,
-[data-ui-mode='standard'] .mission-main .bg-cyan-500\/10 {
-  background: #eff6ff !important;
+  background: #ffffff !important;
 }
 
 [data-ui-mode='standard'] .mission-ui-mode-toggle {
