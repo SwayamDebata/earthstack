@@ -2,6 +2,8 @@
 
 import { useMemo } from 'react';
 import StatusLed, { type LedTone } from './StatusLed';
+import { useMission } from '@/components/dashboard/MissionContext';
+import { opsText } from '@/lib/ui/mode-copy';
 
 export type TickItem = {
   channel: string;
@@ -14,11 +16,26 @@ export type TickItem = {
  * Items are doubled so the loop is seamless.
  */
 export default function LiveTicker({ items }: { items: TickItem[] }) {
+  const { uiMode } = useMission();
+  const std = uiMode === 'standard';
   const doubled = useMemo(() => [...items, ...items], [items]);
+  const summary = items[0];
+
+  if (std) {
+    return (
+      <div className="mission-ticker flex h-9 items-center gap-2 border-t border-slate-200 bg-white px-4 text-xs text-slate-600">
+        <StatusLed tone={summary?.tone ?? 'nominal'} size={6} />
+        <span className="font-medium text-slate-500">{opsText(uiMode, 'tickerLabel')}:</span>
+        <span className="truncate">
+          {summary ? `${summary.channel} — ${summary.text}` : 'All systems reporting normally'}
+        </span>
+      </div>
+    );
+  }
 
   if (!items.length) {
     return (
-      <div className="flex h-9 items-center gap-2 border-t border-cyan-400/15 bg-[#04080f] px-3 font-mono text-[10px] uppercase tracking-widest text-slate-500">
+      <div className="mission-ticker flex h-9 items-center gap-2 border-t border-cyan-400/15 bg-[#04080f] px-3 font-mono text-[10px] uppercase tracking-widest text-slate-500">
         <StatusLed tone="idle" size={6} />
         TELEMETRY · awaiting upstream signals
       </div>
@@ -26,7 +43,7 @@ export default function LiveTicker({ items }: { items: TickItem[] }) {
   }
 
   return (
-    <div className="relative flex h-9 items-center overflow-hidden border-t border-cyan-400/15 bg-[#04080f]">
+    <div className="mission-ticker relative flex h-9 items-center overflow-hidden border-t border-cyan-400/15 bg-[#04080f]">
       <div className="flex shrink-0 items-center gap-2 border-r border-cyan-400/15 bg-[#070d1b] px-3 py-2">
         <StatusLed tone="nominal" size={6} />
         <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-cyan-200">TELEMETRY</span>

@@ -20,6 +20,7 @@ import HudFrame from '@/components/dashboard/HudFrame';
 import StatusLed from '@/components/dashboard/StatusLed';
 import { ErrorBlock, EmptyBlock, Telemetry } from '@/components/dashboard/Atoms';
 import { useSoundOptional } from '@/components/audio/SoundProvider';
+import { useMission } from '@/components/dashboard/MissionContext';
 
 const FRAME_MS = 1500;
 
@@ -326,16 +327,34 @@ function EventHeader({
   pickerOpen: boolean;
   hasPicker: boolean;
 }) {
+  const { uiMode } = useMission();
+  const std = uiMode === 'standard';
   const sevTone = severityTone(event.severity);
   return (
-    <div className="relative overflow-hidden rounded-md border border-emerald-400/20 bg-gradient-to-br from-emerald-950/30 via-slate-950/60 to-slate-950/80 p-4">
-      <span className="hud-bracket hud-bracket-tl" />
-      <span className="hud-bracket hud-bracket-br" />
+    <div
+      className={
+        std
+          ? 'rounded-lg border border-slate-200 bg-white p-4 shadow-sm'
+          : 'relative overflow-hidden rounded-md border border-emerald-400/20 bg-gradient-to-br from-emerald-950/30 via-slate-950/60 to-slate-950/80 p-4'
+      }
+    >
+      {!std ? (
+        <>
+          <span className="hud-bracket hud-bracket-tl" />
+          <span className="hud-bracket hud-bracket-br" />
+        </>
+      ) : null}
 
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-emerald-300/70">
-            Verified Flood Event
+          <p
+            className={
+              std
+                ? 'text-xs font-semibold uppercase tracking-wide text-slate-500'
+                : 'font-mono text-[10px] uppercase tracking-[0.28em] text-emerald-300/70'
+            }
+          >
+            {std ? 'Verified flood event' : 'Verified Flood Event'}
             {event.source ? (
               <span className="text-slate-500">
                 {' '}
@@ -343,29 +362,43 @@ function EventHeader({
               </span>
             ) : null}
           </p>
-          <h3 className="mt-1 text-xl font-semibold tracking-tight text-white md:text-2xl">
+          <h3
+            className={`mt-1 text-xl font-semibold tracking-tight md:text-2xl ${std ? 'text-slate-900' : 'text-white'}`}
+          >
             {event.region ?? 'n/a'}
             <span className="text-slate-400"> · </span>
-            <span className="text-cyan-200">{event.river_name ?? 'n/a'} River</span>
+            <span className={std ? 'text-blue-700' : 'text-cyan-200'}>{event.river_name ?? 'n/a'} River</span>
           </h3>
-          <p className="mt-1 font-mono text-[11px] uppercase tracking-widest text-slate-400">
+          <p
+            className={
+              std
+                ? 'mt-1 text-xs text-slate-500'
+                : 'mt-1 font-mono text-[11px] uppercase tracking-widest text-slate-400'
+            }
+          >
             {fmtDate(event.start_timestamp)}
             {event.end_timestamp && event.end_timestamp !== event.start_timestamp
               ? ` → ${fmtDate(event.end_timestamp)}`
               : ''}
-            <span className="text-slate-600"> · </span>
-            <span className="text-slate-500">{event.event_id}</span>
+            <span className="text-slate-400"> · </span>
+            <span>{event.event_id}</span>
           </p>
         </div>
 
         <div className="flex flex-col items-end gap-2">
           <span
-            className={`rounded-sm px-2 py-1 font-mono text-[10px] uppercase tracking-widest ${
+            className={`rounded-md px-2 py-1 text-xs font-semibold uppercase tracking-wide ${
               sevTone === 'critical'
-                ? 'bg-red-500/15 text-red-200 ring-1 ring-red-500/30'
+                ? std
+                  ? 'bg-red-100 text-red-800 ring-1 ring-red-200'
+                  : 'bg-red-500/15 text-red-200 ring-1 ring-red-500/30'
                 : sevTone === 'warning'
-                  ? 'bg-amber-500/15 text-amber-200 ring-1 ring-amber-500/30'
-                  : 'bg-cyan-500/15 text-cyan-200 ring-1 ring-cyan-500/30'
+                  ? std
+                    ? 'bg-amber-100 text-amber-800 ring-1 ring-amber-200'
+                    : 'bg-amber-500/15 text-amber-200 ring-1 ring-amber-500/30'
+                  : std
+                    ? 'bg-blue-100 text-blue-800 ring-1 ring-blue-200'
+                    : 'bg-cyan-500/15 text-cyan-200 ring-1 ring-cyan-500/30'
             }`}
           >
             {event.severity ?? 'Flood'}
@@ -374,7 +407,11 @@ function EventHeader({
             <button
               type="button"
               onClick={onTogglePicker}
-              className="flex items-center gap-1 rounded-sm border border-white/10 bg-black/40 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-slate-300 hover:border-cyan-400/30 hover:text-cyan-200"
+              className={
+                std
+                  ? 'flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-700 hover:border-slate-300'
+                  : 'flex items-center gap-1 rounded-sm border border-white/10 bg-black/40 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-slate-300 hover:border-cyan-400/30 hover:text-cyan-200'
+              }
             >
               {pickerOpen ? 'Hide catalog' : 'Browse events'}
               <ChevronDown
@@ -406,10 +443,22 @@ function EventHeader({
 
       {/* First-alert callout */}
       {firstAlertHours !== null && firstAlertHours !== undefined ? (
-        <div className="mt-3 flex items-center gap-2 rounded-sm border border-emerald-400/30 bg-emerald-500/10 px-3 py-1.5">
-          <AlertTriangle size={12} className="text-emerald-300" />
-          <p className="font-mono text-[11px] uppercase tracking-widest text-emerald-200">
-            First Alert · T-{firstAlertHours}h before onset
+        <div
+          className={
+            std
+              ? 'mt-3 flex items-center gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-1.5'
+              : 'mt-3 flex items-center gap-2 rounded-sm border border-emerald-400/30 bg-emerald-500/10 px-3 py-1.5'
+          }
+        >
+          <AlertTriangle size={12} className={std ? 'text-emerald-700' : 'text-emerald-300'} />
+          <p
+            className={
+              std
+                ? 'text-sm font-medium text-emerald-800'
+                : 'font-mono text-[11px] uppercase tracking-widest text-emerald-200'
+            }
+          >
+            First alert · T-{firstAlertHours}h before onset
           </p>
         </div>
       ) : null}

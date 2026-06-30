@@ -1,5 +1,6 @@
 'use client';
 
+import { useMission } from '@/components/dashboard/MissionContext';
 import type { SeverityTone } from './util';
 
 export function ScoreBar({
@@ -47,8 +48,17 @@ export function Telemetry({
   value: string;
   tone?: SeverityTone;
 }) {
-  const valueColor =
-    tone === 'critical'
+  const { uiMode } = useMission();
+  const std = uiMode === 'standard';
+  const valueColor = std
+    ? tone === 'critical'
+      ? 'text-red-700'
+      : tone === 'warning'
+        ? 'text-amber-700'
+        : tone === 'nominal'
+          ? 'text-emerald-700'
+          : 'text-slate-900'
+    : tone === 'critical'
       ? 'text-red-200'
       : tone === 'warning'
         ? 'text-amber-200'
@@ -56,9 +66,27 @@ export function Telemetry({
           ? 'text-emerald-200'
           : 'text-cyan-100';
   return (
-    <div className="rounded-sm border border-white/5 bg-slate-950/50 px-2 py-1.5">
-      <p className="font-mono text-[9px] uppercase tracking-widest text-slate-500">{label}</p>
-      <p className={`mt-0.5 truncate font-mono text-xs ${valueColor}`}>{value || 'n/a'}</p>
+    <div
+      className={
+        std
+          ? 'ops-stat rounded-md border border-slate-200 bg-white px-3 py-2 shadow-sm'
+          : 'rounded-sm border border-white/5 bg-slate-950/50 px-2 py-1.5'
+      }
+    >
+      <p
+        className={
+          std
+            ? 'text-[11px] font-medium uppercase tracking-wide text-slate-500'
+            : 'font-mono text-[9px] uppercase tracking-widest text-slate-500'
+        }
+      >
+        {label}
+      </p>
+      <p
+        className={`mt-0.5 truncate ${std ? 'text-sm font-semibold' : 'font-mono text-xs'} ${valueColor}`}
+      >
+        {value || 'n/a'}
+      </p>
     </div>
   );
 }

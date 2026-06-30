@@ -304,3 +304,212 @@ samp {
 .input-hud:focus {
   border-color: rgba(34, 211, 238, 0.6);
 }
+
+/* ========================================================================
+   STANDARD VIEW - familiar govt / district ops desk (dashboard only)
+   Toggle: Mission header · Standard | Command
+   ======================================================================== */
+
+[data-ui-mode='standard'] .mission-dashboard {
+  background: #eef2f7;
+  color: #0f172a;
+}
+
+[data-ui-mode='standard'] .mission-header {
+  border-color: #cbd5e1;
+  background: #ffffff;
+  box-shadow: 0 1px 0 #e2e8f0;
+}
+
+[data-ui-mode='standard'] .mission-header .text-white,
+[data-ui-mode='standard'] .mission-header .text-cyan-400\/70 {
+  color: #1e3a8a !important;
+}
+
+[data-ui-mode='standard'] .mission-header .text-cyan-300 {
+  color: #1d4ed8 !important;
+}
+
+[data-ui-mode='standard'] .mission-nav {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+[data-ui-mode='standard'] .mission-nav a,
+[data-ui-mode='standard'] .mission-nav button {
+  color: #475569;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+[data-ui-mode='standard'] .mission-nav a:hover,
+[data-ui-mode='standard'] .mission-nav button:hover {
+  color: #1d4ed8;
+  box-shadow: none !important;
+}
+
+[data-ui-mode='standard'] .mission-main {
+  background: #eef2f7;
+}
+
+[data-ui-mode='standard'] .mission-ticker {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #64748b;
+}
+
+[data-ui-mode='standard'] .mission-ticker .text-cyan-200 {
+  color: #1e40af !important;
+}
+
+[data-ui-mode='standard'] .hud-bracket {
+  display: none;
+}
+
+[data-ui-mode='standard'] .hud-frame {
+  border-color: #cbd5e1;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+[data-ui-mode='standard'] .hud-frame-header {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+}
+
+[data-ui-mode='standard'] .hud-frame-header .font-mono {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  letter-spacing: 0.04em;
+}
+
+[data-ui-mode='standard'] .hud-frame-header .text-cyan-200 {
+  color: #1e3a8a !important;
+  font-weight: 600;
+}
+
+[data-ui-mode='standard'] .hud-frame-header .text-slate-500 {
+  color: #64748b !important;
+}
+
+[data-ui-mode='standard'] .mission-main .text-white {
+  color: #0f172a !important;
+}
+
+[data-ui-mode='standard'] .mission-main .text-slate-100,
+[data-ui-mode='standard'] .mission-main .text-slate-200,
+[data-ui-mode='standard'] .mission-main .text-slate-300 {
+  color: #334155 !important;
+}
+
+[data-ui-mode='standard'] .mission-main .text-slate-400,
+[data-ui-mode='standard'] .mission-main .text-slate-500 {
+  color: #64748b !important;
+}
+
+[data-ui-mode='standard'] .mission-main .text-cyan-200,
+[data-ui-mode='standard'] .mission-main .text-cyan-300,
+[data-ui-mode='standard'] .mission-main .text-emerald-300 {
+  color: #1d4ed8 !important;
+}
+
+[data-ui-mode='standard'] .mission-main .text-emerald-400\/90 {
+  color: #047857 !important;
+}
+
+[data-ui-mode='standard'] .mission-main .border-white\/5,
+[data-ui-mode='standard'] .mission-main .border-white\/8,
+[data-ui-mode='standard'] .mission-main .border-white\/10,
+[data-ui-mode='standard'] .mission-main .border-white\/15 {
+  border-color: #e2e8f0 !important;
+}
+
+[data-ui-mode='standard'] .mission-main .border-cyan-400\/15,
+[data-ui-mode='standard'] .mission-main .border-cyan-400\/20,
+[data-ui-mode='standard'] .mission-main .border-cyan-400\/25 {
+  border-color: #bfdbfe !important;
+}
+
+[data-ui-mode='standard'] .mission-main .bg-slate-950\/40,
+[data-ui-mode='standard'] .mission-main .bg-slate-950\/50,
+[data-ui-mode='standard'] .mission-main .bg-slate-950\/60,
+[data-ui-mode='standard'] .mission-main .bg-\[\#060b18\]\/90,
+[data-ui-mode='standard'] .mission-main .bg-\[\#060b18\]\/95,
+[data-ui-mode='standard'] .mission-main .bg-black\/30,
+[data-ui-mode='standard'] .mission-main .bg-black\/40 {
+  background: #f8fafc !important;
+}
+
+[data-ui-mode='standard'] .mission-main .bg-emerald-500\/10,
+[data-ui-mode='standard'] .mission-main .bg-emerald-950\/30 {
+  background: #ecfdf5 !important;
+}
+
+[data-ui-mode='standard'] .mission-main .bg-cyan-500\/5,
+[data-ui-mode='standard'] .mission-main .bg-cyan-500\/10 {
+  background: #eff6ff !important;
+}
+
+[data-ui-mode='standard'] .mission-ui-mode-toggle {
+  border-color: #cbd5e1;
+  background: #f1f5f9;
+}
+
+[data-ui-mode='standard'] .input-hud {
+  border-color: #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+[data-ui-mode='standard'] .input-hud::placeholder {
+  color: #94a3b8;
+}
+
+[data-ui-mode='standard'] .input-hud:focus {
+  border-color: #3b82f6;
+}
+
+[data-ui-mode='standard'] .radar-sweep {
+  opacity: 0.15;
+}
+
+[data-ui-mode='standard'] ::-webkit-scrollbar-track {
+  background: #e2e8f0;
+}
+
+[data-ui-mode='standard'] .mission-main .bg-emerald-950\/20,
+[data-ui-mode='standard'] .mission-main .from-emerald-950\/35,
+[data-ui-mode='standard'] .mission-main .via-\[\#070d18\],
+[data-ui-mode='standard'] .mission-main .to-\[\#050a12\] {
+  background: #ffffff !important;
+  background-image: none !important;
+}
+
+html[data-ui-mode='standard'] .pilot-modal label span {
+  color: #475569;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+html[data-ui-mode='standard'] .mission-header .text-white {
+  color: #0f172a !important;
+}
+
+html[data-ui-mode='standard'] .mission-header .mission-brand-badge {
+  border-color: #93c5fd;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+[data-ui-mode='standard'] .mission-preview-banner {
+  background: #eff6ff;
+  border-color: #93c5fd;
+}
+
+[data-ui-mode='standard'] .mission-preview-banner .text-emerald-100\/90 {
+  color: #1e40af !important;
+}

@@ -37,14 +37,14 @@ export default function HudFrame({
 }: HudFrameProps) {
   return (
     <section
-      className={`relative overflow-hidden rounded-md border border-cyan-400/15 bg-[#060b18]/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_0_0_1px_rgba(34,211,238,0.04)] ${className}`}
+      className={`hud-frame relative overflow-hidden rounded-md border border-cyan-400/15 bg-[#060b18]/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_0_0_1px_rgba(34,211,238,0.04)] ${className}`}
     >
       <span className="hud-bracket hud-bracket-tl" />
       <span className="hud-bracket hud-bracket-tr" />
       <span className="hud-bracket hud-bracket-bl" />
       <span className="hud-bracket hud-bracket-br" />
 
-      <header className="relative z-10 flex items-center justify-between border-b border-cyan-400/15 bg-gradient-to-b from-[#0b1325] to-[#070d1b] px-3 py-1.5">
+      <header className="hud-frame-header relative z-10 flex items-center justify-between border-b border-cyan-400/15 bg-gradient-to-b from-[#0b1325] to-[#070d1b] px-3 py-1.5">
         <div className="flex min-w-0 items-center gap-2.5">
           <StatusLed tone={status} />
           <p className="truncate font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-cyan-200">{label}</p>

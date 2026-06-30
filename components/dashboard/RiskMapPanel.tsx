@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { MAPBOX_TOKEN } from '@/lib/config';
+import { useMission } from '@/components/dashboard/MissionContext';
 
 type RiskMapRow = Record<string, unknown>;
 
@@ -79,6 +80,9 @@ export default function RiskMapPanel({
   onRetry: () => void;
   activeLocation?: string;
 }) {
+  const { uiMode } = useMission();
+  const std = uiMode === 'standard';
+  const mapStyle = std ? 'mapbox://styles/mapbox/light-v11' : 'mapbox://styles/mapbox/dark-v11';
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const [mapReady, setMapReady] = useState(false);
@@ -133,11 +137,11 @@ export default function RiskMapPanel({
 
     const map = new mapboxgl.Map({
       container: containerRef.current,
-      style: 'mapbox://styles/mapbox/dark-v11',
+      style: mapStyle,
       center: [85.5, 20.5],
       zoom: 6,
-      pitch: 48,
-      bearing: -14,
+      pitch: std ? 0 : 48,
+      bearing: std ? 0 : -14,
       antialias: true,
     });
 
@@ -172,7 +176,7 @@ export default function RiskMapPanel({
       mapRef.current = null;
       setMapReady(false);
     };
-  }, [tokenMissing]);
+  }, [tokenMissing, mapStyle]);
 
   // GeoJSON layers - pins stay locked to coordinates at every zoom level
   useEffect(() => {
@@ -304,23 +308,35 @@ export default function RiskMapPanel({
       LOCATION_COORDS[activeLocation] ??
       NORMALIZED_LOCATION_COORDS[activeLocation.toLowerCase().replace(/\s+/g, '')];
     if (!target) return;
-    mapRef.current.flyTo({ center: target, zoom: 8.5, pitch: 52, speed: 1.1, curve: 1.4 });
-  }, [activeLocation, mapReady]);
+    mapRef.current.flyTo({
+      center: target,
+      zoom: 8.5,
+      pitch: std ? 0 : 52,
+      speed: 1.1,
+      curve: 1.4,
+    });
+  }, [activeLocation, mapReady, std]);
 
   return (
-    <div className="relative h-full min-h-[440px] w-full overflow-hidden rounded-md border border-cyan-400/20 bg-[#03070f]">
+    <div
+      className={
+        std
+          ? 'relative h-full min-h-[440px] w-full overflow-hidden rounded-md border border-slate-200 bg-slate-100'
+          : 'relative h-full min-h-[440px] w-full overflow-hidden rounded-md border border-cyan-400/20 bg-[#03070f]'
+      }
+    >
       {/* Map */}
       <div ref={containerRef} className="absolute inset-0" />
 
       {/* Radar sweep over the map (subtle, no scrim) */}
-      {mapReady && !isError ? (
+      {mapReady && !isError && !std ? (
         <div className="pointer-events-none absolute left-1/2 top-1/2 z-10 h-[120%] w-[120%] -translate-x-1/2 -translate-y-1/2 mix-blend-screen opacity-60">
           <div className="radar-sweep absolute inset-0 rounded-full" />
         </div>
       ) : null}
 
       {/* Crosshair + concentric rings */}
-      {mapReady ? (
+      {mapReady && !std ? (
         <div className="pointer-events-none absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2">
           <div className="relative h-32 w-32">
             {[1, 2, 3].map((i) => (
@@ -338,33 +354,47 @@ export default function RiskMapPanel({
       ) : null}
 
       {/* Grid overlay */}
-      <div className="pointer-events-none absolute inset-0 z-10 opacity-[0.06] hud-grid-overlay" />
+      {!std ? <div className="pointer-events-none absolute inset-0 z-10 opacity-[0.06] hud-grid-overlay" /> : null}
 
       {/* Coordinate readout - bottom left */}
-      <div className="pointer-events-none absolute bottom-3 left-3 z-20 rounded-sm border border-cyan-400/25 bg-black/60 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-cyan-200">
-        <p>LAT {fmtCoord(center[1], 'lat')}</p>
-        <p>LNG {fmtCoord(center[0], 'lng')}</p>
-        <p className="text-slate-500">ZOOM {zoom.toFixed(2)} · BRG {bearing.toFixed(0)}°</p>
-      </div>
+      {!std ? (
+        <div className="pointer-events-none absolute bottom-3 left-3 z-20 rounded-sm border border-cyan-400/25 bg-black/60 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-cyan-200">
+          <p>LAT {fmtCoord(center[1], 'lat')}</p>
+          <p>LNG {fmtCoord(center[0], 'lng')}</p>
+          <p className="text-slate-500">ZOOM {zoom.toFixed(2)} · BRG {bearing.toFixed(0)}°</p>
+        </div>
+      ) : null}
 
       {/* Severity legend - bottom right */}
-      <div className="pointer-events-none absolute bottom-3 right-3 z-20 flex gap-2 rounded-sm border border-cyan-400/25 bg-black/60 px-2 py-1 font-mono text-[10px] uppercase tracking-widest">
-        <span className="flex items-center gap-1 text-emerald-300">
-          <span className="h-2 w-2 rounded-full bg-emerald-400" /> Low
+      <div
+        className={
+          std
+            ? 'pointer-events-none absolute bottom-3 right-3 z-20 flex gap-3 rounded-md border border-slate-200 bg-white/95 px-3 py-1.5 text-xs font-medium shadow-sm'
+            : 'pointer-events-none absolute bottom-3 right-3 z-20 flex gap-2 rounded-sm border border-cyan-400/25 bg-black/60 px-2 py-1 font-mono text-[10px] uppercase tracking-widest'
+        }
+      >
+        <span className={`flex items-center gap-1 ${std ? 'text-emerald-700' : 'text-emerald-300'}`}>
+          <span className="h-2 w-2 rounded-full bg-emerald-500" /> Low
         </span>
-        <span className="flex items-center gap-1 text-amber-300">
-          <span className="h-2 w-2 rounded-full bg-amber-400" /> Med
+        <span className={`flex items-center gap-1 ${std ? 'text-amber-700' : 'text-amber-300'}`}>
+          <span className="h-2 w-2 rounded-full bg-amber-500" /> Med
         </span>
-        <span className="flex items-center gap-1 text-red-300">
-          <span className="h-2 w-2 rounded-full bg-red-400" /> High
+        <span className={`flex items-center gap-1 ${std ? 'text-red-700' : 'text-red-300'}`}>
+          <span className="h-2 w-2 rounded-full bg-red-500" /> High
         </span>
       </div>
 
       {/* Active region label - top left */}
       {activeLocation ? (
-        <div className="pointer-events-none absolute left-3 top-3 z-20 rounded-sm border border-cyan-400/25 bg-black/60 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-cyan-200">
-          <p className="text-slate-500">TARGET</p>
-          <p className="text-cyan-100">{activeLocation}</p>
+        <div
+          className={
+            std
+              ? 'pointer-events-none absolute left-3 top-3 z-20 rounded-md border border-slate-200 bg-white/95 px-2.5 py-1.5 text-xs shadow-sm'
+              : 'pointer-events-none absolute left-3 top-3 z-20 rounded-sm border border-cyan-400/25 bg-black/60 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-cyan-200'
+          }
+        >
+          <p className={std ? 'text-slate-500' : 'text-slate-500'}>{std ? 'District' : 'TARGET'}</p>
+          <p className={std ? 'font-semibold text-slate-900' : 'text-cyan-100'}>{activeLocation}</p>
         </div>
       ) : null}
 

@@ -14,6 +14,7 @@ import {
   WELCOME_SEEN_KEY,
   type AccessTier,
 } from '@/lib/access/pilot';
+import { readUiMode, writeUiMode, type UiMode } from '@/lib/access/ui-mode';
 
 const LOC_KEY = 'modelearth:location';
 const FILTER_KEY = 'modelearth:active-only';
@@ -38,6 +39,8 @@ type MissionContextValue = {
   closePilotRequest: () => void;
   welcomeOpen: boolean;
   dismissWelcome: () => void;
+  uiMode: UiMode;
+  setUiMode: (mode: UiMode) => void;
 };
 
 const MissionContext = createContext<MissionContextValue | null>(null);
@@ -51,6 +54,7 @@ export function MissionProvider({ children }: { children: ReactNode }) {
   const [pilotRequestOpen, setPilotRequestOpen] = useState(false);
   const [pilotRequestReason, setPilotRequestReason] = useState<string | null>(null);
   const [welcomeOpen, setWelcomeOpen] = useState(false);
+  const [uiMode, setUiModeState] = useState<UiMode>('standard');
   const [hydrated, setHydrated] = useState(false);
 
   const refreshPilotAccess = useCallback(() => {
@@ -72,6 +76,7 @@ export function MissionProvider({ children }: { children: ReactNode }) {
       setMissionProfileState(storedProfile);
     }
     setHasPilotAccess(readPilotAccess());
+    setUiModeState(readUiMode());
     setWelcomeOpen(window.localStorage.getItem(WELCOME_SEEN_KEY) !== '1');
     setHydrated(true);
   }, []);
@@ -124,6 +129,16 @@ export function MissionProvider({ children }: { children: ReactNode }) {
     setWelcomeOpen(false);
   }, []);
 
+  const setUiMode = useCallback((mode: UiMode) => {
+    setUiModeState(mode);
+    writeUiMode(mode);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated || typeof document === 'undefined') return;
+    document.documentElement.setAttribute('data-ui-mode', uiMode);
+  }, [uiMode, hydrated]);
+
   const accessTier: AccessTier = hasPilotAccess ? 'pilot' : 'preview';
 
   return (
@@ -145,6 +160,8 @@ export function MissionProvider({ children }: { children: ReactNode }) {
         closePilotRequest,
         welcomeOpen,
         dismissWelcome,
+        uiMode,
+        setUiMode,
       }}
     >
       {children}

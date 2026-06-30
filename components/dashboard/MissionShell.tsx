@@ -17,6 +17,7 @@ import PilotRequestModal from '@/components/dashboard/PilotRequestModal';
 import PreviewWelcomeModal from '@/components/dashboard/PreviewWelcomeModal';
 import PreviewEngagementPrompt from '@/components/dashboard/PreviewEngagementPrompt';
 import SoundToggle from '@/components/audio/SoundToggle';
+import UiModeToggle from '@/components/dashboard/UiModeToggle';
 import { grantPilotAccess } from '@/lib/access/pilot';
 import { useMission } from '@/components/dashboard/MissionContext';
 
@@ -60,7 +61,9 @@ export default function MissionShell({ children }: { children: ReactNode }) {
     refreshPilotAccess,
     welcomeOpen,
     dismissWelcome,
+    uiMode,
   } = useMission();
+  const std = uiMode === 'standard';
   const [online, setOnline] = useState(true);
 
   useEffect(() => {
@@ -124,20 +127,31 @@ export default function MissionShell({ children }: { children: ReactNode }) {
   }, [health.data, healthStatus, healthTone, highRiskCount, activeAlerts, alertsList, riskMapList]);
 
   return (
-    <div className="flex h-screen w-screen flex-col overflow-hidden bg-[#03070f] text-slate-100">
+    <div
+      data-ui-mode={uiMode}
+      className={`mission-dashboard flex h-screen w-screen flex-col overflow-hidden ${
+        std ? 'bg-[#eef2f7] text-slate-900' : 'bg-[#03070f] text-slate-100'
+      }`}
+    >
       {/* TOP COMMAND STRIP - brand | mission profile (center) | system telemetry (right) */}
-      <header className="relative z-30 shrink-0 border-b border-cyan-400/15 bg-gradient-to-b from-[#0a1224] to-[#04080f] px-3 py-2 md:px-4">
+      <header className="mission-header relative z-30 shrink-0 border-b border-cyan-400/15 bg-gradient-to-b from-[#0a1224] to-[#04080f] px-3 py-2 md:px-4">
         <div className="grid grid-cols-1 items-center gap-3 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:gap-4">
           {/* Brand + clock */}
           <div className="flex items-center justify-between gap-3 md:justify-start">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm border border-cyan-400/40 bg-cyan-500/10 font-mono text-[10px] font-bold tracking-widest text-cyan-300">
+              <div className="mission-brand-badge flex h-8 w-8 shrink-0 items-center justify-center rounded-sm border border-cyan-400/40 bg-cyan-500/10 font-mono text-[10px] font-bold tracking-widest text-cyan-300">
                 ME
               </div>
               <div className="leading-none">
-                <p className="text-sm font-semibold tracking-wide text-white">ModelEarth · MCC</p>
-                <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-cyan-400/70">
-                  Mission Control · v1.0
+                <p className="text-sm font-semibold tracking-wide text-white">ModelEarth</p>
+                <p
+                  className={
+                    std
+                      ? 'text-[11px] font-medium text-slate-500'
+                      : 'font-mono text-[10px] uppercase tracking-[0.22em] text-cyan-400/70'
+                  }
+                >
+                  {std ? 'District flood operations' : 'Mission Control · v1.0'}
                 </p>
               </div>
             </div>
@@ -154,6 +168,7 @@ export default function MissionShell({ children }: { children: ReactNode }) {
 
           {/* System telemetry only */}
           <div className="flex flex-wrap items-center justify-end gap-1.5 font-mono text-[10px] uppercase tracking-[0.2em] md:gap-2">
+            <UiModeToggle />
             <SoundToggle compact className="mr-1" />
             <p className="mr-1 hidden w-full text-right font-mono text-[9px] uppercase tracking-[0.22em] text-slate-600 sm:block md:w-auto">
               System
@@ -191,16 +206,28 @@ export default function MissionShell({ children }: { children: ReactNode }) {
       ) : null}
 
       {!hasPilotAccess ? (
-        <div className="z-30 flex flex-wrap items-center justify-between gap-2 border-b border-emerald-400/25 bg-emerald-950/40 px-4 py-2">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-emerald-100/90">
-          Live command preview · read-only coordination
+        <div className="mission-preview-banner z-30 flex flex-wrap items-center justify-between gap-2 border-b border-emerald-400/25 bg-emerald-950/40 px-4 py-2">
+          <p
+            className={
+              std
+                ? 'text-sm text-blue-900'
+                : 'font-mono text-[10px] uppercase tracking-widest text-emerald-100/90'
+            }
+          >
+            {std
+              ? 'Preview access — explore live data and historical replay. Request a pilot for full access.'
+              : 'Live command preview · read-only coordination'}
           </p>
           <button
             type="button"
             onClick={() => openPilotRequest()}
-            className="rounded-sm border border-emerald-400/40 bg-emerald-500/15 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-emerald-100 hover:bg-emerald-500/25"
+            className={
+              std
+                ? 'rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-blue-700'
+                : 'rounded-sm border border-emerald-400/40 bg-emerald-500/15 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-emerald-100 hover:bg-emerald-500/25'
+            }
           >
-            Request district pilot
+            {std ? 'Request district pilot' : 'Request district pilot'}
           </button>
         </div>
       ) : null}
@@ -211,7 +238,7 @@ export default function MissionShell({ children }: { children: ReactNode }) {
         <div className="hidden h-full w-12 shrink-0 md:block">
           <MissionNav />
         </div>
-        <main className="min-w-0 flex-1 overflow-auto">{children}</main>
+        <main className="mission-main min-w-0 flex-1 overflow-auto">{children}</main>
       </div>
 
       <LiveTicker items={ticker} />
@@ -247,8 +274,19 @@ function Indicator({
   tone: Tone;
   icon?: React.ComponentType<{ size?: number; strokeWidth?: number }>;
 }) {
-  const color =
-    tone === 'critical'
+  const { uiMode } = useMission();
+  const std = uiMode === 'standard';
+  const color = std
+    ? tone === 'critical'
+      ? 'text-red-700 border-red-200 bg-red-50'
+      : tone === 'warning'
+        ? 'text-amber-700 border-amber-200 bg-amber-50'
+        : tone === 'nominal'
+          ? 'text-emerald-700 border-emerald-200 bg-emerald-50'
+          : tone === 'idle'
+            ? 'text-slate-600 border-slate-200 bg-slate-50'
+            : 'text-blue-700 border-blue-200 bg-blue-50'
+    : tone === 'critical'
       ? 'text-red-300 border-red-500/40 bg-red-500/10'
       : tone === 'warning'
         ? 'text-amber-200 border-amber-500/40 bg-amber-500/10'
@@ -258,9 +296,13 @@ function Indicator({
             ? 'text-slate-300 border-white/10 bg-white/5'
             : 'text-cyan-200 border-cyan-500/30 bg-cyan-500/10';
   return (
-    <span className={`flex items-center gap-1.5 rounded-sm border px-2 py-1 ${color}`}>
-      {Icon ? <Icon size={11} strokeWidth={1.6} /> : <StatusLed tone={tone === 'idle' ? 'idle' : tone} size={6} />}
-      <span className="text-slate-400">{label}</span>
+    <span className={`flex items-center gap-1.5 rounded-md border px-2 py-1 ${color}`}>
+      {Icon ? (
+        <Icon size={11} strokeWidth={1.6} />
+      ) : (
+        <StatusLed tone={tone === 'idle' ? 'idle' : tone} size={6} pulse={!std} />
+      )}
+      <span className={std ? 'text-slate-500' : 'text-slate-400'}>{label}</span>
       <span>{value}</span>
     </span>
   );
