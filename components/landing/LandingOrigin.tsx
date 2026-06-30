@@ -26,7 +26,7 @@ export default function LandingOrigin() {
   return (
     <section
       ref={ref}
-      className="relative overflow-hidden bg-[#040810] px-4 py-28 md:px-8 md:py-36"
+      className="relative overflow-hidden bg-[#050816] px-4 py-28 md:px-8 md:py-36"
       aria-label="Why we built ModelEarth"
     >
       <motion.div style={{ y: bgY }} className="absolute inset-0 z-0">
@@ -38,7 +38,7 @@ export default function LandingOrigin() {
           className="object-cover opacity-80"
         />
       </motion.div>
-      <div className="pointer-events-none absolute inset-0 z-[1] bg-[#040810]/35" />
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-[#050816]/35" />
       <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-[#050816] via-[#050816]/10 to-[#050816]" />
 
       <motion.div

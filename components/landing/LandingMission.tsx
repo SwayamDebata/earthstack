@@ -33,7 +33,7 @@ export default function LandingMission() {
   return (
     <section
       ref={ref}
-      className="relative overflow-hidden bg-[#03070f] px-4 py-28 md:px-8 md:py-36"
+      className="relative overflow-hidden bg-[#050816] px-4 py-28 md:px-8 md:py-36"
       aria-label="Our mission"
     >
       <motion.div style={{ y: bgY }} className="absolute inset-0 z-0">
@@ -45,7 +45,9 @@ export default function LandingMission() {
           className="object-cover opacity-40"
         />
       </motion.div>
-      <div className="pointer-events-none absolute inset-0 z-[1] bg-[#03070f]/70" />
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-[#050816]/65" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-48 bg-gradient-to-b from-[#030806] to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-48 bg-gradient-to-t from-[#050816] to-transparent" />
       <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_75%_60%_at_50%_40%,rgba(16,185,129,0.12),transparent_60%)]" />
 
       <div className="relative z-10 mx-auto max-w-5xl text-center">

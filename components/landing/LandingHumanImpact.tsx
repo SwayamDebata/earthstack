@@ -17,7 +17,7 @@ export default function LandingHumanImpact() {
   return (
     <section
       ref={ref}
-      className="relative flex min-h-screen items-center overflow-hidden bg-[#0a0805] px-4 py-28 md:px-8 md:py-36"
+      className="relative flex min-h-screen items-center overflow-hidden bg-[#050816] px-4 py-28 md:px-8 md:py-36"
       aria-label="Who we're for"
     >
       {/* Full-bleed warm background photograph */}
@@ -31,11 +31,11 @@ export default function LandingHumanImpact() {
         />
       </motion.div>
 
-      {/* Warm legibility overlays: dark on the left for text, golden glow kept on the right */}
-      <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-[#0a0805] via-[#0a0805]/75 to-[#0a0805]/20" />
-      <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_60%_70%_at_18%_45%,rgba(0,0,0,0.55),transparent_60%)]" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-28 bg-gradient-to-b from-[#050816] to-transparent" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-28 bg-gradient-to-t from-[#050816] to-transparent" />
+      {/* Legibility overlays: dark on the left for text, golden glow kept on the right */}
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-[#050816] via-[#050816]/75 to-[#050816]/15" />
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_60%_70%_at_18%_45%,rgba(5,8,22,0.55),transparent_60%)]" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-48 bg-gradient-to-b from-[#050816] to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-48 bg-gradient-to-t from-[#050816] to-transparent" />
 
       <div className="relative z-10 mx-auto w-full max-w-6xl">
         <div className="max-w-xl">

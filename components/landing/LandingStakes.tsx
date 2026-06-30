@@ -23,7 +23,7 @@ export default function LandingStakes() {
   return (
     <section
       ref={ref}
-      className="relative flex min-h-screen items-center overflow-hidden bg-[#040810] px-4 py-28 md:px-8 md:py-36"
+      className="relative flex min-h-screen items-center overflow-hidden bg-[#050816] px-4 py-28 md:px-8 md:py-36"
       aria-label="Why ModelEarth exists"
     >
       {/* Background photograph */}
@@ -39,9 +39,10 @@ export default function LandingStakes() {
       </motion.div>
 
       {/* Legibility overlays */}
-      <div className="pointer-events-none absolute inset-0 z-[1] bg-[#040810]/55" />
-      <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-[#040810] via-[#040810]/35 to-[#040810]/80" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-40 bg-gradient-to-t from-[#050816] to-transparent" />
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-[#050816]/55" />
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-[#050816] via-[#050816]/35 to-[#050816]/80" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-48 bg-gradient-to-b from-[#050816] to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-48 bg-gradient-to-t from-[#050816] to-transparent" />
 
       <div className="relative z-10 mx-auto w-full max-w-4xl">
         <motion.p
