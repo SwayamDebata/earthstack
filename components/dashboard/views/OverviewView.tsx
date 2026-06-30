@@ -28,9 +28,24 @@ import SendAlertButton from '@/components/dashboard/alerts/SendAlertButton';
 import { useMission } from '@/components/dashboard/MissionContext';
 import { ScoreBar, Telemetry, Legend, ErrorBlock, EmptyBlock } from '@/components/dashboard/Atoms';
 import { numOrNull, num, severityToTone, relTime, toArray } from '@/components/dashboard/util';
+import {
+  btnPrimary,
+  btnSecondary,
+  chartAxisStroke,
+  chartGridStroke,
+  chartTooltip,
+  checkboxLabel,
+  isStd,
+  listRow,
+  listRowMeta,
+  listRowPrimary,
+  severityBadge,
+} from '@/lib/ui/standard-surface';
 
 export default function OverviewView() {
-  const { location, latencyMs, activeOnly, setActiveOnly } = useMission();
+  const { location, latencyMs, activeOnly, setActiveOnly, uiMode } = useMission();
+  const std = isStd(uiMode);
+  const chartTip = chartTooltip(uiMode);
 
   const [risk, riskMap, alerts, rainfall, rainfallStats, forecast, replay, mlLogs] = useQueries({
     queries: [
@@ -146,9 +161,9 @@ export default function OverviewView() {
       >
         <div className="flex flex-wrap items-center gap-2">
           <RegionChips />
-          <label className="flex cursor-pointer items-center gap-2 rounded-sm border border-cyan-400/20 bg-black/40 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-slate-300 hover:text-cyan-200">
-            <input type="checkbox" checked={activeOnly} onChange={() => setActiveOnly(!activeOnly)} className="h-3 w-3 accent-cyan-400" />
-            ACTIVE ALERTS ONLY
+          <label className={checkboxLabel(uiMode)}>
+            <input type="checkbox" checked={activeOnly} onChange={() => setActiveOnly(!activeOnly)} className={`h-3.5 w-3.5 ${std ? 'accent-blue-600' : 'accent-cyan-400'}`} />
+            {std ? 'Active alerts only' : 'ACTIVE ALERTS ONLY'}
           </label>
           <button
             type="button"
@@ -160,19 +175,19 @@ export default function OverviewView() {
               void forecast.refetch();
               void mlLogs.refetch();
             }}
-            className="flex items-center gap-1.5 rounded-sm border border-cyan-400/30 bg-cyan-500/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-cyan-200 hover:bg-cyan-500/15"
+            className={btnSecondary(uiMode)}
           >
-            <RefreshCw size={10} />
-            RESYNC ALL
+            <RefreshCw size={std ? 14 : 10} />
+            {std ? 'Resync all' : 'RESYNC ALL'}
           </button>
           <button
             type="button"
             onClick={() => replayRun.mutate()}
             disabled={replayRun.isPending}
-            className="flex items-center gap-1.5 rounded-sm border border-emerald-400/40 bg-emerald-500/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-emerald-200 transition hover:bg-emerald-500/20 disabled:opacity-50"
+            className={btnPrimary(uiMode)}
           >
-            <Play size={10} />
-            {replayRun.isPending ? 'REPLAYING…' : `RUN REPLAY · ${location.toUpperCase()}`}
+            <Play size={std ? 14 : 10} />
+            {replayRun.isPending ? (std ? 'Replaying…' : 'REPLAYING…') : std ? `Run replay · ${location}` : `RUN REPLAY · ${location.toUpperCase()}`}
           </button>
         </div>
       </HudFrame>
@@ -184,7 +199,7 @@ export default function OverviewView() {
         <div className="xl:col-span-8">
           <HudFrame
             label="GEOSPATIAL THEATRE"
-            subtitle="risk/map · mapbox dark-v11"
+            subtitle={std ? 'District risk map · Mapbox light' : 'risk/map · mapbox dark-v11'}
             status={riskMap.isError ? 'critical' : 'nominal'}
             statusText={riskMap.isLoading ? 'SYNC' : 'LIVE'}
             meta={[{ label: 'POINTS', value: String(riskMapList.length) }, { label: 'PITCH', value: '48°' }]}
@@ -255,25 +270,22 @@ export default function OverviewView() {
                         <stop offset="100%" stopColor="#a78bfa" stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="2 4" stroke="#1e293b" />
-                    <XAxis dataKey="t" stroke="#475569" tick={{ fontSize: 10, fontFamily: 'monospace' }} />
-                    <YAxis stroke="#475569" tick={{ fontSize: 10, fontFamily: 'monospace' }} width={32} />
-                    <Tooltip
-                      contentStyle={{ background: '#020617', border: '1px solid #22d3ee55', fontFamily: 'monospace', fontSize: 11 }}
-                      labelStyle={{ color: '#67e8f9' }}
-                    />
-                    <Area type="monotone" dataKey="observed" stroke="#22d3ee" strokeWidth={1.5} fill="url(#rainObserved)" />
-                    <Area type="monotone" dataKey="forecast" stroke="#a78bfa" strokeWidth={1.5} strokeDasharray="3 3" fill="url(#rainForecast)" />
-                    <Line type="monotone" dataKey="baseline" stroke="#f59e0b" strokeDasharray="4 4" strokeWidth={1} dot={false} />
+                    <CartesianGrid strokeDasharray="2 4" stroke={chartGridStroke(uiMode)} />
+                    <XAxis dataKey="t" stroke={chartAxisStroke(uiMode)} tick={{ fontSize: 10, fontFamily: std ? 'inherit' : 'monospace' }} />
+                    <YAxis stroke={chartAxisStroke(uiMode)} tick={{ fontSize: 10, fontFamily: std ? 'inherit' : 'monospace' }} width={32} />
+                    <Tooltip {...chartTip} />
+                    <Area type="monotone" dataKey="observed" stroke={std ? '#0284c7' : '#22d3ee'} strokeWidth={1.5} fill="url(#rainObserved)" />
+                    <Area type="monotone" dataKey="forecast" stroke={std ? '#7c3aed' : '#a78bfa'} strokeWidth={1.5} strokeDasharray="3 3" fill="url(#rainForecast)" />
+                    <Line type="monotone" dataKey="baseline" stroke={std ? '#d97706' : '#f59e0b'} strokeDasharray="4 4" strokeWidth={1} dot={false} />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
             )}
             <Legend
               items={[
-                { color: '#22d3ee', label: 'OBSERVED' },
-                { color: '#a78bfa', label: 'FORECAST' },
-                { color: '#f59e0b', label: 'BASELINE' },
+                { color: std ? '#0284c7' : '#22d3ee', label: std ? 'Observed' : 'OBSERVED' },
+                { color: std ? '#7c3aed' : '#a78bfa', label: std ? 'Forecast' : 'FORECAST' },
+                { color: std ? '#d97706' : '#f59e0b', label: std ? 'Baseline' : 'BASELINE' },
               ]}
             />
           </HudFrame>
@@ -294,14 +306,11 @@ export default function OverviewView() {
               <div className="h-44">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={forecastSeries.map((v, i) => ({ t: i + 1, forecast: v }))} margin={{ top: 6, right: 8, left: -16, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="2 4" stroke="#1e293b" />
-                    <XAxis dataKey="t" stroke="#475569" tick={{ fontSize: 10, fontFamily: 'monospace' }} />
-                    <YAxis stroke="#475569" tick={{ fontSize: 10, fontFamily: 'monospace' }} width={32} />
-                    <Tooltip
-                      contentStyle={{ background: '#020617', border: '1px solid #22d3ee55', fontFamily: 'monospace', fontSize: 11 }}
-                      labelStyle={{ color: '#67e8f9' }}
-                    />
-                    <Line type="monotone" dataKey="forecast" stroke="#22d3ee" strokeWidth={1.5} dot={false} />
+                    <CartesianGrid strokeDasharray="2 4" stroke={chartGridStroke(uiMode)} />
+                    <XAxis dataKey="t" stroke={chartAxisStroke(uiMode)} tick={{ fontSize: 10, fontFamily: std ? 'inherit' : 'monospace' }} />
+                    <YAxis stroke={chartAxisStroke(uiMode)} tick={{ fontSize: 10, fontFamily: std ? 'inherit' : 'monospace' }} width={32} />
+                    <Tooltip {...chartTip} />
+                    <Line type="monotone" dataKey="forecast" stroke={std ? '#0284c7' : '#22d3ee'} strokeWidth={1.5} dot={false} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -329,27 +338,24 @@ export default function OverviewView() {
                   const alertId = getAlertId(item);
                   const open = isAlertOpen(item);
                   return (
-                    <div key={String(item.id ?? idx)} className="grid grid-cols-[18px_1fr_auto_auto_auto] items-center gap-2 rounded-sm border border-white/5 bg-slate-950/50 px-2 py-1.5 transition hover:border-cyan-400/25 hover:bg-cyan-500/[0.04]">
-                      <StatusLed tone={tone} size={6} pulse={tone === 'critical'} />
+                    <div
+                      key={String(item.id ?? idx)}
+                      className={`grid grid-cols-[18px_1fr_auto_auto_auto] items-center gap-2 transition ${
+                        std
+                          ? `${listRow(uiMode)} hover:bg-slate-50`
+                          : 'rounded-sm border border-white/5 bg-slate-950/50 px-2 py-1.5 hover:border-cyan-400/25 hover:bg-cyan-500/[0.04]'
+                      }`}
+                    >
+                      <StatusLed tone={tone} size={6} pulse={!std && tone === 'critical'} />
                       <div className="min-w-0">
-                        <p className="truncate text-xs text-slate-100">{String(item.message ?? item.title ?? 'Untitled')}</p>
-                        <p className="truncate font-mono text-[10px] uppercase tracking-widest text-slate-500">
+                        <p className={listRowPrimary(uiMode)}>{String(item.message ?? item.title ?? 'Untitled')}</p>
+                        <p className={listRowMeta(uiMode)}>
                           {getAlertRegion(item)} · {relTime(item.timestamp ?? item.created_at)}
                         </p>
                       </div>
-                      <span
-                        className={`shrink-0 rounded-sm px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest ${
-                          tone === 'critical'
-                            ? 'bg-red-500/15 text-red-200 ring-1 ring-red-500/30'
-                            : tone === 'warning'
-                              ? 'bg-amber-500/15 text-amber-200 ring-1 ring-amber-500/30'
-                              : 'bg-cyan-500/15 text-cyan-200 ring-1 ring-cyan-500/30'
-                        }`}
-                      >
-                        {sev}
-                      </span>
-                      <span className="shrink-0 font-mono text-[9px] uppercase tracking-widest text-slate-500">
-                        {typeof item.status === 'string' ? String(item.status).toUpperCase() : open ? 'OPEN' : 'CLOSED'}
+                      <span className={`shrink-0 ${severityBadge(tone, uiMode)}`}>{sev}</span>
+                      <span className={`shrink-0 ${std ? 'text-xs text-slate-500' : 'font-mono text-[9px] uppercase tracking-widest text-slate-500'}`}>
+                        {typeof item.status === 'string' ? (std ? String(item.status) : String(item.status).toUpperCase()) : open ? (std ? 'Open' : 'OPEN') : std ? 'Closed' : 'CLOSED'}
                       </span>
                       {alertId !== null && open ? (
                         <SendAlertButton alertId={alertId} compact />
@@ -382,22 +388,25 @@ export default function OverviewView() {
             ) : mlList.length === 0 ? (
               <EmptyBlock message="no inference logs yet" />
             ) : (
-              <div className="max-h-72 space-y-1 overflow-auto pr-1 font-mono text-[10px]">
+              <div className={`max-h-72 space-y-1 overflow-auto pr-1 ${std ? 'text-sm' : 'font-mono text-[10px]'}`}>
                 {mlList.slice(0, 12).map((log, idx) => {
                   const rule = numOrNull(log.rule_score);
                   const ml = numOrNull(log.ml_score);
                   const final = numOrNull(log.final_score);
                   const shadow = Boolean(log.shadow_mode);
                   return (
-                    <div key={String(log.id ?? idx)} className="grid grid-cols-[44px_1fr_auto] items-center gap-2 rounded-sm border border-white/5 bg-slate-950/50 px-2 py-1">
-                      <span className="text-slate-500">#{String(idx + 1).padStart(3, '0')}</span>
-                      <div className="flex flex-wrap items-center gap-2 text-cyan-100/80">
+                    <div
+                      key={String(log.id ?? idx)}
+                      className={`grid grid-cols-[44px_1fr_auto] items-center gap-2 ${std ? listRow(uiMode) : 'rounded-sm border border-white/5 bg-slate-950/50 px-2 py-1'}`}
+                    >
+                      <span className={std ? 'text-xs text-slate-500' : 'text-slate-500'}>#{String(idx + 1).padStart(3, '0')}</span>
+                      <div className={`flex flex-wrap items-center gap-2 ${std ? 'text-sm text-slate-800' : 'text-cyan-100/80'}`}>
                         <span><span className="text-slate-500">rule</span>={rule !== null ? rule.toFixed(2) : 'n/a'}</span>
                         <span><span className="text-slate-500">ml</span>={ml !== null ? ml.toFixed(2) : 'n/a'}</span>
                         <span><span className="text-slate-500">final</span>={final !== null ? final.toFixed(2) : 'n/a'}</span>
                       </div>
-                      <span className={`shrink-0 rounded-sm px-1 py-0.5 text-[9px] uppercase tracking-widest ${shadow ? 'bg-violet-500/15 text-violet-200 ring-1 ring-violet-500/30' : 'bg-cyan-500/15 text-cyan-200 ring-1 ring-cyan-500/30'}`}>
-                        {shadow ? 'shadow' : 'live'}
+                      <span className={`shrink-0 ${severityBadge(shadow ? 'info' : 'nominal', uiMode)}`}>
+                        {shadow ? (std ? 'Shadow' : 'shadow') : std ? 'Live' : 'live'}
                       </span>
                     </div>
                   );

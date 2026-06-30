@@ -58,9 +58,7 @@ export default function MissionProfileSwitcher({ className = '' }: { className?:
               className={`flex min-h-[34px] items-center gap-2 rounded-md px-3 py-1.5 text-xs font-medium uppercase tracking-wide transition ${
                 active
                   ? std
-                    ? p.id === 'operational'
-                      ? 'bg-blue-600 text-white shadow-sm'
-                      : 'bg-slate-700 text-white shadow-sm'
+                    ? 'bg-blue-600 text-white shadow-sm'
                     : p.id === 'operational'
                       ? 'bg-emerald-500/20 text-emerald-50 ring-1 ring-emerald-400/40'
                       : 'bg-cyan-500/20 text-cyan-50 ring-1 ring-cyan-400/40'

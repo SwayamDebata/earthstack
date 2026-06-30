@@ -59,19 +59,31 @@ export function severityBadge(tone: SurfaceTone, mode: UiMode) {
     return `rounded-sm px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest ${cmd[tone]}`;
   }
   const gov: Record<SurfaceTone, string> = {
-    critical: 'border border-red-300 bg-red-50 text-red-900',
-    warning: 'border border-amber-300 bg-amber-50 text-amber-950',
-    nominal: 'border border-emerald-300 bg-emerald-50 text-emerald-950',
-    info: 'border border-blue-300 bg-blue-50 text-blue-900',
-    idle: 'border border-slate-300 bg-slate-50 text-slate-700',
+    critical: 'border-2 border-red-600 bg-white text-red-950',
+    warning: 'border-2 border-amber-600 bg-white text-amber-950',
+    nominal: 'border-2 border-emerald-600 bg-white text-emerald-950',
+    info: 'border-2 border-blue-600 bg-white text-blue-950',
+    idle: 'border border-slate-400 bg-white text-slate-800',
   };
   return `rounded-md px-2 py-0.5 text-xs font-semibold ${gov[tone]}`;
 }
 
 export function btnSecondary(mode: UiMode) {
   return isStd(mode)
-    ? 'inline-flex items-center gap-1.5 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50'
+    ? 'inline-flex items-center gap-1.5 rounded-md border border-slate-400 bg-white px-2.5 py-1 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50'
     : 'flex items-center gap-1.5 rounded-sm border border-cyan-400/40 bg-cyan-500/10 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-cyan-200 hover:bg-cyan-500/20';
+}
+
+export function btnPrimary(mode: UiMode) {
+  return isStd(mode)
+    ? 'inline-flex items-center gap-1.5 rounded-md bg-blue-600 px-2.5 py-1 text-xs font-semibold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50'
+    : 'flex items-center gap-1.5 rounded-sm border border-emerald-400/40 bg-emerald-500/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-emerald-200 transition hover:bg-emerald-500/20 disabled:opacity-50';
+}
+
+export function checkboxLabel(mode: UiMode) {
+  return isStd(mode)
+    ? 'flex cursor-pointer items-center gap-2 rounded-md border border-slate-300 bg-white px-2.5 py-1 text-xs font-medium text-slate-800 shadow-sm'
+    : 'flex cursor-pointer items-center gap-2 rounded-sm border border-cyan-400/20 bg-black/40 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-slate-300 hover:text-cyan-200';
 }
 
 export function selectField(mode: UiMode) {

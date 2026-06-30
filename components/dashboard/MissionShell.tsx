@@ -139,11 +139,17 @@ export default function MissionShell({ children }: { children: ReactNode }) {
           {/* Brand + clock */}
           <div className="flex items-center justify-between gap-3 md:justify-start">
             <div className="flex items-center gap-2">
-              <div className="mission-brand-badge flex h-8 w-8 shrink-0 items-center justify-center rounded-sm border border-cyan-400/40 bg-cyan-500/10 font-mono text-[10px] font-bold tracking-widest text-cyan-300">
+              <div
+                className={`mission-brand-badge flex h-8 w-8 shrink-0 items-center justify-center rounded-sm font-mono text-[10px] font-bold tracking-widest ${
+                  std
+                    ? 'border border-slate-300 bg-blue-50 text-blue-700'
+                    : 'border border-cyan-400/40 bg-cyan-500/10 text-cyan-300'
+                }`}
+              >
                 ME
               </div>
               <div className="leading-none">
-                <p className="text-sm font-semibold tracking-wide text-white">ModelEarth</p>
+                <p className={`text-sm font-semibold tracking-wide ${std ? 'text-slate-900' : 'text-white'}`}>ModelEarth</p>
                 <p
                   className={
                     std
@@ -162,7 +168,7 @@ export default function MissionShell({ children }: { children: ReactNode }) {
           </div>
 
           {/* Mission profile - isolated from telemetry */}
-          <div className="flex justify-center border-y border-cyan-400/10 py-2 md:border-y-0 md:py-0">
+          <div className={`flex justify-center py-2 md:py-0 ${std ? '' : 'border-y border-cyan-400/10 md:border-y-0'}`}>
             <MissionProfileSwitcher />
           </div>
 
@@ -278,14 +284,14 @@ function Indicator({
   const std = uiMode === 'standard';
   const color = std
     ? tone === 'critical'
-      ? 'text-red-700 border-red-200 bg-red-50'
+      ? 'border-2 border-red-600 bg-white text-red-950 font-semibold'
       : tone === 'warning'
-        ? 'text-amber-700 border-amber-200 bg-amber-50'
+        ? 'border-2 border-amber-600 bg-white text-amber-950 font-semibold'
         : tone === 'nominal'
-          ? 'text-emerald-700 border-emerald-200 bg-emerald-50'
+          ? 'border-2 border-emerald-600 bg-white text-emerald-950 font-semibold'
           : tone === 'idle'
-            ? 'text-slate-600 border-slate-200 bg-slate-50'
-            : 'text-blue-700 border-blue-200 bg-blue-50'
+            ? 'border border-slate-400 bg-white text-slate-800'
+            : 'border-2 border-blue-600 bg-white text-blue-950 font-semibold'
     : tone === 'critical'
       ? 'text-red-300 border-red-500/40 bg-red-500/10'
       : tone === 'warning'
@@ -302,8 +308,8 @@ function Indicator({
       ) : (
         <StatusLed tone={tone === 'idle' ? 'idle' : tone} size={6} pulse={!std} />
       )}
-      <span className={std ? 'text-slate-500' : 'text-slate-400'}>{label}</span>
-      <span>{value}</span>
+      <span className={std ? 'text-xs font-medium text-slate-600' : 'text-slate-400'}>{label}</span>
+      <span className={std ? 'text-xs font-semibold' : ''}>{value}</span>
     </span>
   );
 }

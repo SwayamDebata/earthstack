@@ -102,8 +102,10 @@ export function Telemetry({
 }
 
 export function Legend({ items }: { items: { color: string; label: string }[] }) {
+  const mode = useDashboardUiMode();
+  const std = mode === 'standard';
   return (
-    <div className="mt-2 flex flex-wrap gap-3 font-mono text-[9px] uppercase tracking-widest text-slate-500">
+    <div className={`mt-2 flex flex-wrap gap-3 ${std ? 'text-xs text-slate-600' : 'font-mono text-[9px] uppercase tracking-widest text-slate-500'}`}>
       {items.map((it) => (
         <span key={it.label} className="flex items-center gap-1.5">
           <span className="inline-block h-1.5 w-3 rounded-sm" style={{ background: it.color }} />
@@ -115,15 +117,29 @@ export function Legend({ items }: { items: { color: string; label: string }[] })
 }
 
 export function ErrorBlock({ message, onRetry }: { message: string; onRetry: () => void }) {
+  const mode = useDashboardUiMode();
+  const std = mode === 'standard';
   return (
-    <div className="flex flex-col items-start gap-2 rounded-sm border border-red-500/30 bg-red-500/5 p-3">
-      <p className="font-mono text-[10px] uppercase tracking-widest text-red-200">UPSTREAM FAULT · {message}</p>
+    <div
+      className={
+        std
+          ? 'flex flex-col items-start gap-2 rounded-md border-2 border-red-600 bg-white p-3'
+          : 'flex flex-col items-start gap-2 rounded-sm border border-red-500/30 bg-red-500/5 p-3'
+      }
+    >
+      <p className={std ? 'text-sm font-semibold text-red-950' : 'font-mono text-[10px] uppercase tracking-widest text-red-200'}>
+        {std ? `Request failed — ${message}` : `UPSTREAM FAULT · ${message}`}
+      </p>
       <button
         type="button"
         onClick={onRetry}
-        className="rounded-sm border border-cyan-400/40 bg-cyan-500/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-cyan-200 hover:bg-cyan-500/15"
+        className={
+          std
+            ? 'rounded-md border border-slate-400 bg-white px-2.5 py-1 text-xs font-semibold text-slate-800 hover:bg-slate-50'
+            : 'rounded-sm border border-cyan-400/40 bg-cyan-500/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-cyan-200 hover:bg-cyan-500/15'
+        }
       >
-        RETRANSMIT
+        {std ? 'Retry' : 'RETRANSMIT'}
       </button>
     </div>
   );
