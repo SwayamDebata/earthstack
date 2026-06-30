@@ -23,10 +23,10 @@ export default function LandingHorizonCTA() {
 
         <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.4em] text-cyan-300/80">Horizon</p>
         <h2 className="text-3xl font-bold tracking-tight text-white md:text-5xl">
-          Early warning your program can deploy
+          The next flood is already forming somewhere
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-slate-400">
-          Live command preview today. Verified replay for every stakeholder who asks: would you have warned in time?
+          Let&apos;s make sure someone sees it in time. Explore the live command center today, or bring ModelEarth to your district and rewind a real flood to see when we&apos;d have raised the alarm.
         </p>
 
           <div className="mt-10 flex flex-col flex-wrap items-center justify-center gap-4 sm:flex-row">

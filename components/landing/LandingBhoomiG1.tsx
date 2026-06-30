@@ -136,22 +136,22 @@ export default function LandingBhoomiG1() {
             <div className="pointer-events-none absolute -left-px top-8 h-16 w-px bg-gradient-to-b from-emerald-400/60 to-transparent" />
 
             <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.45em] text-emerald-400/80">
-              Bhoomi G1 · In development
+              Meet Bhoomi G1 · In development
             </p>
 
             <h2 className="text-3xl font-semibold leading-[1.08] tracking-tight text-white md:text-5xl lg:text-[3.25rem]">
-              Built for the
+              It watches the river
               <span className="block bg-gradient-to-r from-emerald-200 via-cyan-100 to-emerald-300 bg-clip-text text-transparent">
-                Physical World
+                when no one else can
               </span>
             </h2>
 
             <p className="mt-5 text-lg font-medium text-emerald-100/90 md:text-xl">
-              Field-grade sensing for flood basins and river corridors.
+              It sits where the cloud can&apos;t reach. On the riverbank, in the dark, through the storm.
             </p>
 
             <p className="mt-4 max-w-lg text-sm leading-relaxed text-slate-400 md:text-base">
-              Bhoomi G1 extends ModelEarth to ground truth: local conditions, edge telemetry, and resilient capture when cloud coverage gaps matter most.
+              When satellites are clouded over and networks go down, Bhoomi G1 keeps its eyes open, measuring water, rain, and ground truth where it actually rises. Named for the land it stands on, it is ModelEarth&apos;s last line of sight to the people downstream.
             </p>
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
