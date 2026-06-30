@@ -9,7 +9,7 @@ import {
   type PilotRequestPayload,
 } from '@/lib/access/pilot';
 import { useSoundOptional } from '@/components/audio/SoundProvider';
-import { useMission } from '@/components/dashboard/MissionContext';
+import { useDashboardUiMode } from '@/lib/ui/use-dashboard-ui-mode';
 
 type Props = {
   open: boolean;
@@ -29,7 +29,7 @@ export default function PilotRequestModal({
   reason,
 }: Props) {
   const sound = useSoundOptional();
-  const { uiMode } = useMission();
+  const uiMode = useDashboardUiMode();
   const std = uiMode === 'standard';
   const unlockInputRef = useRef<HTMLInputElement>(null);
   const [panel, setPanel] = useState<Panel>('request');

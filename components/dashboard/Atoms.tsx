@@ -1,6 +1,6 @@
 'use client';
 
-import { useMission } from '@/components/dashboard/MissionContext';
+import { useDashboardUiMode } from '@/lib/ui/use-dashboard-ui-mode';
 import type { SeverityTone } from './util';
 
 export function ScoreBar({
@@ -48,7 +48,7 @@ export function Telemetry({
   value: string;
   tone?: SeverityTone;
 }) {
-  const { uiMode } = useMission();
+  const uiMode = useDashboardUiMode();
   const std = uiMode === 'standard';
   const valueColor = std
     ? tone === 'critical'
