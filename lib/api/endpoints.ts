@@ -6,9 +6,11 @@ import {
   AlertDeliveryInfoSchema,
   AlertNotifySchema,
   AlertsSchema,
+  BriefingSchema,
   FeaturesLatestSchema,
   ForecastSchema,
   HealthSchema,
+  RiskExplainSchema,
   MlBacktestSummarySchema,
   MlInferenceLogsSchema,
   RainfallLocationSchema,
@@ -31,6 +33,9 @@ export const api = {
   risk: (location: string, signal?: AbortSignal) => apiRequest(`/risk?location=${encodeURIComponent(location)}`, RiskSchema, { signal }),
   debugRisk: (location: string, signal?: AbortSignal) => apiRequest(`/debug/risk?location=${encodeURIComponent(location)}`, RiskSchema, { signal }),
   riskMap: (signal?: AbortSignal) => apiRequest('/risk/map', RiskMapSchema, { signal }),
+  briefing: (signal?: AbortSignal) => apiRequest('/briefing/odisha', BriefingSchema, { signal, cache: 'no-store' }),
+  riskExplain: (location: string, signal?: AbortSignal) =>
+    apiRequest(`/risk/explain/${encodeURIComponent(location)}`, RiskExplainSchema, { signal }),
   alerts: (activeOnly = true, limit = 20, signal?: AbortSignal) =>
     apiRequest(`/alerts?limit=${limit}&active_only=${activeOnly}`, AlertsSchema, { signal }),
   alertContacts: (signal?: AbortSignal) => apiRequest('/alert-contacts', AlertContactsSchema, { signal }),

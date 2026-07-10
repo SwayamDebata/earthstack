@@ -17,6 +17,14 @@ export const API_BASE_URL = firstNonEmptyBaseUrl(
   process.env.NEXT_PUBLIC_API_BASE_URL,
 );
 
+/**
+ * Public API base used for user-facing deep links (e.g. historical replay URLs).
+ * Unlike API_BASE_URL (server/proxy only), this must be a browser-reachable origin.
+ * Config-driven via NEXT_PUBLIC_API_BASE_URL; defaults to the deployed API.
+ */
+export const PUBLIC_API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL?.trim().replace(/\/$/, '') || 'https://api.modelearth.in';
+
 /** Upstream timeout for the Next.js proxy (ms). */
 export const API_UPSTREAM_TIMEOUT_MS = Number(process.env.API_UPSTREAM_TIMEOUT_MS ?? '45000');
 /**

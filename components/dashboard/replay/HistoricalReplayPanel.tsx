@@ -70,9 +70,15 @@ function riskToColor(level?: string) {
 
 type EventSelection = { eventId: string; source?: string };
 
-export default function HistoricalReplayPanel({ tourMode = false }: { tourMode?: boolean }) {
+export default function HistoricalReplayPanel({
+  tourMode = false,
+  initialEvent = null,
+}: {
+  tourMode?: boolean;
+  initialEvent?: EventSelection | null;
+}) {
   const sound = useSoundOptional();
-  const [selection, setSelection] = useState<EventSelection | null>(null);
+  const [selection, setSelection] = useState<EventSelection | null>(initialEvent);
   const [frameIdx, setFrameIdx] = useState(0);
   const [playing, setPlaying] = useState(true);
   const [showPicker, setShowPicker] = useState(false);

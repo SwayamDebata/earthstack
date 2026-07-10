@@ -238,6 +238,101 @@ export const MlBacktestSummarySchema = z
   })
   .passthrough();
 
+/** Historical similarity event. Present in both briefing districts and risk-explain. */
+export const SimilarEventSchema = z
+  .object({
+    event_id: z.string().nullable().optional(),
+    source: z.string().nullable().optional(),
+    region: z.string().nullable().optional(),
+    date: z.string().nullable().optional(),
+    river_name: z.string().nullable().optional(),
+    peak_water_level: z.number().nullable().optional(),
+    severity: z.string().nullable().optional(),
+    flood_type: z.string().nullable().optional(),
+    description: z.string().nullable().optional(),
+    similarity_pct: z.number().nullable().optional(),
+    replay_url: z.string().nullable().optional(),
+  })
+  .passthrough();
+
+/** GET /briefing/odisha — state-wide situation for the War Room landing. */
+const BriefingDistrictSchema = z
+  .object({
+    location: z.string(),
+    severity: z.string().optional(),
+    risk_score: z.number().nullable().optional(),
+    confidence: z.number().nullable().optional(),
+    trend: z.string().nullable().optional(),
+    top_reason: z.string().nullable().optional(),
+    top_action: z.string().nullable().optional(),
+    primary_driver: z.string().nullable().optional(),
+    similar_event: SimilarEventSchema.nullable().optional(),
+  })
+  .passthrough();
+
+const BriefingTopRiskSchema = z
+  .object({
+    location: z.string(),
+    severity: z.string().optional(),
+    confidence: z.number().nullable().optional(),
+  })
+  .passthrough();
+
+export const BriefingSchema = z
+  .object({
+    ok: z.boolean().optional(),
+    generated_at: z.string().optional(),
+    region: z.string().optional(),
+    summary: z.string().optional(),
+    counts: z.record(z.string(), z.number()).optional().default({}),
+    attention_count: z.number().optional().default(0),
+    districts: z.array(BriefingDistrictSchema).optional().default([]),
+    top_risks: z.array(BriefingTopRiskSchema).optional().default([]),
+    top_actions: z.array(z.string()).optional().default([]),
+    errors: z.array(z.unknown()).optional().default([]),
+    disclaimer: z.string().optional(),
+  })
+  .passthrough();
+
+/** GET /risk/explain/{location} — SHAP-style evidence for a single district. */
+const WhyFactorSchema = z
+  .object({
+    factor: z.string(),
+    contribution_pct: z.number().nullable().optional(),
+    value: z.number().nullable().optional(),
+    unit: z.string().nullable().optional(),
+  })
+  .passthrough();
+
+export const RiskExplainSchema = z
+  .object({
+    ok: z.boolean().optional(),
+    location: z.string().optional(),
+    timestamp: z.string().optional(),
+    headline: z.string().optional(),
+    risk_level: z.string().optional(),
+    severity: z.string().optional(),
+    risk_score: z.number().nullable().optional(),
+    confidence: z.number().nullable().optional(),
+    confidence_factors: z.array(z.string()).optional().default([]),
+    trend: z.string().nullable().optional(),
+    time_to_peak: z.string().nullable().optional(),
+    why: z.array(WhyFactorSchema).optional().default([]),
+    reasons: z.array(z.string()).optional().default([]),
+    suggested_actions: z.array(z.string()).optional().default([]),
+    similar_event: SimilarEventSchema.nullable().optional(),
+    hybrid_mode: z.string().nullable().optional(),
+    evidence: z.record(z.string(), z.unknown()).optional().default({}),
+  })
+  .passthrough();
+
+export type SimilarEvent = z.infer<typeof SimilarEventSchema>;
+export type Briefing = z.infer<typeof BriefingSchema>;
+export type BriefingDistrict = z.infer<typeof BriefingDistrictSchema>;
+export type BriefingTopRisk = z.infer<typeof BriefingTopRiskSchema>;
+export type RiskExplain = z.infer<typeof RiskExplainSchema>;
+export type WhyFactor = z.infer<typeof WhyFactorSchema>;
+
 export type Health = z.infer<typeof HealthSchema>;
 export type WeatherLatest = z.infer<typeof WeatherLatestSchema>;
 export type RiversLatest = z.infer<typeof RiversLatestSchema>;

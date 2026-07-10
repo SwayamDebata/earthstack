@@ -16,6 +16,7 @@ import {
 import { useMission } from '@/components/dashboard/MissionContext';
 import RegionChips from '@/components/dashboard/RegionChips';
 import RiskMapPanel from '@/components/dashboard/RiskMapPanel';
+import WarRoom from '@/components/dashboard/warroom/WarRoom';
 import SituationSummaryCard from '@/components/dashboard/operational/SituationSummaryCard';
 import ExplainabilityPanel from '@/components/dashboard/operational/ExplainabilityPanel';
 import ActionRecommendations from '@/components/dashboard/operational/ActionRecommendations';
@@ -96,6 +97,8 @@ export default function OpsCommandView() {
         </div>
         <RegionChips />
       </header>
+
+      <WarRoom />
 
       {risk.isError ? (
         <ErrorBlock message="risk assessment unavailable" onRetry={() => void risk.refetch()} />

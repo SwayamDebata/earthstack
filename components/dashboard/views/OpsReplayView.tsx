@@ -12,6 +12,9 @@ import HistoricalReplayPanel from '@/components/dashboard/replay/HistoricalRepla
 export default function OpsReplayView() {
   const searchParams = useSearchParams();
   const tour = searchParams.get('tour') === '1';
+  const eventId = searchParams.get('event');
+  const source = searchParams.get('source');
+  const initialEvent = eventId ? { eventId, source: source ?? undefined } : null;
 
   return (
     <div className="space-y-4 p-3 md:p-4">
@@ -40,7 +43,7 @@ export default function OpsReplayView() {
         </p>
       </header>
 
-      <HistoricalReplayPanel tourMode={tour} />
+      <HistoricalReplayPanel tourMode={tour} initialEvent={initialEvent} />
     </div>
   );
 }
