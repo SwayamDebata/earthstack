@@ -11,6 +11,7 @@ import {
   FloodBenchSummarySchema,
   ForecastSchema,
   HealthSchema,
+  MonsoonScorecardSchema,
   RiskExplainSchema,
   MlBacktestSummarySchema,
   MlInferenceLogsSchema,
@@ -39,6 +40,12 @@ export const api = {
     apiRequest(`/risk/explain/${encodeURIComponent(location)}`, RiskExplainSchema, { signal }),
   floodbenchSummary: (signal?: AbortSignal) =>
     apiRequest('/floodbench/summary', FloodBenchSummarySchema, { signal }),
+  monsoonScorecard: (seasonStart?: string, signal?: AbortSignal) =>
+    apiRequest(
+      `/monsoon/scorecard${seasonStart ? `?season_start=${encodeURIComponent(seasonStart)}` : ''}`,
+      MonsoonScorecardSchema,
+      { signal, cache: 'no-store' },
+    ),
   alerts: (activeOnly = true, limit = 20, signal?: AbortSignal) =>
     apiRequest(`/alerts?limit=${limit}&active_only=${activeOnly}`, AlertsSchema, { signal }),
   alertContacts: (signal?: AbortSignal) => apiRequest('/alert-contacts', AlertContactsSchema, { signal }),

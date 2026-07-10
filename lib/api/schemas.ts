@@ -432,6 +432,107 @@ export const FloodBenchSummarySchema = z
   })
   .passthrough();
 
+/** GET /monsoon/scorecard — live-season shadow/advisory track record. */
+const MonsoonCityDetectionSchema = z
+  .object({
+    events: z.number().optional(),
+    alerted_medium: z.number().optional(),
+    alerted_high: z.number().optional(),
+    recall_medium: z.number().optional(),
+    recall_high: z.number().optional(),
+  })
+  .passthrough();
+
+const MonsoonDetectionSchema = z
+  .object({
+    total_events: z.number().optional(),
+    alerted_medium: z.number().optional(),
+    alerted_high: z.number().optional(),
+    recall_medium: z.number().optional(),
+    recall_high: z.number().optional(),
+    by_city: z.record(z.string(), MonsoonCityDetectionSchema).optional().default({}),
+    label: z.string().optional(),
+  })
+  .passthrough();
+
+const MonsoonShadowMlSchema = z
+  .object({
+    events_with_ml_score: z.number().optional(),
+    ml_elevated_count: z.number().optional(),
+    agreement_with_rule_pct: z.number().optional(),
+    note: z.string().optional(),
+  })
+  .passthrough();
+
+const MonsoonCityTrustSchema = z
+  .object({
+    consecutive_clean_days: z.number().optional(),
+    target_days: z.number().optional(),
+    meets_target: z.boolean().optional(),
+  })
+  .passthrough();
+
+const MonsoonFalseHighDaySchema = z
+  .object({
+    day: z.string().optional(),
+    location: z.string().optional(),
+    max_rule: z.number().optional(),
+    max_ml: z.number().optional(),
+    max_past_rain_mm: z.number().optional(),
+  })
+  .passthrough();
+
+const MonsoonDryDaySchema = z
+  .object({
+    target_days: z.number().optional(),
+    trust_gate_passed: z.boolean().optional(),
+    min_consecutive_clean_days: z.number().optional(),
+    false_high_days: z.array(MonsoonFalseHighDaySchema).optional().default([]),
+    per_city: z.record(z.string(), MonsoonCityTrustSchema).optional().default({}),
+    notes: z.string().optional(),
+  })
+  .passthrough();
+
+const MonsoonEventSchema = z
+  .object({
+    event_id: z.string(),
+    region: z.string().optional(),
+    date: z.string().optional(),
+    peak_rule_score: z.number().nullable().optional(),
+    severity: z.string().optional(),
+    alerted: z.boolean().optional(),
+    alerted_high: z.boolean().optional(),
+    peak_ml_score: z.number().nullable().optional(),
+    ml_elevated: z.boolean().nullable().optional(),
+    past_rain_mm: z.number().nullable().optional(),
+    forecast_rain_mm: z.number().nullable().optional(),
+    imd_rain_mm: z.number().nullable().optional(),
+    source: z.string().optional(),
+    notes: z.string().optional(),
+  })
+  .passthrough();
+
+export const MonsoonScorecardSchema = z
+  .object({
+    ok: z.boolean().optional(),
+    generated_at: z.string().optional(),
+    season_start: z.string().optional(),
+    mode: z.string().optional(),
+    disclaimer: z.string().optional(),
+    headline_numbers: z.array(z.string()).optional().default([]),
+    detection: MonsoonDetectionSchema.optional(),
+    shadow_ml: MonsoonShadowMlSchema.optional(),
+    dry_day_discipline: MonsoonDryDaySchema.optional(),
+    events: z.array(MonsoonEventSchema).optional().default([]),
+  })
+  .passthrough();
+
+export type MonsoonScorecard = z.infer<typeof MonsoonScorecardSchema>;
+export type MonsoonEvent = z.infer<typeof MonsoonEventSchema>;
+export type MonsoonCityDetection = z.infer<typeof MonsoonCityDetectionSchema>;
+export type MonsoonCityTrust = z.infer<typeof MonsoonCityTrustSchema>;
+export type MonsoonFalseHighDay = z.infer<typeof MonsoonFalseHighDaySchema>;
+
 export type FloodBenchSummary = z.infer<typeof FloodBenchSummarySchema>;
 export type FloodBenchEvent = z.infer<typeof FloodBenchEventSchema>;
 export type FloodBenchCoverageScore = z.infer<typeof FloodBenchCoverageScoreSchema>;

@@ -6,6 +6,7 @@ import { RefreshCw, ShieldAlert, Info, Trophy } from 'lucide-react';
 import { api } from '@/lib/api/endpoints';
 import { useDashboardUiMode } from '@/lib/ui/use-dashboard-ui-mode';
 import { PageTitle, ErrorBlock } from '@/components/dashboard/Atoms';
+import MonsoonTrackRecord from '@/components/dashboard/warroom/MonsoonTrackRecord';
 import { btnSecondary, panelCard } from '@/lib/ui/standard-surface';
 import { coverageBadgeClass, coverageColor } from '@/lib/ui/severity';
 import type {
@@ -187,6 +188,8 @@ export default function BenchmarkView() {
           ) : null}
         </>
       ) : null}
+
+      <MonsoonTrackRecord />
     </div>
   );
 }
