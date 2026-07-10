@@ -15,6 +15,7 @@ import {
   Shield,
   History,
   Lock,
+  Trophy,
 } from 'lucide-react';
 import { useMission } from '@/components/dashboard/MissionContext';
 
@@ -26,12 +27,14 @@ const analyticsItems = [
   { href: '/dashboard/forecast', label: 'Forecast', icon: Satellite },
   { href: '/dashboard/ml', label: 'ML', icon: Brain },
   { href: '/dashboard/replay', label: 'Replay', icon: Film },
+  { href: '/dashboard/benchmark', label: 'Bench', icon: Trophy },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ] as const;
 
 const operationalItems = [
   { href: '/dashboard/ops', label: 'Command', icon: Shield, match: 'exact' as const },
   { href: '/dashboard/ops/replay', label: 'Replay', icon: History },
+  { href: '/dashboard/benchmark', label: 'Bench', icon: Trophy },
 ] as const;
 
 const operationalPilotItems = [

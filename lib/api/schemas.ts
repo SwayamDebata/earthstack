@@ -326,6 +326,121 @@ export const RiskExplainSchema = z
   })
   .passthrough();
 
+/** GET /floodbench/summary — offline, reproducible credibility benchmark. */
+const FloodBenchEventSchema = z
+  .object({
+    id: z.string(),
+    name: z.string().optional(),
+    date: z.string().optional(),
+    city: z.string().optional(),
+    hazard_type: z.string().optional(),
+    gauged: z.boolean().optional(),
+    river: z.string().nullable().optional(),
+    in_arena: z.boolean().optional(),
+    citation: z.string().optional(),
+    coverage: z.record(z.string(), z.string()).optional().default({}),
+    note: z.string().optional(),
+  })
+  .passthrough();
+
+const FloodBenchCoverageScoreSchema = z
+  .object({
+    events: z.number().optional(),
+    covered_full: z.number().optional(),
+    covered_partial: z.number().optional(),
+    not_covered: z.number().optional(),
+    coverage_score_pct: z.number().optional(),
+  })
+  .passthrough();
+
+const FloodBenchScoreGroupSchema = z.record(z.string(), FloodBenchCoverageScoreSchema);
+
+const FloodBenchMlSchema = z
+  .object({
+    model: z.string().optional(),
+    label_source: z.string().optional(),
+    leave_one_region_out_mean_recall: z.number().optional(),
+    event_holdout: z
+      .object({
+        recall: z.number().optional(),
+        precision: z.number().optional(),
+        f1: z.number().optional(),
+        roc_auc: z.number().optional(),
+      })
+      .passthrough()
+      .optional(),
+    operational_holdout: z
+      .object({
+        n_negatives: z.number().optional(),
+        false_positive_rate: z.number().optional(),
+        decision_threshold: z.number().optional(),
+      })
+      .passthrough()
+      .optional(),
+    calibration: z
+      .object({
+        mean_predicted_when_no_flood: z.number().optional(),
+        mean_predicted_when_flood: z.number().optional(),
+        interpretation: z.string().optional(),
+      })
+      .passthrough()
+      .optional(),
+    label: z.string().optional(),
+  })
+  .passthrough();
+
+const FloodBenchRuleSchema = z
+  .object({
+    engine: z.string().optional(),
+    'recall_at_T-24h': z.number().optional(),
+    'recall_at_T-48h': z.number().optional(),
+    note: z.string().optional(),
+    label: z.string().optional(),
+  })
+  .passthrough();
+
+export const FloodBenchSummarySchema = z
+  .object({
+    ok: z.boolean().optional(),
+    generated_at: z.string().optional(),
+    name: z.string().optional(),
+    arena: z.string().optional(),
+    disclaimer: z.string().optional(),
+    contenders: z.record(z.string(), z.string()).optional().default({}),
+    headline_numbers: z.array(z.string()).optional().default([]),
+    coverage: z
+      .object({
+        methodology: z.string().optional(),
+        systems: z.record(z.string(), z.string()).optional().default({}),
+        per_event: z.array(FloodBenchEventSchema).optional().default([]),
+        all_events: FloodBenchScoreGroupSchema.optional().default({}),
+        modelearth_arena_only: FloodBenchScoreGroupSchema.optional().default({}),
+        urban_pluvial_only: FloodBenchScoreGroupSchema.optional().default({}),
+        arena_definition: z.string().optional(),
+      })
+      .passthrough()
+      .optional(),
+    detection: z
+      .object({
+        ModelEarth_ML_v2: FloodBenchMlSchema.optional(),
+        ModelEarth_rule_v2_2: FloodBenchRuleSchema.optional(),
+        baselines: z.record(z.string(), z.unknown()).optional().default({}),
+        cross_vendor_note: z.string().optional(),
+      })
+      .passthrough()
+      .optional(),
+  })
+  .passthrough();
+
+export type FloodBenchSummary = z.infer<typeof FloodBenchSummarySchema>;
+export type FloodBenchEvent = z.infer<typeof FloodBenchEventSchema>;
+export type FloodBenchCoverageScore = z.infer<typeof FloodBenchCoverageScoreSchema>;
+export type FloodBenchBaseline = {
+  recall?: number | string;
+  false_positive_rate?: number | string;
+  why?: string;
+};
+
 export type SimilarEvent = z.infer<typeof SimilarEventSchema>;
 export type Briefing = z.infer<typeof BriefingSchema>;
 export type BriefingDistrict = z.infer<typeof BriefingDistrictSchema>;

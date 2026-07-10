@@ -90,6 +90,48 @@ export function needsAttention(input: unknown): boolean {
   return key === 'CRITICAL' || key === 'HIGH' || key === 'MEDIUM';
 }
 
+/**
+ * Coverage scale for the FloodBench matrix. Same helper family as severity,
+ * mapped to yes = green, partial = amber, no = grey/empty.
+ */
+export type CoverageKey = 'yes' | 'partial' | 'no';
+
+export function normalizeCoverage(input: unknown): CoverageKey {
+  const v = String(input ?? '').trim().toLowerCase();
+  if (v === 'yes' || v === 'full' || v === 'covered') return 'yes';
+  if (v === 'partial' || v === 'part') return 'partial';
+  return 'no';
+}
+
+type CoverageStyle = { key: CoverageKey; label: string; hex: string };
+
+const COVERAGE_STYLE: Record<CoverageKey, CoverageStyle> = {
+  yes: { key: 'yes', label: 'Yes', hex: '#10b981' },
+  partial: { key: 'partial', label: 'Partial', hex: '#f59e0b' },
+  no: { key: 'no', label: 'No', hex: '#64748b' },
+};
+
+export function coverageColor(input: unknown): CoverageStyle {
+  return COVERAGE_STYLE[normalizeCoverage(input)];
+}
+
+export function coverageBadgeClass(input: unknown, mode: UiMode): string {
+  const key = normalizeCoverage(input);
+  const base = 'inline-flex min-w-[3.5rem] items-center justify-center rounded px-2 py-1 text-[11px] font-semibold uppercase tracking-wide';
+  const std = mode === 'standard';
+  const light: Record<CoverageKey, string> = {
+    yes: 'bg-emerald-100 text-emerald-800 ring-1 ring-emerald-300',
+    partial: 'bg-amber-100 text-amber-900 ring-1 ring-amber-300',
+    no: 'bg-slate-100 text-slate-400 ring-1 ring-slate-200',
+  };
+  const dark: Record<CoverageKey, string> = {
+    yes: 'bg-emerald-500/20 text-emerald-200 ring-1 ring-emerald-400/45',
+    partial: 'bg-amber-500/20 text-amber-200 ring-1 ring-amber-400/45',
+    no: 'bg-white/[0.04] text-slate-500 ring-1 ring-white/10',
+  };
+  return `${base} ${(std ? light : dark)[key]}`;
+}
+
 /** Trend direction. Rising up, Falling down, everything else stable. */
 export type TrendKey = 'rising' | 'falling' | 'stable';
 

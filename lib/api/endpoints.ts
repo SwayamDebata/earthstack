@@ -8,6 +8,7 @@ import {
   AlertsSchema,
   BriefingSchema,
   FeaturesLatestSchema,
+  FloodBenchSummarySchema,
   ForecastSchema,
   HealthSchema,
   RiskExplainSchema,
@@ -36,6 +37,8 @@ export const api = {
   briefing: (signal?: AbortSignal) => apiRequest('/briefing/odisha', BriefingSchema, { signal, cache: 'no-store' }),
   riskExplain: (location: string, signal?: AbortSignal) =>
     apiRequest(`/risk/explain/${encodeURIComponent(location)}`, RiskExplainSchema, { signal }),
+  floodbenchSummary: (signal?: AbortSignal) =>
+    apiRequest('/floodbench/summary', FloodBenchSummarySchema, { signal }),
   alerts: (activeOnly = true, limit = 20, signal?: AbortSignal) =>
     apiRequest(`/alerts?limit=${limit}&active_only=${activeOnly}`, AlertsSchema, { signal }),
   alertContacts: (signal?: AbortSignal) => apiRequest('/alert-contacts', AlertContactsSchema, { signal }),
