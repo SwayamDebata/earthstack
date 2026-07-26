@@ -14,7 +14,7 @@ const footerLinks = {
   ],
   company: [
     { name: 'District pilot', href: '#horizon' },
-    { name: 'Contact', href: 'mailto:swayamdebata2003@gmail.com' },
+    { name: 'Contact', href: 'mailto:swayam@modelearth.com' },
     { name: 'Website', href: 'https://www.modelearth.in' },
   ],
   resources: [
@@ -26,7 +26,7 @@ const footerLinks = {
 
 const socialLinks = [
   { icon: Instagram, href: 'https://www.instagram.com/modelearth.ai/', label: 'Instagram' },
-  { icon: Mail, href: 'mailto:swayamdebata2003@gmail.com', label: 'Email' },
+  { icon: Mail, href: 'mailto:swayam@modelearth.com', label: 'Email' },
   { icon: Github, href: '#', label: 'GitHub' },
   { icon: Twitter, href: '#', label: 'Twitter' },
   { icon: Linkedin, href: '#', label: 'LinkedIn' },
