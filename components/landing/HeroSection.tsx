@@ -41,7 +41,7 @@ export default function HeroSection() {
           </div>
           <div className="flex flex-col">
             <span className="text-xl font-bold tracking-tight text-white md:text-2xl">ModelEarth</span>
-            <span className="hidden text-[10px] font-mono uppercase tracking-[0.28em] text-cyan-400/70 sm:block">
+            <span className="hidden text-[11px] font-medium tracking-wide text-cyan-400/70 sm:block">
               Climate intelligence
             </span>
           </div>
@@ -84,7 +84,7 @@ export default function HeroSection() {
             className="mb-8 inline-flex items-center gap-2 rounded-full border border-cyan-400/25 bg-black/60 px-4 py-1.5"
           >
             <Sparkles className="text-cyan-300" size={14} />
-            <span className="font-mono text-[11px] tracking-[0.22em] text-cyan-200/90">MODEL EARTH · EARLY WARNING OPS</span>
+            <span className="text-[13px] font-medium tracking-wide text-cyan-100/90">MODEL EARTH · EARLY WARNING OPS</span>
           </motion.div>
 
           <motion.h1
@@ -151,7 +151,7 @@ export default function HeroSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.35 }}
-            className="mt-5 font-mono text-[10px] uppercase tracking-[0.22em] text-slate-600"
+            className="mt-5 text-xs font-medium tracking-wide text-slate-500"
           >
             Live command preview · verified historical replay · API-driven
           </motion.p>
@@ -167,7 +167,7 @@ export default function HeroSection() {
         <div className="w-64 rounded-md border border-l-4 border-white/10 border-l-cyan-400 bg-slate-950/85 p-4">
           <div className="mb-2 flex items-center gap-3 text-cyan-300">
             <Database size={18} />
-            <span className="text-[10px] font-bold tracking-[0.2em]">DATA MESH</span>
+            <span className="text-xs font-semibold tracking-wide">DATA MESH</span>
           </div>
           <div className="space-y-2">
             <div className="h-1 overflow-hidden rounded-full bg-white/10">
@@ -178,7 +178,7 @@ export default function HeroSection() {
                 transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
               />
             </div>
-            <p className="text-[10px] font-mono text-slate-500">Ingest · validate · route to models</p>
+            <p className="text-xs text-slate-400">Ingest · validate · route to models</p>
           </div>
         </div>
       </motion.div>
@@ -191,11 +191,11 @@ export default function HeroSection() {
       >
         <div className="w-64 rounded-md border border-r-4 border-white/10 border-r-emerald-400 bg-slate-950/85 p-4">
           <div className="mb-2 flex items-center justify-end gap-3 text-emerald-300">
-            <span className="text-[10px] font-bold tracking-[0.2em]">TRUST LAYER</span>
+            <span className="text-xs font-semibold tracking-wide">TRUST LAYER</span>
             <ShieldCheck size={18} />
           </div>
           <p className="text-sm font-semibold text-white">Historical replay evidence</p>
-          <p className="mt-1 text-[11px] text-slate-500">Verified floods replayed against live rule-engine timing.</p>
+          <p className="mt-1 text-xs text-slate-400">Verified floods replayed against live rule-engine timing.</p>
         </div>
       </motion.div>
 

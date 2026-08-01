@@ -21,12 +21,13 @@ export default function LandingHorizonCTA() {
         <div className="pointer-events-none absolute -right-20 -top-20 h-40 w-40 rounded-full border border-cyan-400/20" />
         <div className="pointer-events-none absolute -bottom-16 -left-16 h-48 w-48 rounded-full border border-violet-400/15" />
 
-        <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.4em] text-cyan-300/80">Horizon</p>
+        <p className="mb-3 text-xs font-medium tracking-wide text-cyan-300/80">What happens next</p>
         <h2 className="text-3xl font-bold tracking-tight text-white md:text-5xl">
           The next flood is already forming somewhere
         </h2>
-        <p className="mx-auto mt-4 max-w-xl text-slate-400">
-          Let&apos;s make sure someone sees it in time. Explore the live command center today, or bring ModelEarth to your district and rewind a real flood to see when we&apos;d have raised the alarm.
+        <p className="mx-auto mt-4 max-w-xl text-slate-300">
+          Let&apos;s make sure someone sees it in time. Open the War Room, check the Benchmark evidence, or bring
+          ModelEarth to your district and rewind a real flood.
         </p>
 
           <div className="mt-10 flex flex-col flex-wrap items-center justify-center gap-4 sm:flex-row">

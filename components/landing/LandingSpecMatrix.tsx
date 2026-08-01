@@ -3,10 +3,10 @@
 import { motion } from 'framer-motion';
 
 const rows = [
-  { k: 'Architecture', v: 'API-first · widget-isolated degradation' },
-  { k: 'Surface', v: 'Operational command + verified historical replay' },
-  { k: 'Geospatial', v: 'District-aware risk maps and basin context' },
-  { k: 'Trust', v: 'Explicit empty / loading / retry. No toy metrics' },
+  { k: 'Architecture', v: 'API-first, so one failing widget never blanks the room' },
+  { k: 'War Room', v: 'Today\'s situation, evidence mode, and suggested actions' },
+  { k: 'Coverage', v: '5 Odisha pilot cities with basin and rainfall context' },
+  { k: 'Trust', v: 'Honest empty states, offline labels, and Benchmark evidence' },
 ];
 
 export default function LandingSpecMatrix() {
@@ -22,7 +22,7 @@ export default function LandingSpecMatrix() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <p className="mb-6 font-mono text-[11px] uppercase tracking-[0.35em] text-cyan-400/80">Spec matrix</p>
+            <p className="mb-6 text-xs font-medium tracking-wide text-cyan-400/80">What you get</p>
             <ul className="space-y-0 divide-y divide-white/10">
               {rows.map((row, i) => (
                 <motion.li
@@ -33,7 +33,7 @@ export default function LandingSpecMatrix() {
                   transition={{ delay: i * 0.06, duration: 0.4 }}
                   className="flex flex-col gap-1 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-8"
                 >
-                  <span className="text-xs font-medium uppercase tracking-wider text-slate-500">{row.k}</span>
+                  <span className="text-xs font-medium tracking-wide text-slate-500">{row.k}</span>
                   <span className="text-sm text-slate-200 sm:text-right">{row.v}</span>
                 </motion.li>
               ))}

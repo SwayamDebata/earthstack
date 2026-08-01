@@ -9,6 +9,7 @@ const footerLinks = {
   product: [
     { name: 'Command center', href: '/dashboard/ops' },
     { name: 'Replay proof', href: '/dashboard/ops/replay?tour=1' },
+    { name: 'krishiOS', href: '#krishios' },
     { name: 'Rainfall & rivers', href: '/dashboard/rainfall' },
     { name: 'Risk surface', href: '/dashboard/risk' },
   ],
@@ -50,7 +51,8 @@ export default function PremiumFooter() {
               <span className="text-xl font-bold gradient-text">ModelEarth</span>
             </Link>
             <p className="mt-4 text-gray-400 max-w-sm">
-              Early warning and flood operations for districts that need lead time, not another dashboard. Live command preview with verified historical replay.
+              Early warning for districts that need lead time, not another dashboard. Start in the War Room, prove it in
+              Benchmark, and rewind a real flood before you trust the next alert.
             </p>
             
             {/* Social Links */}

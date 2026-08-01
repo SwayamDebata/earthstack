@@ -144,20 +144,21 @@ export default function LandingHologramShowcase() {
 
       <div className="relative mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-2 md:gap-14">
         <div>
-          <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.4em] text-cyan-400/80">Hologram deck</p>
+          <p className="mb-3 text-xs font-medium tracking-wide text-cyan-400/80">One room, many views</p>
           <h2 className="text-4xl font-bold leading-tight tracking-tight text-white md:text-5xl">
-            Operational surfaces, <br />
-            stacked in{' '}
+            Maps, alerts, and evidence <br />
+            in the{' '}
             <span className="bg-gradient-to-r from-cyan-300 via-sky-400 to-violet-400 bg-clip-text text-transparent">
-              parallel
+              same place
             </span>
             .
           </h2>
-          <p className="mt-5 max-w-md text-slate-400">
-            Risk maps, alert streams, forecasts, and replay proof. Composable surfaces on one typed API, so ops and analytics stay in sync.
+          <p className="mt-5 max-w-md text-slate-300">
+            Risk maps, alert streams, forecasts, and replay proof stay in sync, so the officer on duty is never juggling
+            five tools at 3 a.m.
           </p>
-          <div className="mt-8 flex flex-wrap gap-2 font-mono text-[10px] uppercase tracking-widest text-slate-400">
-            {['typed sdk', 'zod validated', 'widget-isolated', 'replayable'].map((t) => (
+          <div className="mt-8 flex flex-wrap gap-2 text-xs font-medium tracking-wide text-slate-400">
+            {['Live risk', 'Replay proof', 'Typed API', 'Honest empty states'].map((t) => (
               <span key={t} className="rounded-full border border-cyan-400/20 bg-slate-950/70 px-3 py-1.5">
                 {t}
               </span>

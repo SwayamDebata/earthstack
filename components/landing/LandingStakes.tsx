@@ -50,7 +50,7 @@ export default function LandingStakes() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.6 }}
-          className="mb-8 font-mono text-[11px] uppercase tracking-[0.45em] text-cyan-300/80"
+          className="mb-8 text-xs font-medium tracking-wide text-cyan-300/90"
         >
           The water always comes
         </motion.p>

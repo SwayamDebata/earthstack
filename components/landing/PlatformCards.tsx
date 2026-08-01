@@ -47,7 +47,7 @@ export default function PlatformCards() {
         viewport={{ once: true }}
         className="mb-20 text-center"
       >
-        <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.35em] text-cyan-400/80">ModelEarth stack</p>
+        <p className="mb-3 text-xs font-medium tracking-wide text-cyan-400/80">The ModelEarth stack</p>
         <h2 className="mb-6 text-5xl font-bold md:text-6xl">
           One loop: <span className="gradient-text">observe, score, prove</span>
         </h2>

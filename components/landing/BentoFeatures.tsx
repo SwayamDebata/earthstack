@@ -61,7 +61,7 @@ export default function BentoFeatures() {
           transition={{ duration: 0.7 }}
           className="mb-14 text-center"
         >
-          <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.4em] text-cyan-300/80">ModelEarth</p>
+          <p className="mb-3 text-xs font-medium tracking-wide text-cyan-300/80">Built for the people on call</p>
           <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl">
             Built like a <span className="gradient-text">flight console</span>. Not a slide deck
           </h2>

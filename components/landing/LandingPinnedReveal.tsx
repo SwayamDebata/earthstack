@@ -92,15 +92,16 @@ export default function LandingPinnedReveal() {
 
         <div className="relative mx-auto grid w-full max-w-6xl gap-10 md:grid-cols-2 md:gap-16">
           <div className="flex flex-col justify-center">
-            <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.4em] text-cyan-400/80">The loop</p>
+            <p className="mb-3 text-xs font-medium tracking-wide text-cyan-400/80">The operating loop</p>
             <h2 className="text-4xl font-bold tracking-tight text-white md:text-6xl">
-              Observe → reason →{' '}
+              Observe, reason,{' '}
               <span className="bg-gradient-to-r from-cyan-300 via-sky-400 to-violet-400 bg-clip-text text-transparent">
                 act
               </span>
             </h2>
-            <p className="mt-5 max-w-md text-slate-400">
-              Scroll through ModelEarth&apos;s operating loop. Each stage is a real surface in the dashboard, not a marketing claim.
+            <p className="mt-5 max-w-md text-slate-300">
+              Scroll through how a district watch should feel. Each stage is a real surface in the War Room, not a
+              marketing claim.
             </p>
 
             <ol className="mt-8 space-y-3">
@@ -115,7 +116,7 @@ export default function LandingPinnedReveal() {
                         : 'translate-x-[-2px] border-white/10 bg-slate-950/60 opacity-50'
                     }`}
                   >
-                    <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-cyan-300/80">{s.badge}</p>
+                    <p className="text-[11px] font-medium tracking-wide text-cyan-300/85">{s.badge}</p>
                     <p className="mt-1 text-base font-semibold text-white">{s.title}</p>
                     <p className="mt-1 text-sm text-slate-400">{s.body}</p>
                   </li>
@@ -178,7 +179,7 @@ function Slide({
               <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-cyan-400/25 bg-black/40 text-cyan-200">
                 <stage.icon size={16} strokeWidth={1.5} />
               </span>
-              <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-cyan-300/80">{stage.badge}</span>
+              <span className="text-[11px] font-medium tracking-wide text-cyan-300/85">{stage.badge}</span>
             </div>
             <span className="rounded-md border border-cyan-400/20 bg-black/40 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-cyan-200">
               {stage.glyph}

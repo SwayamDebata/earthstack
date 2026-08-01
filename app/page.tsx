@@ -14,22 +14,28 @@ import LandingHorizonCTA from '@/components/landing/LandingHorizonCTA';
 import Landing3DTunnel from '@/components/landing/Landing3DTunnel';
 import LandingHologramShowcase from '@/components/landing/LandingHologramShowcase';
 import LandingBhoomiG1 from '@/components/landing/LandingBhoomiG1';
+import LandingKrishiOS from '@/components/landing/LandingKrishiOS';
 import LandingPinnedReveal from '@/components/landing/LandingPinnedReveal';
 import LandingStakes from '@/components/landing/LandingStakes';
 import LandingMission from '@/components/landing/LandingMission';
 import LandingHumanImpact from '@/components/landing/LandingHumanImpact';
 import LandingOrigin from '@/components/landing/LandingOrigin';
+import LandingProofStrip from '@/components/landing/LandingProofStrip';
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-[#050816] font-[family-name:var(--font-sans)]">
       <CursorSpotlight />
       <HeroSection />
+      <div className="relative z-20 -mt-8 px-4 pb-10 md:-mt-12 md:px-8">
+        <LandingProofStrip />
+      </div>
       <LandingStakes />
       <MarqueeStrip />
       <Landing3DTunnel />
       <LandingOrbitalDeck />
       <LandingBhoomiG1 />
+      <LandingKrishiOS />
       <LandingMission />
       <LandingHumanImpact />
       <BentoFeatures />

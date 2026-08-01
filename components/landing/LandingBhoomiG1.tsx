@@ -135,8 +135,8 @@ export default function LandingBhoomiG1() {
             <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-400/[0.06] via-transparent to-cyan-400/[0.04]" />
             <div className="pointer-events-none absolute -left-px top-8 h-16 w-px bg-gradient-to-b from-emerald-400/60 to-transparent" />
 
-            <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.45em] text-emerald-400/80">
-              Meet Bhoomi G1 · In development
+            <p className="mb-4 text-xs font-medium tracking-wide text-emerald-400/85">
+              Meet Bhoomi G1 · in development
             </p>
 
             <h2 className="text-3xl font-semibold leading-[1.08] tracking-tight text-white md:text-5xl lg:text-[3.25rem]">
@@ -164,7 +164,7 @@ export default function LandingBhoomiG1() {
                 <span className="relative">Request pilot briefing</span>
                 <ArrowRight size={16} className="relative transition-transform duration-300 group-hover:translate-x-0.5" />
               </button>
-              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-slate-500">
+              <p className="text-xs text-slate-500">
                 Hardware roadmap · field deployment trials
               </p>
             </div>
@@ -222,7 +222,7 @@ export default function LandingBhoomiG1() {
                 ) : (
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[#060809]">
                     <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-400/30 border-t-emerald-400" />
-                    <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-slate-500">Initializing field unit</p>
+                    <p className="text-[11px] font-medium tracking-wide text-slate-500">Starting field unit</p>
                   </div>
                 )}
               </div>

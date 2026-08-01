@@ -23,7 +23,7 @@ export default function LandingSignalPath() {
           transition={{ duration: 0.6 }}
           className="mb-16 text-center"
         >
-          <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.4em] text-cyan-400/70">Signal path</p>
+          <p className="mb-2 text-xs font-medium tracking-wide text-cyan-400/80">From signal to decision</p>
           <h2 className="text-3xl font-bold text-white md:text-4xl">From observation to decision</h2>
           <p className="mx-auto mt-3 max-w-xl text-slate-400">
             How rainfall becomes a district briefing. Clear stages, no buzzword soup.
@@ -68,7 +68,7 @@ export default function LandingSignalPath() {
                 <div className="mb-4 flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-cyan-400/35 bg-slate-900 text-cyan-300 shadow-[0_0_24px_rgba(34,211,238,0.2)]">
                   <phase.icon size={20} strokeWidth={1.5} />
                 </div>
-                <h3 className="text-sm font-semibold uppercase tracking-widest text-white">{phase.label}</h3>
+                <h3 className="text-sm font-semibold tracking-wide text-white">{phase.label}</h3>
                 <p className="mt-1 max-w-[200px] text-xs text-slate-500">{phase.detail}</p>
               </motion.div>
             ))}

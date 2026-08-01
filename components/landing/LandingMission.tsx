@@ -56,7 +56,7 @@ export default function LandingMission() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.6 }}
-          className="mb-6 font-mono text-[11px] uppercase tracking-[0.45em] text-emerald-300/80"
+          className="mb-6 text-xs font-medium tracking-wide text-emerald-300/90"
         >
           Our mission
         </motion.p>
@@ -96,7 +96,7 @@ export default function LandingMission() {
               className="relative rounded-2xl border border-white/[0.08] bg-slate-950/60 p-6 backdrop-blur-sm"
             >
               <div className="pointer-events-none absolute -left-px top-6 h-12 w-px bg-gradient-to-b from-emerald-400/60 to-transparent" />
-              <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-emerald-300/70">{b.k}</p>
+              <p className="text-xs font-medium tracking-wide text-emerald-300/80">{b.k}</p>
               <h3 className="mt-3 text-lg font-semibold text-white">{b.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-slate-400">{b.body}</p>
             </motion.div>

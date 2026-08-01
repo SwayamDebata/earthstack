@@ -4,16 +4,9 @@ import { useRef } from 'react';
 import Image from 'next/image';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
-/**
- * Founder / origin note.
- *
- * When a real founder photo is available, drop it in at /public/story/founder.jpg
- * and set HAS_FOUNDER_PHOTO = true. Until then we show a tasteful monogram so the
- * section never looks like it's missing an asset.
- */
-const HAS_FOUNDER_PHOTO = false;
 const FOUNDER_NAME = 'Swayam Debata';
 const FOUNDER_ROLE = 'Founder, ModelEarth';
+const FOUNDER_PHOTO = '/story/profile.jpeg';
 
 export default function LandingOrigin() {
   const ref = useRef<HTMLElement>(null);
@@ -48,7 +41,7 @@ export default function LandingOrigin() {
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         className="relative z-10 mx-auto max-w-3xl rounded-3xl border border-white/[0.08] bg-slate-950/55 p-8 backdrop-blur-md md:p-12"
       >
-        <p className="mb-6 font-mono text-[11px] uppercase tracking-[0.45em] text-amber-300/90">Why we built this</p>
+        <p className="mb-6 text-xs font-medium tracking-wide text-amber-300/90">Why we built this</p>
 
         <blockquote className="space-y-5 text-lg leading-relaxed text-slate-200 md:text-xl">
           <p>
@@ -66,25 +59,17 @@ export default function LandingOrigin() {
         </blockquote>
 
         <div className="mt-9 flex items-center gap-4">
-          {HAS_FOUNDER_PHOTO ? (
-            <Image
-              src="/story/founder.jpg"
-              alt={FOUNDER_NAME}
-              width={56}
-              height={56}
-              className="h-14 w-14 rounded-full border border-cyan-400/30 object-cover"
-            />
-          ) : (
-            <span
-              aria-hidden
-              className="flex h-14 w-14 items-center justify-center rounded-full border border-amber-400/40 bg-gradient-to-br from-amber-900/40 to-slate-950 font-mono text-sm font-bold tracking-widest text-amber-200"
-            >
-              SD
-            </span>
-          )}
+          <Image
+            src={FOUNDER_PHOTO}
+            alt={FOUNDER_NAME}
+            width={64}
+            height={64}
+            className="h-16 w-16 rounded-full border border-amber-400/35 object-cover object-top shadow-[0_0_24px_rgba(251,191,36,0.15)]"
+            priority={false}
+          />
           <div>
             <p className="text-base font-semibold text-white">{FOUNDER_NAME}</p>
-            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-slate-500">{FOUNDER_ROLE}</p>
+            <p className="text-sm text-slate-400">{FOUNDER_ROLE}</p>
           </div>
         </div>
       </motion.div>

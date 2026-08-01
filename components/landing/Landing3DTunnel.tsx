@@ -105,27 +105,27 @@ export default function Landing3DTunnel() {
         style={inView ? { y: headlineY } : undefined}
         className="relative z-10 mx-auto flex max-w-3xl flex-col items-center text-center"
       >
-        <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.4em] text-cyan-400/80">Data tunnel</p>
+        <p className="mb-3 text-xs font-medium tracking-wide text-cyan-400/80">Inside the data path</p>
         <h2 className="text-4xl font-bold leading-tight tracking-tight text-white md:text-6xl">
           Step inside the{' '}
           <span className="bg-gradient-to-r from-cyan-300 via-sky-400 to-violet-400 bg-clip-text text-transparent">
             live grid
           </span>
         </h2>
-        <p className="mt-5 max-w-xl text-base text-slate-400 md:text-lg">
-          Every region streams through a single addressable surface. Observation in, decisions out, with full
-          traceability.
+        <p className="mt-5 max-w-xl text-base text-slate-300 md:text-lg">
+          Rainfall, rivers, and risk for each pilot city land in one place. Observation in, a clear decision out, with
+          a trail you can defend in a briefing.
         </p>
 
-        <div className="mt-10 grid grid-cols-3 gap-3 text-left text-xs font-mono text-cyan-200/80 md:gap-5">
+        <div className="mt-10 grid grid-cols-3 gap-3 text-left text-xs text-cyan-100/85 md:gap-5">
           {[
-            { k: 'channels', v: 'rainfall · rivers · ml' },
-            { k: 'cadence', v: 'live · replay · forecast' },
-            { k: 'scope', v: 'District · expandable' },
+            { k: 'Signals', v: 'Rainfall · rivers · risk' },
+            { k: 'Modes', v: 'Live · replay · forecast' },
+            { k: 'Scope', v: '5 Odisha cities today' },
           ].map((it) => (
             <div key={it.k} className="rounded-lg border border-cyan-400/15 bg-slate-950/80 px-3 py-2">
-              <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500">{it.k}</p>
-              <p className="mt-1 text-cyan-200">{it.v}</p>
+              <p className="text-[11px] font-medium tracking-wide text-slate-500">{it.k}</p>
+              <p className="mt-1 text-cyan-100">{it.v}</p>
             </div>
           ))}
         </div>

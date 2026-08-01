@@ -42,7 +42,7 @@ export default function LandingHumanImpact() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.6 }}
-            className="mb-5 font-mono text-[11px] uppercase tracking-[0.4em] text-amber-300/90"
+            className="mb-5 text-xs font-medium tracking-wide text-amber-300/90"
           >
             Who we&apos;re for
           </motion.p>

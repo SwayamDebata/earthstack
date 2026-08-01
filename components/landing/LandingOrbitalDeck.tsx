@@ -42,10 +42,11 @@ export default function LandingOrbitalDeck() {
           viewport={{ once: true, margin: '-60px' }}
           className="mb-14 text-center"
         >
-          <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.4em] text-cyan-400/70">Orbital deck</p>
+          <p className="mb-2 text-xs font-medium tracking-wide text-cyan-400/80">How the watch works</p>
           <h2 className="text-3xl font-bold text-white md:text-5xl">Built for real coordination rooms</h2>
-          <p className="mx-auto mt-3 max-w-2xl text-slate-400">
-            Spatial UI that stays fast on field laptops. Depth where it helps decisions, not where it slows operators down.
+          <p className="mx-auto mt-3 max-w-2xl text-slate-300">
+            Built to stay fast on a field laptop. Depth where it helps a decision, not where it slows the person on
+            watch.
           </p>
         </motion.div>
 
