@@ -15,7 +15,7 @@ const footerLinks = {
   ],
   company: [
     { name: 'District pilot', href: '#horizon' },
-    { name: 'Contact', href: 'mailto:swayam@modelearth.com' },
+    { name: 'Contact', href: 'mailto:swayam@modelearth.in' },
     { name: 'Website', href: 'https://www.modelearth.in' },
   ],
   resources: [
@@ -27,10 +27,10 @@ const footerLinks = {
 
 const socialLinks = [
   { icon: Instagram, href: 'https://www.instagram.com/modelearth.ai/', label: 'Instagram' },
-  { icon: Mail, href: 'mailto:swayam@modelearth.com', label: 'Email' },
+  { icon: Mail, href: 'mailto:swayam@modelearth.in', label: 'Email' },
   { icon: Github, href: '#', label: 'GitHub' },
   { icon: Twitter, href: '#', label: 'Twitter' },
-  { icon: Linkedin, href: '#', label: 'LinkedIn' },
+  { icon: Linkedin, href: 'https://www.linkedin.com/company/modelearth-in', label: 'LinkedIn' },
 ];
 
 export default function PremiumFooter() {
