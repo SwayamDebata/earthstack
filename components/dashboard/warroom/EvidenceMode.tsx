@@ -9,6 +9,7 @@ import { ApiError } from '@/lib/api/client';
 import type { SimilarEvent } from '@/lib/api/schemas';
 import { useMission } from '@/components/dashboard/MissionContext';
 import WhyBar from '@/components/dashboard/warroom/WhyBar';
+import HeatEvidencePanel from '@/components/dashboard/heat/HeatEvidencePanel';
 import {
   confidencePct,
   isLowConfidence,
@@ -21,6 +22,8 @@ import {
   trendLabel,
 } from '@/lib/ui/severity';
 
+export type EvidenceHazardTab = 'flood' | 'heat';
+
 function numOf(rec: Record<string, unknown>, key: string): number | null {
   const v = rec[key];
   const n = typeof v === 'number' ? v : Number(v);
@@ -30,18 +33,23 @@ function numOf(rec: Record<string, unknown>, key: string): number | null {
 export default function EvidenceMode({
   location,
   onClose,
+  tab = 'flood',
+  onTabChange,
 }: {
   location: string | null;
   onClose: () => void;
+  tab?: EvidenceHazardTab;
+  onTabChange?: (tab: EvidenceHazardTab) => void;
 }) {
   const { uiMode } = useMission();
   const std = uiMode === 'standard';
   const open = Boolean(location);
+  const hazard: EvidenceHazardTab = tab === 'heat' ? 'heat' : 'flood';
 
   const q = useQuery({
     queryKey: ['risk-explain', location],
     queryFn: ({ signal }) => api.riskExplain(location as string, signal),
-    enabled: open,
+    enabled: open && hazard === 'flood',
     staleTime: 0,
     refetchOnMount: 'always',
   });
@@ -75,35 +83,67 @@ export default function EvidenceMode({
     <div className="fixed inset-0 z-[80] flex justify-end" role="dialog" aria-modal="true" aria-label="Evidence mode">
       <div className="absolute inset-0 bg-black/55 backdrop-blur-sm" onClick={onClose} aria-hidden />
       <aside className={`relative flex h-full w-full max-w-xl flex-col overflow-y-auto shadow-2xl ${panel}`}>
-        {/* Header */}
-        <div className={`sticky top-0 z-10 flex items-start gap-3 px-5 py-4 ${std ? 'border-b border-slate-200 bg-white' : 'border-b border-cyan-400/15 bg-[#060b18]'}`}>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              <span className={label}>Evidence mode</span>
-              <span className={severityChipClass(sev, uiMode)}>{data?.severity ?? 'n/a'}</span>
+        <div className={`sticky top-0 z-10 px-5 py-4 ${std ? 'border-b border-slate-200 bg-white' : 'border-b border-cyan-400/15 bg-[#060b18]'}`}>
+          <div className="flex items-start gap-3">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                <span className={label}>Evidence mode</span>
+                {hazard === 'flood' ? (
+                  <span className={severityChipClass(sev, uiMode)}>{data?.severity ?? 'n/a'}</span>
+                ) : null}
+              </div>
+              <h2 className={`mt-1 truncate text-xl font-semibold ${std ? 'text-slate-900' : 'text-white'}`}>
+                {hazard === 'flood' ? (data?.location ?? location) : location}
+              </h2>
+              <p className={`mt-0.5 text-sm ${std ? 'text-slate-600' : 'text-slate-400'}`}>
+                {hazard === 'heat'
+                  ? 'Heat shadow assessment'
+                  : q.isLoading
+                    ? 'Loading assessment'
+                    : data?.headline ?? 'Flood risk assessment'}
+              </p>
             </div>
-            <h2 className={`mt-1 truncate text-xl font-semibold ${std ? 'text-slate-900' : 'text-white'}`}>
-              {data?.location ?? location}
-            </h2>
-            <p className={`mt-0.5 text-sm ${std ? 'text-slate-600' : 'text-slate-400'}`}>
-              {q.isLoading ? 'Loading assessment' : data?.headline ?? 'Flood risk assessment'}
-            </p>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close evidence mode"
+              className={
+                std
+                  ? 'rounded-md border border-slate-300 p-1.5 text-slate-600 hover:bg-slate-50'
+                  : 'rounded-md border border-white/15 p-1.5 text-slate-300 hover:bg-white/5'
+              }
+            >
+              <X size={16} />
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close evidence mode"
-            className={
-              std
-                ? 'rounded-md border border-slate-300 p-1.5 text-slate-600 hover:bg-slate-50'
-                : 'rounded-md border border-white/15 p-1.5 text-slate-300 hover:bg-white/5'
-            }
-          >
-            <X size={16} />
-          </button>
+          <div className={`mt-3 flex gap-1 ${std ? 'rounded-lg bg-slate-100 p-1' : 'rounded-md border border-white/10 bg-black/30 p-1'}`}>
+            {(['flood', 'heat'] as const).map((id) => {
+              const active = hazard === id;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => onTabChange?.(id)}
+                  className={
+                    active
+                      ? std
+                        ? 'rounded-md bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white'
+                        : 'rounded-sm border border-cyan-400/40 bg-cyan-500/15 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-cyan-100'
+                      : std
+                        ? 'rounded-md px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100'
+                        : 'rounded-sm px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-500 hover:bg-white/5 hover:text-slate-300'
+                  }
+                >
+                  {id === 'flood' ? 'Flood' : 'Heat'}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {q.isLoading ? (
+        {hazard === 'heat' ? (
+          <HeatEvidencePanel location={location as string} />
+        ) : q.isLoading ? (
           <EvidenceSkeleton std={std} />
         ) : q.isError ? (
           <div className="p-5">

@@ -533,6 +533,66 @@ export type MonsoonCityDetection = z.infer<typeof MonsoonCityDetectionSchema>;
 export type MonsoonCityTrust = z.infer<typeof MonsoonCityTrustSchema>;
 export type MonsoonFalseHighDay = z.infer<typeof MonsoonFalseHighDaySchema>;
 
+/** GET /heat/map — shadow heat strip for the 5 product cities. */
+const HeatMapCitySchema = z
+  .object({
+    region: z.string(),
+    district: z.string().optional(),
+    severity: z.string().optional(),
+    heat_score: z.number().nullable().optional(),
+    confidence: z.number().nullable().optional(),
+    mode: z.string().optional(),
+    engine_version: z.string().optional(),
+    lat: z.number().nullable().optional(),
+    lng: z.number().nullable().optional(),
+    tmax_c: z.number().nullable().optional(),
+    heat_index_c: z.number().nullable().optional(),
+    timestamp: z.string().optional(),
+  })
+  .passthrough();
+
+export const HeatMapSchema = z
+  .object({
+    mode: z.string().optional(),
+    cities: z.array(HeatMapCitySchema).optional().default([]),
+  })
+  .passthrough();
+
+const HeatWhySchema = z
+  .object({
+    id: z.string().optional(),
+    label: z.string().optional(),
+    value: z.number().nullable().optional(),
+  })
+  .passthrough();
+
+/** GET /heat/{city} — city Heat Evidence Mode. */
+export const HeatDecisionSchema = z
+  .object({
+    ok: z.boolean().optional(),
+    mode: z.string().optional(),
+    location: z.string().optional(),
+    timestamp: z.string().optional(),
+    heat_score: z.number().nullable().optional(),
+    severity: z.string().optional(),
+    confidence: z.number().nullable().optional(),
+    confidence_factors: z.array(z.string()).optional().default([]),
+    why: z.array(HeatWhySchema).optional().default([]),
+    components: z.record(z.string(), z.unknown()).optional().default({}),
+    features: z.record(z.string(), z.unknown()).optional().default({}),
+    similar_event: z.unknown().nullable().optional(),
+    suggested_actions: z.array(z.string()).optional().default([]),
+    engine_version: z.string().optional(),
+    advisory: z.boolean().optional(),
+    error: z.string().optional(),
+  })
+  .passthrough();
+
+export type HeatMapCity = z.infer<typeof HeatMapCitySchema>;
+export type HeatMapResponse = z.infer<typeof HeatMapSchema>;
+export type HeatDecision = z.infer<typeof HeatDecisionSchema>;
+export type HeatWhy = z.infer<typeof HeatWhySchema>;
+
 export type FloodBenchSummary = z.infer<typeof FloodBenchSummarySchema>;
 export type FloodBenchEvent = z.infer<typeof FloodBenchEventSchema>;
 export type FloodBenchCoverageScore = z.infer<typeof FloodBenchCoverageScoreSchema>;

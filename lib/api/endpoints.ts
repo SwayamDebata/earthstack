@@ -11,6 +11,8 @@ import {
   FloodBenchSummarySchema,
   ForecastSchema,
   HealthSchema,
+  HeatDecisionSchema,
+  HeatMapSchema,
   MonsoonScorecardSchema,
   RiskExplainSchema,
   MlBacktestSummarySchema,
@@ -46,6 +48,9 @@ export const api = {
       MonsoonScorecardSchema,
       { signal, cache: 'no-store' },
     ),
+  heatMap: (signal?: AbortSignal) => apiRequest('/heat/map', HeatMapSchema, { signal, cache: 'no-store' }),
+  heatCity: (location: string, signal?: AbortSignal) =>
+    apiRequest(`/heat/${encodeURIComponent(location)}`, HeatDecisionSchema, { signal, cache: 'no-store' }),
   alerts: (activeOnly = true, limit = 20, signal?: AbortSignal) =>
     apiRequest(`/alerts?limit=${limit}&active_only=${activeOnly}`, AlertsSchema, { signal }),
   alertContacts: (signal?: AbortSignal) => apiRequest('/alert-contacts', AlertContactsSchema, { signal }),

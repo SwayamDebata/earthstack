@@ -60,6 +60,8 @@ export const POLLING_INTERVALS = {
   alerts: 60_000,
   risk: 90_000,
   map: 120_000,
+  /** Heat pipeline is twice daily; 10 min picks up manual /heat/run. */
+  heat: 600_000,
   rainfall: 180_000,
   forecast: 300_000,
   mlLogs: 120_000,
@@ -86,4 +88,13 @@ export const STALE_THRESHOLDS_MS = {
   alerts: 15 * 60_000,
   rainfall: 60 * 60_000,
   forecast: 3 * 60 * 60_000,
+  /** Heat scores refresh twice daily; older than 36h is stale, not an error. */
+  heat: 36 * 60 * 60_000,
 } as const;
+
+/** Product heat surfaces: same 5 cities as flood. HeatBench reference cities are forbidden. */
+export function isProductHeatCity(name: string | null | undefined): boolean {
+  if (!name) return false;
+  const n = name.trim().toLowerCase();
+  return (LOCATIONS as readonly string[]).some((c) => c.toLowerCase() === n);
+}
