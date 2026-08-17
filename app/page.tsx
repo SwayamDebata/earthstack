@@ -18,6 +18,7 @@ import LandingKrishiOS from '@/components/landing/LandingKrishiOS';
 import LandingPinnedReveal from '@/components/landing/LandingPinnedReveal';
 import LandingStakes from '@/components/landing/LandingStakes';
 import LandingFieldMedia from '@/components/landing/LandingFieldMedia';
+import LandingProducts from '@/components/landing/LandingProducts';
 import LandingMission from '@/components/landing/LandingMission';
 import LandingHumanImpact from '@/components/landing/LandingHumanImpact';
 import LandingOrigin from '@/components/landing/LandingOrigin';
@@ -33,6 +34,7 @@ export default function Home() {
       </div>
       <LandingStakes />
       <LandingFieldMedia />
+      <LandingProducts />
       <MarqueeStrip />
       <Landing3DTunnel />
       <LandingOrbitalDeck />

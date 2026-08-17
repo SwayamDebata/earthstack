@@ -33,14 +33,21 @@ export default function LandingProofStrip() {
           href="/dashboard/ops"
           className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-white/15"
         >
-          Open War Room
+          Flood Ops
+          <ArrowUpRight size={13} />
+        </Link>
+        <Link
+          href="/dashboard/heat"
+          className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/25 bg-amber-500/10 px-3.5 py-1.5 text-xs font-medium text-amber-100 transition hover:border-amber-400/40 hover:bg-amber-500/15"
+        >
+          Heat Ops
           <ArrowUpRight size={13} />
         </Link>
         <Link
           href="/dashboard/benchmark"
           className="inline-flex items-center gap-1.5 rounded-full border border-white/15 px-3.5 py-1.5 text-xs font-medium text-slate-300 transition hover:border-cyan-400/40 hover:text-white"
         >
-          See Benchmark evidence
+          Benchmark
         </Link>
       </div>
     </div>

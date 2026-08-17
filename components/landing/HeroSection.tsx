@@ -50,6 +50,9 @@ export default function HeroSection() {
         <div className="flex items-center gap-3 md:gap-8">
           <SoundToggle compact className="md:hidden" />
           <div className="hidden items-center gap-8 text-sm font-medium text-slate-400 md:flex">
+          <a href="#products" className="transition-colors hover:text-white">
+            Products
+          </a>
           <a href="#capabilities" className="transition-colors hover:text-white">
             Capabilities
           </a>
@@ -64,7 +67,7 @@ export default function HeroSection() {
             href="/dashboard/ops"
             className="rounded-full border border-cyan-400/30 bg-slate-900/80 px-5 py-2.5 text-white shadow-[0_0_24px_rgba(34,211,238,0.12)] transition hover:border-cyan-300/50 hover:bg-cyan-500/10"
           >
-            Command center
+            Flood Ops
           </Link>
           </div>
         </div>

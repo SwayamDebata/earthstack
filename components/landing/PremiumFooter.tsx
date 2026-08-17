@@ -7,7 +7,8 @@ import BrandMark from '@/components/landing/BrandMark';
 
 const footerLinks = {
   product: [
-    { name: 'Command center', href: '/dashboard/ops' },
+    { name: 'Flood Ops', href: '/dashboard/ops' },
+    { name: 'Heat Ops', href: '/dashboard/heat' },
     { name: 'Replay proof', href: '/dashboard/ops/replay?tour=1' },
     { name: 'krishiOS', href: '#krishios' },
     { name: 'Rainfall & rivers', href: '/dashboard/rainfall' },
@@ -21,6 +22,7 @@ const footerLinks = {
   resources: [
     { name: 'API', href: 'https://api.modelearth.in' },
     { name: 'Capabilities', href: '#capabilities' },
+    { name: 'Products', href: '#products' },
     { name: 'Platform', href: '#platforms' },
   ],
 };

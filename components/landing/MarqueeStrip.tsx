@@ -2,11 +2,12 @@
 
 const ITEMS = [
   'ModelEarth',
+  'Flood Ops',
+  'Heat Ops',
   '72h early warning',
   'Verified historical replay',
-  'Rainfall · Rivers · Risk',
-  'District command center',
-  'Flood operations',
+  'District command',
+  'Shadow heat layer',
   'API-first intelligence',
 ];
 
