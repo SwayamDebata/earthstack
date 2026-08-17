@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import Link from 'next/link';
 import { useQueries } from '@tanstack/react-query';
-import { Film, MapPin } from 'lucide-react';
+import { Film, MapPin, Thermometer } from 'lucide-react';
 import { api } from '@/lib/api/endpoints';
 import { isAlertOpen } from '@/lib/api/alerts';
 import { POLLING_INTERVALS, withJitter } from '@/lib/config';
@@ -95,7 +95,20 @@ export default function OpsCommandView() {
             {opsText(uiMode, 'opsSubtitle')}
           </p>
         </div>
-        <RegionChips />
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/dashboard/heat"
+            className={
+              std
+                ? 'inline-flex items-center gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-medium text-amber-900 hover:border-amber-300 hover:bg-amber-100'
+                : 'inline-flex items-center gap-2 rounded-md border border-amber-400/25 px-3 py-2 font-mono text-[10px] uppercase tracking-widest text-amber-200 hover:bg-amber-500/10'
+            }
+          >
+            <Thermometer size={14} />
+            Heat Ops
+          </Link>
+          <RegionChips />
+        </div>
       </header>
 
       <WarRoom />

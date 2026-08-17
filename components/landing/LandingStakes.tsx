@@ -29,12 +29,12 @@ export default function LandingStakes() {
       {/* Background photograph */}
       <motion.div style={{ scale: imageScale, y: imageY }} className="absolute inset-0 z-0">
         <Image
-          src="/story/stakes.png"
-          alt="A swollen monsoon river delta at dusk in eastern India"
+          src="/story/field-flood-1.jpg"
+          alt="Floodwater submerging trees and palms under a grey monsoon sky in Odisha"
           fill
           priority={false}
           sizes="100vw"
-          className="object-cover opacity-70"
+          className="object-cover opacity-75"
         />
       </motion.div>
 

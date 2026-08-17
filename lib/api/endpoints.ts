@@ -13,6 +13,7 @@ import {
   HealthSchema,
   HeatDecisionSchema,
   HeatMapSchema,
+  HeatGridSchema,
   MonsoonScorecardSchema,
   RiskExplainSchema,
   MlBacktestSummarySchema,
@@ -49,6 +50,16 @@ export const api = {
       { signal, cache: 'no-store' },
     ),
   heatMap: (signal?: AbortSignal) => apiRequest('/heat/map', HeatMapSchema, { signal, cache: 'no-store' }),
+  heatGrid: async (signal?: AbortSignal) => {
+    // Prefer Next BFF (upstream /heat/grid with Open-Meteo fallback) so the field
+    // works before the VM route is deployed.
+    const response = await fetch('/api/heat-grid', { signal, cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error(`Heat grid unavailable (${response.status})`);
+    }
+    const json = await response.json();
+    return HeatGridSchema.parse(json);
+  },
   heatCity: (location: string, signal?: AbortSignal) =>
     apiRequest(`/heat/${encodeURIComponent(location)}`, HeatDecisionSchema, { signal, cache: 'no-store' }),
   alerts: (activeOnly = true, limit = 20, signal?: AbortSignal) =>

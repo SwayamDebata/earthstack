@@ -2,39 +2,23 @@
 
 import { useCallback, useState } from 'react';
 import StateBriefing from '@/components/dashboard/warroom/StateBriefing';
-import EvidenceMode, { type EvidenceHazardTab } from '@/components/dashboard/warroom/EvidenceMode';
-import HeatStrip from '@/components/dashboard/heat/HeatStrip';
+import EvidenceMode from '@/components/dashboard/warroom/EvidenceMode';
 
 /**
- * Decision Engine / War Room.
- * Flood briefing + Heat SHADOW strip. District click opens Evidence Mode
- * with Flood | Heat tabs. Advisory only. Does not override IMD or CWC.
+ * Flood Ops War Room only.
+ * Heat lives on /dashboard/heat as a separate product surface.
+ * Advisory only. Does not override IMD or CWC official warnings.
  */
 export default function WarRoom() {
   const [selected, setSelected] = useState<string | null>(null);
-  const [tab, setTab] = useState<EvidenceHazardTab>('flood');
 
-  const openDistrict = useCallback((location: string, hazard: EvidenceHazardTab = 'flood') => {
-    setSelected(location);
-    setTab(hazard);
-  }, []);
-
-  const handleClose = useCallback(() => {
-    setSelected(null);
-    setTab('flood');
-  }, []);
+  const handleSelect = useCallback((location: string) => setSelected(location), []);
+  const handleClose = useCallback(() => setSelected(null), []);
 
   return (
     <>
-      <HeatStrip onSelectCity={(city) => openDistrict(city, 'heat')} />
-      <div className="mt-4">
-        <StateBriefing
-          onSelectDistrict={(city) => openDistrict(city, 'flood')}
-          activeDistrict={selected}
-          onSelectHeat={(city) => openDistrict(city, 'heat')}
-        />
-      </div>
-      <EvidenceMode location={selected} onClose={handleClose} tab={tab} onTabChange={setTab} />
+      <StateBriefing onSelectDistrict={handleSelect} activeDistrict={selected} />
+      <EvidenceMode location={selected} onClose={handleClose} />
     </>
   );
 }

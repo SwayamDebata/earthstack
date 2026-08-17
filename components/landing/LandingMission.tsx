@@ -38,11 +38,11 @@ export default function LandingMission() {
     >
       <motion.div style={{ y: bgY }} className="absolute inset-0 z-0">
         <Image
-          src="/story/mission.png"
-          alt="Earth from orbit with rivers rendered as glowing data contours"
+          src="/story/rf-india-heatwave.jpg"
+          alt="Sun-baked terrain under extreme heat, India heatwave context"
           fill
           sizes="100vw"
-          className="object-cover opacity-40"
+          className="object-cover opacity-45"
         />
       </motion.div>
       <div className="pointer-events-none absolute inset-0 z-[1] bg-[#050816]/65" />

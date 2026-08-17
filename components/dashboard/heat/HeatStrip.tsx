@@ -24,7 +24,7 @@ function isStale(ts: string | undefined): boolean {
 }
 
 /**
- * Compact HEAT SHADOW strip for the main map / War Room.
+ * Compact HEAT SHADOW strip (Heat Ops only; do not embed in Flood Ops).
  * Always visible even when all cities are LOW (correct August state).
  */
 export default function HeatStrip({ onSelectCity }: { onSelectCity: (city: string) => void }) {
@@ -87,7 +87,7 @@ export default function HeatStrip({ onSelectCity }: { onSelectCity: (city: strin
         <div className={`h-12 animate-pulse rounded-md ${std ? 'bg-amber-100' : 'bg-white/5'}`} />
       ) : q.isError ? (
         <p className={std ? 'text-sm text-red-700' : 'text-sm text-red-300'}>
-          Heat score unavailable. Flood surfaces still work.
+          Heat score unavailable. Retry or check the heat pipeline.
         </p>
       ) : engineOff ? (
         <p className={std ? 'text-sm text-slate-600' : 'text-sm text-slate-400'}>Heat engine off</p>

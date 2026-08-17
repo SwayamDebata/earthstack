@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo } from 'react';
 import { useMutation, useQueries } from '@tanstack/react-query';
 import {
   Area,
@@ -24,8 +24,6 @@ import StatusLed from '@/components/dashboard/StatusLed';
 import KpiRibbon, { type Kpi } from '@/components/dashboard/KpiRibbon';
 import RiskMapPanel from '@/components/dashboard/RiskMapPanel';
 import RegionChips from '@/components/dashboard/RegionChips';
-import HeatStrip from '@/components/dashboard/heat/HeatStrip';
-import EvidenceMode, { type EvidenceHazardTab } from '@/components/dashboard/warroom/EvidenceMode';
 import SendAlertButton from '@/components/dashboard/alerts/SendAlertButton';
 import { useMission } from '@/components/dashboard/MissionContext';
 import { ScoreBar, Telemetry, Legend, ErrorBlock, EmptyBlock } from '@/components/dashboard/Atoms';
@@ -48,17 +46,6 @@ export default function OverviewView() {
   const { location, latencyMs, activeOnly, setActiveOnly, uiMode } = useMission();
   const std = isStd(uiMode);
   const chartTip = chartTooltip(uiMode);
-  const [evidenceCity, setEvidenceCity] = useState<string | null>(null);
-  const [evidenceTab, setEvidenceTab] = useState<EvidenceHazardTab>('flood');
-
-  const openHeat = useCallback((city: string) => {
-    setEvidenceCity(city);
-    setEvidenceTab('heat');
-  }, []);
-  const closeEvidence = useCallback(() => {
-    setEvidenceCity(null);
-    setEvidenceTab('flood');
-  }, []);
 
   const [risk, riskMap, alerts, rainfall, rainfallStats, forecast, replay, mlLogs] = useQueries({
     queries: [
@@ -203,17 +190,7 @@ export default function OverviewView() {
             {replayRun.isPending ? (std ? 'Replaying…' : 'REPLAYING…') : std ? `Run replay · ${location}` : `RUN REPLAY · ${location.toUpperCase()}`}
           </button>
         </div>
-        <div className="mt-3">
-          <HeatStrip onSelectCity={openHeat} />
-        </div>
       </HudFrame>
-
-      <EvidenceMode
-        location={evidenceCity}
-        onClose={closeEvidence}
-        tab={evidenceTab}
-        onTabChange={setEvidenceTab}
-      />
 
       <KpiRibbon kpis={kpis} />
 

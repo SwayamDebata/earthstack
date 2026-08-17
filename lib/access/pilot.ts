@@ -15,7 +15,7 @@ export type PilotRequestPayload = {
 export type AccessTier = 'preview' | 'pilot';
 
 /** Routes open in public preview (operational trust surface). */
-export const PREVIEW_ALLOWED_PREFIXES = ['/dashboard/ops'] as const;
+export const PREVIEW_ALLOWED_PREFIXES = ['/dashboard/ops', '/dashboard/heat'] as const;
 
 /** Routes that require pilot access. */
 export const PILOT_ONLY_PREFIXES = [
@@ -36,6 +36,7 @@ export function isPilotOnlyPath(pathname: string): boolean {
 
 export function isPreviewAllowedPath(pathname: string): boolean {
   if (pathname.startsWith('/dashboard/ops')) return true;
+  if (pathname.startsWith('/dashboard/heat')) return true;
   if (pathname === '/dashboard/alerts') return true;
   return false;
 }

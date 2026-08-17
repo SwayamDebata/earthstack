@@ -24,10 +24,10 @@ export default function MissionProfileSwitcher({ className = '' }: { className?:
     }
     setMissionProfile(profile);
     if (profile === 'operational') {
-      if (!pathname.startsWith('/dashboard/ops')) {
+      if (!pathname.startsWith('/dashboard/ops') && !pathname.startsWith('/dashboard/heat')) {
         router.push('/dashboard/ops');
       }
-    } else if (pathname.startsWith('/dashboard/ops')) {
+    } else if (pathname.startsWith('/dashboard/ops') || pathname.startsWith('/dashboard/heat')) {
       router.push('/dashboard');
     }
   };

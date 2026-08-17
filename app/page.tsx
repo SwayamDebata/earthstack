@@ -17,6 +17,7 @@ import LandingBhoomiG1 from '@/components/landing/LandingBhoomiG1';
 import LandingKrishiOS from '@/components/landing/LandingKrishiOS';
 import LandingPinnedReveal from '@/components/landing/LandingPinnedReveal';
 import LandingStakes from '@/components/landing/LandingStakes';
+import LandingFieldMedia from '@/components/landing/LandingFieldMedia';
 import LandingMission from '@/components/landing/LandingMission';
 import LandingHumanImpact from '@/components/landing/LandingHumanImpact';
 import LandingOrigin from '@/components/landing/LandingOrigin';
@@ -31,6 +32,7 @@ export default function Home() {
         <LandingProofStrip />
       </div>
       <LandingStakes />
+      <LandingFieldMedia />
       <MarqueeStrip />
       <Landing3DTunnel />
       <LandingOrbitalDeck />

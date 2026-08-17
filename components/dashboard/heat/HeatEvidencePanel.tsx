@@ -55,7 +55,7 @@ function HeatWhyBars({ why, std }: { why: HeatWhy[]; std: boolean }) {
 }
 
 /**
- * City Heat Evidence Mode body (Flood | Heat tab content).
+ * City heat evidence body for Heat Ops (/dashboard/heat).
  * Display-only. Does not compute scores. SHADOW badge always visible.
  */
 export default function HeatEvidencePanel({ location }: { location: string }) {
@@ -106,7 +106,7 @@ export default function HeatEvidencePanel({ location }: { location: string }) {
           {is404 ? 'Heat score unavailable for this location' : 'Heat score unavailable'}
         </p>
         <p className={`mt-1 text-sm ${std ? 'text-slate-600' : 'text-slate-400'}`}>
-          {q.data?.error || (q.error instanceof Error ? q.error.message : 'Flood tab still works.')}
+          {q.data?.error || (q.error instanceof Error ? q.error.message : 'Try again or pick another city.')}
         </p>
         <button
           type="button"

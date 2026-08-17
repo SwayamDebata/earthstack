@@ -2,12 +2,11 @@
 
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
-import { RefreshCw, AlertTriangle, ShieldCheck, ChevronRight, Film, Thermometer } from 'lucide-react';
+import { RefreshCw, AlertTriangle, ShieldCheck, ChevronRight, Film } from 'lucide-react';
 import { api } from '@/lib/api/endpoints';
-import { POLLING_INTERVALS, withJitter } from '@/lib/config';
 import { useMission } from '@/components/dashboard/MissionContext';
 import { relTime } from '@/components/dashboard/util';
-import type { Briefing, BriefingDistrict, HeatMapCity } from '@/lib/api/schemas';
+import type { Briefing, BriefingDistrict } from '@/lib/api/schemas';
 import {
   SEVERITY_ORDER,
   confidencePct,
@@ -25,11 +24,9 @@ const BRIEFING_REFRESH_MS = 5 * 60_000;
 export default function StateBriefing({
   onSelectDistrict,
   activeDistrict,
-  onSelectHeat,
 }: {
   onSelectDistrict: (location: string) => void;
   activeDistrict: string | null;
-  onSelectHeat?: (location: string) => void;
 }) {
   const { uiMode } = useMission();
   const std = uiMode === 'standard';
@@ -40,20 +37,6 @@ export default function StateBriefing({
     refetchInterval: BRIEFING_REFRESH_MS,
     refetchOnWindowFocus: true,
   });
-
-  const heatQ = useQuery({
-    queryKey: ['heat-map'],
-    queryFn: ({ signal }) => api.heatMap(signal),
-    refetchInterval: () => withJitter(POLLING_INTERVALS.heat),
-  });
-
-  const heatByCity = (() => {
-    const map = new Map<string, HeatMapCity>();
-    for (const c of heatQ.data?.cities ?? []) {
-      map.set(c.region.toLowerCase(), c);
-    }
-    return map;
-  })();
 
   if (q.isLoading) return <BriefingSkeleton std={std} />;
 
@@ -252,8 +235,6 @@ export default function StateBriefing({
               std={std}
               active={activeDistrict === d.location}
               onSelect={() => onSelectDistrict(d.location)}
-              heat={heatByCity.get(d.location.toLowerCase())}
-              onSelectHeat={onSelectHeat ? () => onSelectHeat(d.location) : undefined}
             />
           ))}
         </div>
@@ -275,16 +256,12 @@ function DistrictRow({
   std,
   active,
   onSelect,
-  heat,
-  onSelectHeat,
 }: {
   district: BriefingDistrict;
   mode: ReturnType<typeof useMission>['uiMode'];
   std: boolean;
   active: boolean;
   onSelect: () => void;
-  heat?: HeatMapCity;
-  onSelectHeat?: () => void;
 }) {
   const sev = normalizeSeverity(d.severity);
   const score = scorePct(d.risk_score);
@@ -311,24 +288,6 @@ function DistrictRow({
       <div className="flex items-center gap-3">
         <span className={severityChipClass(sev, mode)}>{d.severity ?? 'n/a'}</span>
         <span className={`text-base font-semibold ${std ? 'text-slate-900' : 'text-white'}`}>{d.location}</span>
-        {heat && typeof heat.heat_score === 'number' ? (
-          <button
-            type="button"
-            title="Open heat evidence (shadow)"
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelectHeat?.();
-            }}
-            className={
-              std
-                ? 'inline-flex items-center gap-1 rounded border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-900'
-                : 'inline-flex items-center gap-1 rounded-sm border border-amber-400/30 bg-amber-500/10 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-amber-200'
-            }
-          >
-            <Thermometer size={10} />
-            Heat {heat.severity ?? 'n/a'} {heat.heat_score.toFixed(2)}
-          </button>
-        ) : null}
         <span className={`ml-auto flex items-center gap-3 text-sm ${std ? 'text-slate-600' : 'text-slate-300'}`}>
           {score !== null ? (
             <span className="tabular-nums">

@@ -558,6 +558,50 @@ export const HeatMapSchema = z
   })
   .passthrough();
 
+/** GET /heat/grid — Odisha continuous heat field (ModelEarth-owned). */
+export const HeatGridSchema = z
+  .object({
+    type: z.literal('FeatureCollection').optional().default('FeatureCollection'),
+    mode: z.string().optional(),
+    advisory: z.boolean().optional(),
+    engine: z.string().optional(),
+    generated_at: z.string().optional(),
+    bbox: z.array(z.number()).optional(),
+    step_deg: z.number().optional(),
+    cell_count: z.number().optional(),
+    attribution: z.string().optional(),
+    features: z
+      .array(
+        z
+          .object({
+            type: z.literal('Feature').optional(),
+            geometry: z
+              .object({
+                type: z.string(),
+                coordinates: z.unknown(),
+              })
+              .passthrough(),
+            properties: z
+              .object({
+                lat: z.number().optional(),
+                lon: z.number().optional(),
+                tmax_c: z.number().nullable().optional(),
+                heat_index_c: z.number().nullable().optional(),
+                rh_midday_pct: z.number().nullable().optional(),
+                severity_band: z.string().optional(),
+                obs_date: z.string().optional(),
+                source: z.string().optional(),
+                mode: z.string().optional(),
+              })
+              .passthrough(),
+          })
+          .passthrough(),
+      )
+      .optional()
+      .default([]),
+  })
+  .passthrough();
+
 const HeatWhySchema = z
   .object({
     id: z.string().optional(),
@@ -590,6 +634,7 @@ export const HeatDecisionSchema = z
 
 export type HeatMapCity = z.infer<typeof HeatMapCitySchema>;
 export type HeatMapResponse = z.infer<typeof HeatMapSchema>;
+export type HeatGridResponse = z.infer<typeof HeatGridSchema>;
 export type HeatDecision = z.infer<typeof HeatDecisionSchema>;
 export type HeatWhy = z.infer<typeof HeatWhySchema>;
 

@@ -19,7 +19,7 @@ export default function LandingHumanImpact() {
       className="relative flex min-h-screen items-center overflow-hidden bg-[#050816] px-4 py-28 md:px-8 md:py-36"
       aria-label="Who we're for"
     >
-      {/* Full-bleed nocturne painting */}
+      {/* Full-bleed nocturne (restored) */}
       <motion.div style={{ scale: bgScale, y: bgY }} className="absolute inset-0 z-0">
         <Image
           src="/story/people-dusk.png"
@@ -30,7 +30,7 @@ export default function LandingHumanImpact() {
         />
       </motion.div>
 
-      {/* Legibility: darken only the left for text, let the painting breathe elsewhere; feather into neighbors */}
+      {/* Legibility: darken only the left for text, let the painting breathe elsewhere */}
       <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-[#050816]/95 via-[#050816]/45 to-transparent" />
       <div className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-40 bg-gradient-to-b from-[#050816] to-transparent" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-40 bg-gradient-to-t from-[#050816] to-transparent" />
