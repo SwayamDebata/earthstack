@@ -3,6 +3,13 @@
  * No hardcoded risk scores - only transforms validated upstream fields.
  */
 
+import {
+  riverStatusOf,
+  scoringModeOf,
+  riverStationLabel,
+  riverObservedAt,
+} from '@/lib/api/risk-status';
+
 export type RiskPayload = Record<string, unknown>;
 
 export type OperationalSituation = {
@@ -55,6 +62,7 @@ export function buildSituation(risk: RiskPayload, region: string): OperationalSi
   const confidence = confidenceLabel(risk);
   const timeToPeak = String(risk.time_to_peak ?? risk.time_to_impact ?? 'n/a');
   const trend = String(risk.trend ?? 'n/a');
+  const mode = scoringModeOf(risk);
 
   const headline =
     severity.includes('HIGH') || severity.includes('CRITICAL')
@@ -63,12 +71,16 @@ export function buildSituation(risk: RiskPayload, region: string): OperationalSi
         ? `ELEVATED CONDITIONS - ${region}`
         : `STABLE CONDITIONS - ${region}`;
 
-  const escalationWindow =
+  let escalationWindow =
     timeToPeak !== 'n/a'
       ? `Expected escalation window: ${timeToPeak}${trend !== 'n/a' ? ` · Trend ${trend}` : ''}`
       : trend !== 'n/a'
         ? `Trend: ${trend}`
         : 'Escalation timing unavailable from upstream';
+
+  if (mode === 'rain_only') {
+    escalationWindow = `${escalationWindow} · Rainfall-only score (no live river gauge)`;
+  }
 
   return {
     headline,
@@ -84,10 +96,16 @@ export function buildDrivers(risk: RiskPayload): OperationalDriver[] {
   const r = raw(risk);
 
   const rain24 = num(r.rainfall_forecast_24h ?? risk.rain_forecast_24h);
+  const past24 = num(r.rainfall_past_24h);
   const p95 = num(r.historical_p95_rain);
   const rainSeverity = String(risk.rain_severity ?? '').toUpperCase();
 
-  if (rain24 !== null && p95 !== null && rain24 >= p95 * 0.85) {
+  if (past24 !== null && p95 !== null && past24 >= p95 * 0.85) {
+    drivers.push({
+      label: 'Antecedent rainfall near historical extreme',
+      detail: `Past 24h ${past24.toFixed(1)} mm vs p95 baseline ${p95.toFixed(1)} mm`,
+    });
+  } else if (rain24 !== null && p95 !== null && rain24 >= p95 * 0.85) {
     drivers.push({
       label: 'Forecast rainfall near historical extreme',
       detail: `24h forecast ${rain24.toFixed(1)} mm vs p95 baseline ${p95.toFixed(1)} mm`,
@@ -104,21 +122,35 @@ export function buildDrivers(risk: RiskPayload): OperationalDriver[] {
     });
   }
 
+  const status = riverStatusOf(risk);
   const riverLevel = num(r.river_level);
   const floodThreshold = num(r.flood_threshold);
-  if (riverLevel !== null && floodThreshold !== null && floodThreshold > 0) {
+  const station = riverStationLabel(risk);
+  const observed = riverObservedAt(risk);
+
+  if (status === 'live' && riverLevel !== null && floodThreshold !== null && floodThreshold > 0) {
     const ratio = riverLevel / floodThreshold;
     if (ratio >= 0.9) {
       drivers.push({
         label: 'River level approaching danger threshold',
-        detail: `${riverLevel.toFixed(1)} m vs threshold ${floodThreshold.toFixed(1)} m (${Math.round(ratio * 100)}%)`,
+        detail: `${riverLevel.toFixed(1)} m vs threshold ${floodThreshold.toFixed(1)} m (${Math.round(ratio * 100)}%)${station ? ` · ${station}` : ''}`,
       });
     } else if (ratio >= 0.75) {
       drivers.push({
         label: 'River level rising relative to threshold',
-        detail: `${riverLevel.toFixed(1)} m · ${Math.round(ratio * 100)}% of flood threshold`,
+        detail: `${riverLevel.toFixed(1)} m · ${Math.round(ratio * 100)}% of flood threshold${station ? ` · ${station}` : ''}`,
       });
     }
+  } else if (status === 'stale') {
+    drivers.push({
+      label: 'River reading stale (not used in score)',
+      detail: `${riverLevel !== null ? `${riverLevel.toFixed(1)} m` : 'level n/a'}${observed ? ` · observed ${observed}` : ''}${station ? ` · ${station}` : ''}`,
+    });
+  } else {
+    drivers.push({
+      label: 'No live river gauge',
+      detail: 'Score is rainfall-only; CRITICAL not assessable without river data',
+    });
   }
 
   const alertRatio = num((r.ml_features as Record<string, unknown> | undefined)?.rainfall_alert_ratio);
@@ -161,7 +193,7 @@ export function buildRecommendedActions(
     actions.push(
       { priority: 'immediate', text: `Alert low-lying wards in ${region}` },
       { priority: 'immediate', text: 'Prepare evacuation teams and assembly points' },
-      { priority: 'prepare', text: 'Monitor embankments and river gauges hourly' },
+      { priority: 'prepare', text: 'Monitor embankments and rainfall updates hourly' },
       { priority: 'prepare', text: 'Activate district communication channels' },
     );
   } else if (severity.includes('medium') || severity.includes('warning')) {
@@ -174,7 +206,7 @@ export function buildRecommendedActions(
   } else {
     actions.push(
       { priority: 'monitor', text: `Continue routine monitoring for ${region}` },
-      { priority: 'monitor', text: 'Validate river and rainfall sensors are reporting' },
+      { priority: 'monitor', text: 'Validate rainfall sensors are reporting' },
     );
   }
 

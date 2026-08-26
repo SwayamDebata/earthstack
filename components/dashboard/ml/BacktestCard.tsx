@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronDown, ChevronUp, RefreshCw, ShieldCheck } from 'lucide-react';
+import Link from 'next/link';
 import { api } from '@/lib/api/endpoints';
 import HudFrame from '@/components/dashboard/HudFrame';
 import StatusLed from '@/components/dashboard/StatusLed';
@@ -87,14 +88,41 @@ export default function BacktestCard() {
         <EmptyBlock message="backtest report not available yet" />
       ) : (
         <div className="space-y-4">
-          {/* HERO + BY-CITY */}
+          <div
+            className={
+              std
+                ? 'rounded-lg border border-amber-200 bg-amber-50 p-4'
+                : 'rounded-md border border-amber-400/30 bg-amber-500/10 p-4'
+            }
+          >
+            <p className={std ? 'text-sm font-semibold text-amber-950' : 'text-sm font-semibold text-amber-100'}>
+              Legacy backtest endpoint. Do not use as product accuracy.
+            </p>
+            <p className={`mt-1 text-sm leading-relaxed ${std ? 'text-amber-900/90' : 'text-amber-100/85'}`}>
+              `/ml/backtest/summary` still serves pre-relabel v4 numbers (city labels snapped across basins).
+              Product claim is the honest pair only: <strong>94.4%</strong> north Odisha onsets (102/108)
+              and LOW on <strong>14 of 18</strong> location-days during active flooding. See North Odisha shadow.
+            </p>
+            <Link
+              href="/dashboard/shadow"
+              className={
+                std
+                  ? 'mt-3 inline-flex text-sm font-semibold text-amber-950 underline'
+                  : 'mt-3 inline-flex text-sm font-semibold text-amber-100 underline'
+              }
+            >
+              Open North Odisha shadow →
+            </Link>
+          </div>
+
+          {/* Raw API dump kept for pilot debugging only - not marketing */}
           <div className="grid grid-cols-1 gap-3 md:grid-cols-[1.4fr_1fr]">
             {/* Hero - 24h recall */}
             <div
               className={
                 std
-                  ? 'rounded-lg border border-emerald-200 bg-emerald-50 p-4'
-                  : 'relative overflow-hidden rounded-md border border-emerald-400/25 bg-gradient-to-br from-emerald-950/30 via-slate-950/60 to-slate-950/80 p-4'
+                  ? 'rounded-lg border border-slate-200 bg-slate-50 p-4 opacity-80'
+                  : 'relative overflow-hidden rounded-md border border-white/10 bg-slate-950/60 p-4 opacity-80'
               }
             >
               {showHudChrome(mode) ? (
@@ -104,28 +132,28 @@ export default function BacktestCard() {
                 </>
               ) : null}
               <div className="flex items-center gap-2">
-                <ShieldCheck size={14} className={std ? 'text-emerald-700' : 'text-emerald-300'} />
-                <p className={std ? 'text-xs font-semibold uppercase tracking-wide text-emerald-800' : 'font-mono text-[10px] uppercase tracking-[0.28em] text-emerald-300/80'}>
-                  24h Lead-Time Recall
+                <ShieldCheck size={14} className={std ? 'text-slate-500' : 'text-slate-400'} />
+                <p className={std ? 'text-xs font-semibold uppercase tracking-wide text-slate-600' : 'font-mono text-[10px] uppercase tracking-[0.28em] text-slate-500'}>
+                  Legacy API · 24h recall (not product)
                 </p>
               </div>
               <div className="mt-2 flex items-end gap-3">
-                <p className={std ? 'text-5xl font-bold tabular-nums text-emerald-900' : 'font-mono text-5xl font-semibold tabular-nums text-emerald-200'}>
+                <p className={std ? 'text-5xl font-bold tabular-nums text-slate-500' : 'font-mono text-5xl font-semibold tabular-nums text-slate-500'}>
                   {recall24 !== undefined ? `${recall24.toFixed(1)}%` : 'n/a'}
                 </p>
-                <p className={std ? 'mb-1.5 text-sm text-slate-600' : 'mb-1.5 font-mono text-[11px] uppercase tracking-widest text-slate-400'}>
+                <p className={std ? 'mb-1.5 text-sm text-slate-500' : 'mb-1.5 font-mono text-[11px] uppercase tracking-widest text-slate-500'}>
                   {triggered24 ?? 'n/a'} / {scored ?? 'n/a'} scored · {total ?? 'n/a'} total events
                 </p>
               </div>
               {data?.headline ? (
-                <p className={`mt-3 max-w-3xl text-sm leading-relaxed ${std ? 'text-slate-700' : 'text-slate-300'}`}>{data.headline}</p>
+                <p className={`mt-3 max-w-3xl text-sm leading-relaxed ${std ? 'text-slate-600' : 'text-slate-400'}`}>{data.headline}</p>
               ) : null}
 
-              <div className={`mt-4 flex flex-wrap items-center gap-3 border-t pt-3 ${std ? 'border-emerald-200' : 'border-white/5'}`}>
+              <div className={`mt-4 flex flex-wrap items-center gap-3 border-t pt-3 ${std ? 'border-slate-200' : 'border-white/5'}`}>
                 <span className={std ? 'text-xs font-medium text-slate-600' : 'font-mono text-[10px] uppercase tracking-[0.28em] text-slate-500'}>
                   48h Lead Time
                 </span>
-                <span className={std ? 'text-base font-semibold tabular-nums text-slate-900' : 'font-mono text-base font-semibold tabular-nums text-cyan-200'}>
+                <span className={std ? 'text-base font-semibold tabular-nums text-slate-700' : 'font-mono text-base font-semibold tabular-nums text-slate-400'}>
                   {recall48 !== undefined ? `${recall48.toFixed(1)}%` : 'n/a'}
                 </span>
                 <span className={std ? 'text-xs text-slate-500' : 'font-mono text-[10px] uppercase tracking-widest text-slate-500'}>

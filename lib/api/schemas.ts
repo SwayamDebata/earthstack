@@ -29,14 +29,78 @@ export const FeaturesLatestSchema = z.record(z.string(), z.unknown());
 export const RiskSchema = z
   .object({
     location: z.union([z.string(), z.number()]).optional(),
+    mode: z.string().optional(),
+    advisory: z.boolean().optional(),
+    alerting: z.boolean().optional(),
     risk_score: z.number().or(z.string()).optional(),
     rule_score: z.number().or(z.string()).optional(),
     ml_score: z.number().or(z.string()).optional(),
     final_score: z.number().or(z.string()).optional(),
+    max_achievable_score: z.number().nullable().optional(),
     trend: z.union([z.string(), z.number()]).optional(),
     severity: z.union([z.string(), z.number()]).optional(),
     timestamp: timestampUnion,
     scores: scoreRecord.optional(),
+    raw_data: z.record(z.string(), z.unknown()).optional(),
+  })
+  .passthrough();
+
+/** GET /risk/shadow/map - north Odisha shadow validation cities (never alerted). */
+const ShadowRiskCitySchema = z
+  .object({
+    region: z.string(),
+    lat: z.number().nullable().optional(),
+    lon: z.number().nullable().optional(),
+    rule_score: z.number().nullable().optional(),
+    severity: z.string().optional(),
+    risk_level: z.string().optional(),
+    confidence: z.number().nullable().optional(),
+    trend: z.string().nullable().optional(),
+    scoring_mode: z.string().optional(),
+    river_status: z.string().optional(),
+    rainfall_past_24h_mm: z.number().nullable().optional(),
+    rainfall_forecast_24h_mm: z.number().nullable().optional(),
+  })
+  .passthrough();
+
+export const ShadowRiskMapSchema = z
+  .object({
+    mode: z.string().optional(),
+    advisory: z.boolean().optional(),
+    alerting: z.boolean().optional(),
+    note: z.string().optional(),
+    basins: z.array(z.string()).optional().default([]),
+    cities: z.array(ShadowRiskCitySchema).optional().default([]),
+  })
+  .passthrough();
+
+/** GET /risk/shadow/rivers - Odisha DoWR daily Flood Bulletin gauges. */
+const ShadowRiverGaugeSchema = z
+  .object({
+    river: z.string().optional(),
+    site: z.string().optional(),
+    danger_level_m: z.number().nullable().optional(),
+    warning_level_m: z.number().nullable().optional(),
+    present_level_m: z.number().nullable().optional(),
+    level_ratio: z.number().nullable().optional(),
+    metres_wrt_danger: z.number().nullable().optional(),
+    trend: z.string().nullable().optional(),
+    // DoWR rows without a danger level publish above_danger: null
+    above_danger: z.boolean().nullable().optional(),
+    observed_time: z.string().nullable().optional(),
+    highest_recorded_m: z.number().nullable().optional(),
+    highest_recorded_date: z.string().nullable().optional(),
+  })
+  .passthrough();
+
+export const ShadowRiversSchema = z
+  .object({
+    mode: z.string().optional(),
+    advisory: z.boolean().optional(),
+    source: z.string().optional(),
+    bulletin_date: z.string().nullable().optional(),
+    error: z.string().nullable().optional(),
+    gauges: z.array(ShadowRiverGaugeSchema).optional().default([]),
   })
   .passthrough();
 
@@ -255,7 +319,7 @@ export const SimilarEventSchema = z
   })
   .passthrough();
 
-/** GET /briefing/odisha — state-wide situation for the War Room landing. */
+/** GET /briefing/odisha - state-wide situation for the War Room landing. */
 const BriefingDistrictSchema = z
   .object({
     location: z.string(),
@@ -294,7 +358,7 @@ export const BriefingSchema = z
   })
   .passthrough();
 
-/** GET /risk/explain/{location} — SHAP-style evidence for a single district. */
+/** GET /risk/explain/{location} - SHAP-style evidence for a single district. */
 const WhyFactorSchema = z
   .object({
     factor: z.string(),
@@ -309,10 +373,14 @@ export const RiskExplainSchema = z
     ok: z.boolean().optional(),
     location: z.string().optional(),
     timestamp: z.string().optional(),
+    mode: z.string().optional(),
+    advisory: z.boolean().optional(),
+    alerting: z.boolean().optional(),
     headline: z.string().optional(),
     risk_level: z.string().optional(),
     severity: z.string().optional(),
     risk_score: z.number().nullable().optional(),
+    max_achievable_score: z.number().nullable().optional(),
     confidence: z.number().nullable().optional(),
     confidence_factors: z.array(z.string()).optional().default([]),
     trend: z.string().nullable().optional(),
@@ -326,7 +394,7 @@ export const RiskExplainSchema = z
   })
   .passthrough();
 
-/** GET /floodbench/summary — offline, reproducible credibility benchmark. */
+/** GET /floodbench/summary - offline, reproducible credibility benchmark. */
 const FloodBenchEventSchema = z
   .object({
     id: z.string(),
@@ -432,7 +500,7 @@ export const FloodBenchSummarySchema = z
   })
   .passthrough();
 
-/** GET /monsoon/scorecard — live-season shadow/advisory track record. */
+/** GET /monsoon/scorecard - live-season shadow/advisory track record. */
 const MonsoonCityDetectionSchema = z
   .object({
     events: z.number().optional(),
@@ -533,7 +601,7 @@ export type MonsoonCityDetection = z.infer<typeof MonsoonCityDetectionSchema>;
 export type MonsoonCityTrust = z.infer<typeof MonsoonCityTrustSchema>;
 export type MonsoonFalseHighDay = z.infer<typeof MonsoonFalseHighDaySchema>;
 
-/** GET /heat/map — shadow heat strip for the 5 product cities. */
+/** GET /heat/map - shadow heat strip for the 5 product cities. */
 const HeatMapCitySchema = z
   .object({
     region: z.string(),
@@ -558,7 +626,7 @@ export const HeatMapSchema = z
   })
   .passthrough();
 
-/** GET /heat/grid — Odisha continuous heat field (ModelEarth-owned). */
+/** GET /heat/grid - Odisha continuous heat field (ModelEarth-owned). */
 export const HeatGridSchema = z
   .object({
     type: z.literal('FeatureCollection').optional().default('FeatureCollection'),
@@ -610,7 +678,7 @@ const HeatWhySchema = z
   })
   .passthrough();
 
-/** GET /heat/{city} — city Heat Evidence Mode. */
+/** GET /heat/{city} - city Heat Evidence Mode. */
 export const HeatDecisionSchema = z
   .object({
     ok: z.boolean().optional(),
@@ -659,6 +727,10 @@ export type WeatherLatest = z.infer<typeof WeatherLatestSchema>;
 export type RiversLatest = z.infer<typeof RiversLatestSchema>;
 export type FeaturesLatest = z.infer<typeof FeaturesLatestSchema>;
 export type Risk = z.infer<typeof RiskSchema>;
+export type ShadowRiskMap = z.infer<typeof ShadowRiskMapSchema>;
+export type ShadowRiskCity = z.infer<typeof ShadowRiskCitySchema>;
+export type ShadowRivers = z.infer<typeof ShadowRiversSchema>;
+export type ShadowRiverGauge = z.infer<typeof ShadowRiverGaugeSchema>;
 export type RiskMap = z.infer<typeof RiskMapSchema>;
 export type Alert = z.infer<typeof AlertSchema>;
 export type AlertContact = z.infer<typeof AlertContactSchema>;

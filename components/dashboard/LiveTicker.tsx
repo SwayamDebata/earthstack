@@ -27,7 +27,7 @@ export default function LiveTicker({ items }: { items: TickItem[] }) {
         <StatusLed tone={summary?.tone ?? 'nominal'} size={6} />
         <span className="font-medium text-slate-500">{opsText(uiMode, 'tickerLabel')}:</span>
         <span className="truncate">
-          {summary ? `${summary.channel} — ${summary.text}` : 'All systems reporting normally'}
+          {summary ? `${summary.channel} - ${summary.text}` : 'All systems reporting normally'}
         </span>
       </div>
     );

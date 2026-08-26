@@ -26,6 +26,8 @@ import {
   ReplaySchema,
   RiskMapSchema,
   RiskSchema,
+  ShadowRiskMapSchema,
+  ShadowRiversSchema,
   RiversLatestSchema,
   WeatherLatestSchema,
 } from '@/lib/api/schemas';
@@ -38,6 +40,14 @@ export const api = {
   risk: (location: string, signal?: AbortSignal) => apiRequest(`/risk?location=${encodeURIComponent(location)}`, RiskSchema, { signal }),
   debugRisk: (location: string, signal?: AbortSignal) => apiRequest(`/debug/risk?location=${encodeURIComponent(location)}`, RiskSchema, { signal }),
   riskMap: (signal?: AbortSignal) => apiRequest('/risk/map', RiskMapSchema, { signal }),
+  shadowRiskMap: (signal?: AbortSignal) =>
+    apiRequest('/risk/shadow/map', ShadowRiskMapSchema, { signal, cache: 'no-store' }),
+  shadowRivers: (bulletinDate?: string, signal?: AbortSignal) =>
+    apiRequest(
+      `/risk/shadow/rivers${bulletinDate ? `?bulletin_date=${encodeURIComponent(bulletinDate)}` : ''}`,
+      ShadowRiversSchema,
+      { signal, cache: 'no-store' },
+    ),
   briefing: (signal?: AbortSignal) => apiRequest('/briefing/odisha', BriefingSchema, { signal, cache: 'no-store' }),
   riskExplain: (location: string, signal?: AbortSignal) =>
     apiRequest(`/risk/explain/${encodeURIComponent(location)}`, RiskExplainSchema, { signal }),

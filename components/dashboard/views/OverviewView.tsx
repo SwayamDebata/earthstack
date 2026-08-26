@@ -28,6 +28,7 @@ import SendAlertButton from '@/components/dashboard/alerts/SendAlertButton';
 import { useMission } from '@/components/dashboard/MissionContext';
 import { ScoreBar, Telemetry, Legend, ErrorBlock, EmptyBlock } from '@/components/dashboard/Atoms';
 import { numOrNull, num, severityToTone, relTime, toArray } from '@/components/dashboard/util';
+import { maxAchievableScore, scoringModeOf } from '@/lib/api/risk-status';
 import {
   btnPrimary,
   btnSecondary,
@@ -95,6 +96,8 @@ export default function OverviewView() {
   const riskMlScore = numOrNull(currentRisk?.ml_score);
   const riskSeverity = String(currentRisk?.severity ?? 'unknown');
   const riskTrend = String(currentRisk?.trend ?? 'n/a');
+  const riskScoreMax = currentRisk ? maxAchievableScore(currentRisk) : 1;
+  const rainOnlyScore = currentRisk ? scoringModeOf(currentRisk) === 'rain_only' : false;
 
   const kpis: Kpi[] = useMemo(
     () => [
@@ -223,9 +226,15 @@ export default function OverviewView() {
               <ErrorBlock onRetry={() => void risk.refetch()} message="risk endpoint failed" />
             ) : (
               <div className="space-y-3">
-                <ScoreBar label="FINAL" value={riskFinalScore} max={1} highlight />
-                <ScoreBar label="RULE" value={riskRuleScore} max={1} />
-                <ScoreBar label="ML" value={riskMlScore} max={1} />
+                <ScoreBar label="FINAL" value={riskFinalScore} max={riskScoreMax} highlight />
+                <ScoreBar label="RULE" value={riskRuleScore} max={riskScoreMax} />
+                <ScoreBar label="ML" value={riskMlScore} max={riskScoreMax} />
+                {rainOnlyScore ? (
+                  <p className={std ? 'text-[11px] leading-snug text-amber-800' : 'text-[10px] leading-snug text-amber-300'}>
+                    Rainfall-only · CRITICAL not assessable without river data
+                    {riskScoreMax < 1 ? ` · dial to ${riskScoreMax.toFixed(3)}` : ''}
+                  </p>
+                ) : null}
                 <div className="grid grid-cols-2 gap-2 pt-2">
                   <Telemetry label="LOCATION" value={String(currentRisk?.location ?? location)} />
                   <Telemetry label="SEVERITY" value={riskSeverity} tone={severityToTone(riskSeverity)} />

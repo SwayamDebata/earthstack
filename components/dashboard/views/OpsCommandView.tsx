@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import Link from 'next/link';
 import { useQueries } from '@tanstack/react-query';
-import { Film, MapPin, Thermometer } from 'lucide-react';
+import { Film, MapPin, Thermometer, MapPinned } from 'lucide-react';
 import { api } from '@/lib/api/endpoints';
 import { isAlertOpen } from '@/lib/api/alerts';
 import { POLLING_INTERVALS, withJitter } from '@/lib/config';
@@ -106,6 +106,17 @@ export default function OpsCommandView() {
           >
             <Thermometer size={14} />
             Heat Ops
+          </Link>
+          <Link
+            href="/dashboard/shadow"
+            className={
+              std
+                ? 'inline-flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-800 hover:border-slate-300 hover:bg-white'
+                : 'inline-flex items-center gap-2 rounded-md border border-slate-400/30 px-3 py-2 font-mono text-[10px] uppercase tracking-widest text-slate-200 hover:bg-white/5'
+            }
+          >
+            <MapPinned size={14} />
+            North Odisha
           </Link>
           <RegionChips />
         </div>

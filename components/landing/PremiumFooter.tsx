@@ -9,6 +9,7 @@ const footerLinks = {
   product: [
     { name: 'Flood Ops', href: '/dashboard/ops' },
     { name: 'Heat Ops', href: '/dashboard/heat' },
+    { name: 'North Odisha', href: '/dashboard/shadow' },
     { name: 'Replay proof', href: '/dashboard/ops/replay?tour=1' },
     { name: 'krishiOS', href: '#krishios' },
     { name: 'Rainfall & rivers', href: '/dashboard/rainfall' },

@@ -175,7 +175,7 @@ export function useMission() {
   return ctx;
 }
 
-/** Safe outside dashboard — returns null on marketing pages and during SSR. */
+/** Safe outside dashboard - returns null on marketing pages and during SSR. */
 export function useMissionOptional() {
   return useContext(MissionContext);
 }

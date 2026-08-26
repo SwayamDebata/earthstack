@@ -24,10 +24,18 @@ export default function MissionProfileSwitcher({ className = '' }: { className?:
     }
     setMissionProfile(profile);
     if (profile === 'operational') {
-      if (!pathname.startsWith('/dashboard/ops') && !pathname.startsWith('/dashboard/heat')) {
+      if (
+        !pathname.startsWith('/dashboard/ops') &&
+        !pathname.startsWith('/dashboard/heat') &&
+        !pathname.startsWith('/dashboard/shadow')
+      ) {
         router.push('/dashboard/ops');
       }
-    } else if (pathname.startsWith('/dashboard/ops') || pathname.startsWith('/dashboard/heat')) {
+    } else if (
+      pathname.startsWith('/dashboard/ops') ||
+      pathname.startsWith('/dashboard/heat') ||
+      pathname.startsWith('/dashboard/shadow')
+    ) {
       router.push('/dashboard');
     }
   };

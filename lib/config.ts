@@ -62,6 +62,8 @@ export const POLLING_INTERVALS = {
   map: 120_000,
   /** Heat pipeline is twice daily; 10 min picks up manual /heat/run. */
   heat: 600_000,
+  /** North Odisha shadow map + DoWR bulletin; bulletin is daily. */
+  shadow: 300_000,
   rainfall: 180_000,
   forecast: 300_000,
   mlLogs: 120_000,

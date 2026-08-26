@@ -1,11 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowUpRight, Shield, Thermometer } from 'lucide-react';
+import { ArrowUpRight, MapPinned, Shield, Thermometer } from 'lucide-react';
 
 /**
- * Tomorrow.io / Vassar-style product lines: separate surfaces, one company.
- * Flood Ops is live command. Heat Ops is SHADOW advisory.
+ * Product lines stay separate: Flood Ops (alerting), Heat Ops (shadow),
+ * North Odisha flood (shadow validation - never alerted).
  */
 const products = [
   {
@@ -14,7 +14,7 @@ const products = [
     name: 'Flood Ops',
     status: 'Live',
     statusClass: 'border-emerald-400/30 bg-emerald-500/10 text-emerald-200',
-    blurb: 'War Room briefing, district evidence, and historical replay for flood decisions.',
+    blurb: 'War Room briefing and evidence for five alerting cities. River honesty when gauges are live; rainfall-only when they are not.',
     cta: 'Open Flood Ops',
   },
   {
@@ -25,6 +25,15 @@ const products = [
     statusClass: 'border-amber-400/30 bg-amber-500/10 text-amber-200',
     blurb: 'Odisha heat field and city scores. Advisory only. Does not replace IMD heat warnings.',
     cta: 'Open Heat Ops',
+  },
+  {
+    href: '/dashboard/shadow',
+    icon: MapPinned,
+    name: 'North Odisha',
+    status: 'Shadow',
+    statusClass: 'border-slate-400/35 bg-white/5 text-slate-200',
+    blurb: 'Baitarani · Brahmani · Budhabalanga. Scored and published with DoWR gauges, never alerted. Validation, not product alerts.',
+    cta: 'Open shadow surface',
   },
 ] as const;
 
@@ -38,11 +47,11 @@ export default function LandingProducts() {
       <div className="mx-auto max-w-5xl">
         <p className="text-xs font-medium tracking-wide text-slate-500">Products</p>
         <h2 className="mt-2 max-w-xl text-2xl font-semibold tracking-tight text-white md:text-3xl">
-          One engine. Separate ops for each hazard.
+          One engine. Separate surfaces for each decision.
         </h2>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400 md:text-base">
-          Flood and heat are different decisions. ModelEarth ships them as distinct surfaces, the same way
-          operational weather platforms split lines of work.
+          Alerting stays on five flood cities. Heat and north Odisha are published as shadow,
+          scored for trust, never mixed into the alert map.
         </p>
 
         <ul className="mt-8 divide-y divide-white/[0.08] border-y border-white/[0.08]">

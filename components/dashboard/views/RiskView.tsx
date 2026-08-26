@@ -24,6 +24,7 @@ import {
 } from '@/lib/ui/standard-surface';
 import { useStagger } from '@/components/dashboard/useStagger';
 import { num, numOrNull, severityToTone, toArray } from '@/components/dashboard/util';
+import { maxAchievableScore, scoringModeOf } from '@/lib/api/risk-status';
 
 export default function RiskView() {
   const mode = useDashboardUiMode();
@@ -48,6 +49,7 @@ export default function RiskView() {
     () =>
       LOCATIONS.map((loc, i) => {
         const data = perRegion[i].data as Record<string, unknown> | undefined;
+        const payload = (data ?? {}) as Record<string, unknown>;
         return {
           location: loc,
           isLoading: perRegion[i].isLoading,
@@ -57,6 +59,8 @@ export default function RiskView() {
           final: numOrNull(data?.final_score),
           severity: String(data?.severity ?? 'n/a'),
           trend: String(data?.trend ?? 'n/a'),
+          scoreMax: data ? maxAchievableScore(payload) : 1,
+          rainOnly: data ? scoringModeOf(payload) === 'rain_only' : false,
         };
       }),
     [perRegion],
@@ -150,9 +154,14 @@ export default function RiskView() {
                   </div>
                 ) : (
                   <div className="mt-3 space-y-2">
-                    <ScoreBar label="FINAL" value={m.final} max={1} highlight />
-                    <ScoreBar label="RULE" value={m.rule} max={1} />
-                    <ScoreBar label="ML" value={m.ml} max={1} />
+                    <ScoreBar label="FINAL" value={m.final} max={m.scoreMax} highlight />
+                    <ScoreBar label="RULE" value={m.rule} max={m.scoreMax} />
+                    <ScoreBar label="ML" value={m.ml} max={m.scoreMax} />
+                    {m.rainOnly ? (
+                      <p className={std ? 'text-[11px] leading-snug text-amber-800' : 'text-[10px] leading-snug text-amber-300'}>
+                        Rainfall-only · CRITICAL not assessable without river data
+                      </p>
+                    ) : null}
                   </div>
                 )}
 

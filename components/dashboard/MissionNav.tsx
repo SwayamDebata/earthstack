@@ -17,6 +17,7 @@ import {
   Lock,
   Trophy,
   Thermometer,
+  MapPinned,
 } from 'lucide-react';
 import { useMission } from '@/components/dashboard/MissionContext';
 
@@ -27,6 +28,7 @@ const analyticsItems = [
   { href: '/dashboard/rainfall', label: 'Rainfall', icon: CloudRain },
   { href: '/dashboard/forecast', label: 'Forecast', icon: Satellite },
   { href: '/dashboard/heat', label: 'Heat', icon: Thermometer },
+  { href: '/dashboard/shadow', label: 'North', icon: MapPinned },
   { href: '/dashboard/ml', label: 'ML', icon: Brain },
   { href: '/dashboard/replay', label: 'Replay', icon: Film },
   { href: '/dashboard/benchmark', label: 'Bench', icon: Trophy },
@@ -36,6 +38,7 @@ const analyticsItems = [
 const operationalItems = [
   { href: '/dashboard/ops', label: 'Flood', icon: Shield, match: 'exact' as const },
   { href: '/dashboard/heat', label: 'Heat', icon: Thermometer, match: 'exact' as const },
+  { href: '/dashboard/shadow', label: 'North', icon: MapPinned, match: 'exact' as const },
   { href: '/dashboard/ops/replay', label: 'Replay', icon: History },
   { href: '/dashboard/benchmark', label: 'Bench', icon: Trophy },
 ] as const;

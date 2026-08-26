@@ -8,14 +8,20 @@ import { api } from '@/lib/api/endpoints';
 import { ApiError } from '@/lib/api/client';
 import type { SimilarEvent } from '@/lib/api/schemas';
 import { useMission } from '@/components/dashboard/MissionContext';
+import ShadowBadge from '@/components/dashboard/heat/ShadowBadge';
 import WhyBar from '@/components/dashboard/warroom/WhyBar';
+import {
+  isAlertingLocation,
+  maxAchievableScore,
+  riverStatusOf,
+  scoringModeOf,
+} from '@/lib/api/risk-status';
 import {
   confidencePct,
   isLowConfidence,
   needsAttention,
   normalizeSeverity,
   replayViewHref,
-  scorePct,
   severityChipClass,
   trendArrow,
   trendLabel,
@@ -30,9 +36,12 @@ function numOf(rec: Record<string, unknown>, key: string): number | null {
 export default function EvidenceMode({
   location,
   onClose,
+  /** When false, never show alert affordances (north Odisha shadow surface). */
+  alerting,
 }: {
   location: string | null;
   onClose: () => void;
+  alerting?: boolean;
 }) {
   const { uiMode } = useMission();
   const std = uiMode === 'standard';
@@ -58,10 +67,25 @@ export default function EvidenceMode({
   if (!open) return null;
 
   const data = q.data;
+  const payload = (data ?? {}) as Record<string, unknown>;
+  const canAlert = typeof alerting === 'boolean' ? alerting : isAlertingLocation(payload);
   const sev = normalizeSeverity(data?.severity ?? data?.risk_level);
-  const urgent = needsAttention(sev);
+  const urgent = canAlert && needsAttention(sev);
   const conf = confidencePct(data?.confidence);
-  const score = scorePct(data?.risk_score);
+  const scoreVal = typeof data?.risk_score === 'number' ? data.risk_score : null;
+  const scoreCap = maxAchievableScore({
+    ...payload,
+    max_achievable_score: data?.max_achievable_score ?? payload.max_achievable_score,
+    raw_data: (data?.evidence as Record<string, unknown> | undefined) ?? {},
+  });
+  const scoreFill =
+    scoreVal !== null && scoreCap > 0
+      ? Math.max(0, Math.min(100, (scoreVal / scoreCap) * 100))
+      : null;
+  const rainOnly = scoringModeOf({
+    ...payload,
+    raw_data: (data?.evidence as Record<string, unknown> | undefined) ?? {},
+  }) === 'rain_only';
   const is404 = q.error instanceof ApiError && q.error.status === 404;
 
   const panel = std
@@ -78,9 +102,12 @@ export default function EvidenceMode({
         {/* Header */}
         <div className={`sticky top-0 z-10 flex items-start gap-3 px-5 py-4 ${std ? 'border-b border-slate-200 bg-white' : 'border-b border-cyan-400/15 bg-[#060b18]'}`}>
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className={label}>Evidence mode</span>
               <span className={severityChipClass(sev, uiMode)}>{data?.severity ?? 'n/a'}</span>
+              {!canAlert ? (
+                <ShadowBadge mode={uiMode} showDisclaimer={false} label="SHADOW · not alerting" />
+              ) : null}
             </div>
             <h2 className={`mt-1 truncate text-xl font-semibold ${std ? 'text-slate-900' : 'text-white'}`}>
               {data?.location ?? location}
@@ -140,8 +167,23 @@ export default function EvidenceMode({
               <div className={std ? 'rounded-lg border border-slate-200 bg-slate-50 p-3' : 'rounded-md border border-white/10 bg-white/5 p-3'}>
                 <p className={label}>Risk score</p>
                 <p className={`mt-1 text-2xl font-semibold tabular-nums ${std ? 'text-slate-900' : 'text-white'}`}>
-                  {score !== null ? `${score}%` : 'n/a'}
+                  {scoreVal !== null ? scoreVal.toFixed(2) : 'n/a'}
                 </p>
+                <div className={`mt-2 h-1.5 w-full overflow-hidden rounded-full ${std ? 'bg-slate-200' : 'bg-white/10'}`}>
+                  <div
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${scoreFill ?? 0}%`,
+                      background: urgent ? '#b91c1c' : std ? '#2563eb' : '#22d3ee',
+                    }}
+                  />
+                </div>
+                {rainOnly ? (
+                  <p className={`mt-1.5 text-[11px] leading-snug ${std ? 'text-amber-800' : 'text-amber-300'}`}>
+                    Rainfall-only · CRITICAL not assessable without river data
+                    {scoreCap < 1 ? ` · dial scaled to ${scoreCap.toFixed(3)}` : ''}
+                  </p>
+                ) : null}
                 <div className="mt-1 flex items-center gap-1.5 text-sm">
                   <span className={std ? 'text-slate-500' : 'text-slate-400'}>{trendArrow(data.trend)}</span>
                   <span className={std ? 'text-slate-600' : 'text-slate-300'}>{trendLabel(data.trend)}</span>
@@ -265,10 +307,15 @@ function EvidencePanel({
   const p95 = numOf(evidence, 'historical_p95_rain_mm');
   const level = numOf(evidence, 'river_level_m');
   const threshold = numOf(evidence, 'flood_threshold_m');
-  const station = evidence.river_station ?? evidence.river_station_name;
+  const status = riverStatusOf(evidence);
+  const station = evidence.river_station_cwc ?? evidence.river_station ?? evidence.river_station_name;
+  const observed = typeof evidence.river_observed_at === 'string' ? evidence.river_observed_at : null;
   const source = evidence.rainfall_source_used;
   const decay = evidence.antecedent_decay_applied;
-  const gaugePct = level !== null && threshold ? Math.max(0, Math.min(100, (level / threshold) * 100)) : null;
+  const gaugePct =
+    status === 'live' && level !== null && threshold && threshold > 0
+      ? Math.max(0, Math.min(100, (level / threshold) * 100))
+      : null;
 
   const cell = std ? 'rounded-lg border border-slate-200 bg-slate-50 p-3' : 'rounded-md border border-white/10 bg-white/5 p-3';
   const val = `text-sm font-semibold tabular-nums ${std ? 'text-slate-900' : 'text-white'}`;
@@ -279,8 +326,8 @@ function EvidencePanel({
     <section>
       <h3 className={`mb-2 text-sm font-semibold ${std ? 'text-slate-900' : 'text-white'}`}>Evidence</h3>
 
-      {/* River gauge */}
-      {level !== null && threshold !== null ? (
+      {/* River gauge: only live readings are current; stale is labelled not-used-in-score */}
+      {status === 'live' && level !== null && threshold !== null && threshold > 0 ? (
         <div className={`${cell} mb-3`}>
           <div className="flex items-center justify-between">
             <p className={label}>River level vs flood mark{station ? ` · ${String(station)}` : ''}</p>
@@ -296,7 +343,6 @@ function EvidencePanel({
                 background: gaugePct !== null && gaugePct >= 90 ? '#b91c1c' : gaugePct !== null && gaugePct >= 70 ? '#f59e0b' : '#10b981',
               }}
             />
-            {/* flood-mark marker at 100% */}
             <span className="absolute right-0 top-0 h-full w-0.5 bg-slate-900/60" aria-hidden />
           </div>
           {gaugePct !== null ? (
@@ -305,7 +351,28 @@ function EvidencePanel({
             </p>
           ) : null}
         </div>
-      ) : null}
+      ) : status === 'stale' && level !== null ? (
+        <div className={`${cell} mb-3 opacity-80`}>
+          <p className={label}>River reading (stale · not used in score)</p>
+          <p className={`mt-1 ${val}`}>
+            {fmt(level, ' m')}
+            {threshold !== null && threshold > 0 ? (
+              <span className={std ? 'text-slate-400' : 'text-slate-500'}> / {fmt(threshold, ' m')}</span>
+            ) : null}
+          </p>
+          <p className={`mt-1 text-xs ${std ? 'text-amber-800' : 'text-amber-300'}`}>
+            {observed ? `Observed ${observed}` : 'Stale reading'}
+            {station ? ` · ${String(station)}` : ''}
+          </p>
+        </div>
+      ) : (
+        <div className={`${cell} mb-3`}>
+          <p className={label}>River</p>
+          <p className={`mt-1 text-sm ${std ? 'text-slate-700' : 'text-slate-300'}`}>
+            No live river gauge for this location. Score is rainfall-only.
+          </p>
+        </div>
+      )}
 
       <div className="grid grid-cols-3 gap-2">
         <div className={cell}>

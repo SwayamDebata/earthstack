@@ -221,7 +221,7 @@ export default function MissionShell({ children }: { children: ReactNode }) {
             }
           >
             {std
-              ? 'Preview access — explore live data and historical replay. Request a pilot for full access.'
+              ? 'Preview access - explore live data and historical replay. Request a pilot for full access.'
               : 'Live command preview · read-only coordination'}
           </p>
           <button

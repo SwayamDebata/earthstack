@@ -128,7 +128,7 @@ export function ErrorBlock({ message, onRetry }: { message: string; onRetry: () 
       }
     >
       <p className={std ? 'text-sm font-semibold text-red-950' : 'font-mono text-[10px] uppercase tracking-widest text-red-200'}>
-        {std ? `Request failed — ${message}` : `UPSTREAM FAULT · ${message}`}
+        {std ? `Request failed - ${message}` : `UPSTREAM FAULT · ${message}`}
       </p>
       <button
         type="button"

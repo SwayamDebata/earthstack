@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { ArrowUpRight, Shield } from 'lucide-react';
 
 /**
- * Above-the-fold proof: live ops + one honest offline number + advisory disclaimer.
+ * Above-the-fold proof: live ops + honest north Odisha pair (recall and miss together).
  * War Room and Benchmark stay the serious surfaces; this only points there.
  */
 export default function LandingProofStrip() {
@@ -15,17 +15,22 @@ export default function LandingProofStrip() {
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
           Live ops
         </span>
-        <span className="text-[11px] text-slate-500">5 Odisha pilot cities</span>
+        <span className="text-[11px] text-slate-500">5 Odisha pilot cities · alerts only</span>
       </div>
 
       <p className="mt-3 text-base font-semibold leading-snug text-white md:text-lg">
-        99.3% recall at 24-hour lead on gauged historical flood events
-        <span className="ml-2 align-middle text-[11px] font-medium text-slate-400">(offline · rule engine)</span>
+        94.4% of north Odisha flood onsets detected
+        <span className="ml-2 align-middle text-[11px] font-medium text-slate-400">
+          (102/108, 1990-2020 backtest)
+        </span>
+      </p>
+      <p className="mt-1.5 text-sm leading-snug text-slate-300">
+        and the engine went LOW on 14 of 18 location-days during active flooding.
       </p>
 
       <p className="mt-2 flex items-start gap-2 text-xs leading-relaxed text-slate-400">
         <Shield size={13} className="mt-0.5 shrink-0 text-amber-300/80" />
-        Advisory only. Does not override IMD or CWC official warnings.
+        Advisory only. Does not override IMD, CWC or OSDMA warnings. Limitation ships with the number.
       </p>
 
       <div className="mt-4 flex flex-wrap gap-2">
@@ -34,6 +39,13 @@ export default function LandingProofStrip() {
           className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-white/15"
         >
           Flood Ops
+          <ArrowUpRight size={13} />
+        </Link>
+        <Link
+          href="/dashboard/shadow"
+          className="inline-flex items-center gap-1.5 rounded-full border border-slate-400/30 bg-white/5 px-3.5 py-1.5 text-xs font-medium text-slate-100 transition hover:border-slate-300/50 hover:bg-white/10"
+        >
+          North Odisha
           <ArrowUpRight size={13} />
         </Link>
         <Link
