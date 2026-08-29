@@ -1,0 +1,1353 @@
+/* ==========================================================================
+   ModelEarth — landing design system
+   Three themes: paper (warm light, default) · white (clean) · void (dark)
+   Everything is scoped under .me-root so the dashboard is untouched.
+   No gradients. No glow. Hairline rules, tabular numerals, labelled claims.
+   ========================================================================== */
+
+.me-root {
+  /* ---- type ---- */
+  --display: var(--font-display), 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  --sans: var(--font-site-sans), 'Inter Tight', ui-sans-serif, system-ui, sans-serif;
+  --mono: var(--font-mono), 'JetBrains Mono', ui-monospace, Menlo, monospace;
+
+  /* ---- accents: constant across themes, tuned per theme below ---- */
+  --laterite: #c4622f;
+  --amber: #b8791f;
+  --water: #2f7f77;
+  --green: #2f6b41;
+  --steel: #566b64;
+
+  /* ---- paper theme (default) ---- */
+  --bg: #f2f0e4;
+  --bg-2: #eae7d7;
+  --surface: #ebe8d9;
+  --surface-2: #e3dfcc;
+  --ink: #17160f;
+  --text: #3d3a2c;
+  --muted: #6d6a56;
+  --faint: #8f8c78;
+  --line: #d8d4bf;
+  --line-2: #c6c1a8;
+  --inverse-bg: #0a0b08;
+  --inverse-ink: #ede9de;
+
+  /* status chip foregrounds/backgrounds */
+  --chip-live-fg: #f4f6ef;
+  --chip-live-bg: #2f6b41;
+  --chip-back-fg: #f2f4f1;
+  --chip-back-bg: #566b64;
+  --chip-shad-fg: #1f1704;
+  --chip-shad-bg: #e0a05a;
+  --chip-miss-fg: #fbf3e6;
+  --chip-miss-bg: #c4622f;
+  --chip-open-fg: #4b4838;
+  --chip-open-bg: #ded9c4;
+
+  --shadow-card: none;
+  --grain-opacity: 0.035;
+
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'ss01' 1;
+}
+
+/* ---- white theme ---- */
+.me-root[data-me-theme='white'] {
+  --bg: #ffffff;
+  --bg-2: #f7f6f2;
+  --surface: #f8f7f3;
+  --surface-2: #f1efe9;
+  --ink: #101010;
+  --text: #35342f;
+  --muted: #66645c;
+  --faint: #8b8981;
+  --line: #e5e3dc;
+  --line-2: #d3d0c6;
+  --inverse-bg: #101010;
+  --inverse-ink: #f5f4f0;
+  --chip-open-fg: #4a4840;
+  --chip-open-bg: #eceae3;
+  --grain-opacity: 0.02;
+}
+
+/* ---- void theme (the artifact palette) ---- */
+.me-root[data-me-theme='void'] {
+  --laterite: #d4703a;
+  --amber: #e0a05a;
+  --water: #4fa89c;
+  --green: #7fb08a;
+  --steel: #8e9a93;
+
+  --bg: #0a0b08;
+  --bg-2: #0e100b;
+  --surface: #14160e;
+  --surface-2: #191b12;
+  --ink: #ede9de;
+  --text: #c9c4b4;
+  --muted: #9a9584;
+  --faint: #6b6857;
+  --line: #2a2c21;
+  --line-2: #3a3d2f;
+  --inverse-bg: #ede9de;
+  --inverse-ink: #0a0b08;
+
+  --chip-live-fg: #0e1a10;
+  --chip-live-bg: #7fb08a;
+  --chip-back-fg: #101209;
+  --chip-back-bg: #8e9a93;
+  --chip-shad-fg: #1a1206;
+  --chip-shad-bg: #e0a05a;
+  --chip-miss-fg: #fbf3e6;
+  --chip-miss-bg: #c4622f;
+  --chip-open-fg: #9a9584;
+  --chip-open-bg: #22241a;
+
+  --grain-opacity: 0.045;
+}
+
+/* ==========================================================================
+   base
+   ========================================================================== */
+
+.me-root *,
+.me-root *::before,
+.me-root *::after {
+  box-sizing: border-box;
+}
+
+.me-root ::selection {
+  background: var(--laterite);
+  color: #fbf3e6;
+}
+
+/* Themed scrollbar */
+.me-root {
+  scrollbar-color: var(--line-2) transparent;
+}
+
+/* ---- display type: heavy and very tightly tracked, per the prototype ---- */
+.me-display {
+  font-family: var(--display);
+  font-weight: 700;
+  letter-spacing: -0.038em;
+  line-height: 0.94;
+  font-feature-settings: 'ss01' 1;
+  color: var(--ink);
+  margin: 0;
+  text-wrap: balance;
+}
+
+.me-d1 {
+  font-size: clamp(2.75rem, 7vw, 5.75rem);
+}
+.me-d2 {
+  font-size: clamp(2.1rem, 4.4vw, 3.5rem);
+  line-height: 0.99;
+  letter-spacing: -0.028em;
+}
+.me-d3 {
+  font-size: clamp(1.5rem, 2.6vw, 2.15rem);
+  line-height: 1.08;
+}
+
+/* ---- sans headings for structural / UI labels ---- */
+.me-h {
+  font-family: var(--display);
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  color: var(--ink);
+  margin: 0;
+}
+
+/* ---- mono eyebrow / label ---- */
+.me-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--laterite);
+}
+
+.me-label {
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.me-lede {
+  font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
+  line-height: 1.62;
+  color: var(--text);
+  margin: 0;
+  max-width: 62ch;
+  text-wrap: pretty;
+}
+
+.me-body {
+  font-size: 1rem;
+  line-height: 1.68;
+  color: var(--text);
+  margin: 0;
+  max-width: 66ch;
+  text-wrap: pretty;
+}
+
+.me-num {
+  font-family: var(--display);
+  font-weight: 700;
+  letter-spacing: -0.032em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.me-mono {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   layout
+   ========================================================================== */
+
+.me-wrap {
+  width: 100%;
+  max-width: 1360px;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 4.5rem);
+}
+
+.me-band {
+  padding-block: clamp(4rem, 9vw, 7.5rem);
+  position: relative;
+}
+
+.me-rule {
+  height: 1px;
+  background: var(--line);
+  border: 0;
+  margin: 0;
+}
+
+/* section header — eyebrow only, no trailing rule */
+.me-sec-head {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* ==========================================================================
+   surfaces
+   ========================================================================== */
+
+.me-panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: clamp(1.25rem, 2.4vw, 1.9rem);
+}
+
+/* hairline-gap grid: cells separated by 1px of --line, like the artifact */
+.me-hairgrid {
+  display: grid;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+.me-hairgrid > * {
+  background: var(--bg);
+  padding: clamp(1.15rem, 2vw, 1.6rem);
+}
+
+/* ==========================================================================
+   status chips — every claim on this site carries one
+   ========================================================================== */
+
+.me-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font-family: var(--mono);
+  font-size: 0.5625rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.3em 0.6em;
+  white-space: nowrap;
+  line-height: 1.1;
+}
+
+.me-chip[data-k='live'] {
+  color: var(--chip-live-fg);
+  background: var(--chip-live-bg);
+}
+.me-chip[data-k='backtest'] {
+  color: var(--chip-back-fg);
+  background: var(--chip-back-bg);
+}
+.me-chip[data-k='shadow'] {
+  color: var(--chip-shad-fg);
+  background: var(--chip-shad-bg);
+}
+.me-chip[data-k='miss'] {
+  color: var(--chip-miss-fg);
+  background: var(--chip-miss-bg);
+}
+.me-chip[data-k='open'],
+.me-chip[data-k='dev'] {
+  color: var(--chip-open-fg);
+  background: var(--chip-open-bg);
+}
+
+/* ==========================================================================
+   controls
+   ========================================================================== */
+
+.me-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55em;
+  font-family: var(--sans);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  padding: 0.85em 1.6em;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+
+.me-btn-primary {
+  background: var(--ink);
+  color: var(--bg);
+}
+.me-btn-primary:hover {
+  background: var(--laterite);
+  color: #fbf3e6;
+}
+
+.me-btn-ghost {
+  border-color: var(--line-2);
+  color: var(--ink);
+  background: transparent;
+}
+.me-btn-ghost:hover {
+  border-color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 5%, transparent);
+}
+
+/* on-video buttons always read against dark footage */
+.me-on-dark .me-btn-primary {
+  background: #ede9de;
+  color: #0a0b08;
+}
+.me-on-dark .me-btn-primary:hover {
+  background: var(--laterite);
+  color: #fbf3e6;
+}
+.me-on-dark .me-btn-ghost {
+  border-color: rgba(237, 233, 222, 0.34);
+  color: #ede9de;
+}
+.me-on-dark .me-btn-ghost:hover {
+  border-color: #ede9de;
+  background: rgba(237, 233, 222, 0.08);
+}
+
+/* ==========================================================================
+   texture
+   ========================================================================== */
+
+.me-grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+}
+.me-root[data-me-theme='void'] .me-grain::after {
+  mix-blend-mode: screen;
+}
+
+
+/* ==========================================================================
+   motion — every reveal respects reduced motion
+   ========================================================================== */
+
+.me-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.me-reveal[data-shown='true'] {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .me-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .me-root * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   misc
+   ========================================================================== */
+
+.me-kv {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1.25rem;
+  align-items: baseline;
+  padding-block: 0.9rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.me-link {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line-2);
+  transition: border-color 0.18s ease, color 0.18s ease;
+}
+.me-link:hover {
+  color: var(--laterite);
+  border-color: var(--laterite);
+}
+
+.me-a11y-skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: var(--ink);
+  color: var(--bg);
+  padding: 0.75rem 1.25rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+}
+.me-a11y-skip:focus {
+  left: 1rem;
+  top: 1rem;
+}
+
+.me-root :focus-visible {
+  outline: 2px solid var(--laterite);
+  outline-offset: 3px;
+}
+
+/* ==========================================================================
+   responsive
+   ========================================================================== */
+
+@media (max-width: 1080px) {
+  .me-nav-links {
+    display: none !important;
+  }
+  .me-nav-burger {
+    display: inline-flex !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .me-nav-cta,
+  .me-theme-switch {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1081px) {
+  .me-nav-drawer {
+    display: none;
+  }
+}
+
+/* the product rows collapse to a single column before the grid minmax does */
+@media (max-width: 640px) {
+  .me-d1 {
+    letter-spacing: -0.018em;
+  }
+}
+
+/* ==========================================================================
+   terrain hero — WebGL flythrough of the Mahanadi reach
+   ========================================================================== */
+
+.me-beat {
+  position: absolute;
+  left: clamp(1.25rem, 4vw, 4.5rem);
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: min(620px, 62vw);
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+.me-beat .me-eyebrow {
+  display: block;
+  margin-bottom: 1.15rem;
+}
+.me-beat h1 {
+  font-size: clamp(2.1rem, 4.6vw, 4.1rem);
+  line-height: 1.0;
+  margin: 0 0 1rem;
+  text-wrap: balance;
+}
+.me-beat p {
+  margin: 0;
+  font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+  line-height: 1.62;
+  color: rgba(237, 233, 222, 0.78);
+  max-width: 52ch;
+}
+
+/* city pins, projected from world space every frame */
+.me-pins {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.me-pin {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  white-space: nowrap;
+}
+.me-pin-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e0a05a;
+  box-shadow: 0 0 0 1px rgba(10, 11, 8, 0.9);
+  flex: 0 0 auto;
+}
+.me-pin-lbl {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: #ede9de;
+  text-shadow: 0 1px 6px rgba(10, 11, 8, 0.95);
+}
+.me-pin-sub {
+  display: block;
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  color: #e0a05a;
+  margin-top: 2px;
+}
+
+/* instrument readout, bottom left — no frame, no rules */
+.me-hud {
+  position: absolute;
+  left: clamp(1.25rem, 4vw, 4.5rem);
+  bottom: clamp(1.25rem, 3vw, 2.25rem);
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.75rem;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  font-variant-numeric: tabular-nums;
+}
+.me-hud > div {
+  display: flex;
+  gap: 0.6rem;
+}
+.me-hud dt {
+  margin: 0;
+  color: rgba(237, 233, 222, 0.45);
+}
+.me-hud dd {
+  margin: 0;
+  color: rgba(237, 233, 222, 0.92);
+}
+.me-hud dd b {
+  font-weight: 400;
+}
+
+.me-hud-note {
+  position: absolute;
+  right: clamp(1.25rem, 4vw, 4.5rem);
+  bottom: clamp(1.25rem, 3vw, 2.25rem);
+  margin: 0;
+  max-width: 40ch;
+  text-align: right;
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.8;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(237, 233, 222, 0.36);
+}
+
+.me-scroll-cue {
+  position: absolute;
+  right: clamp(1.25rem, 4vw, 4.5rem);
+  top: 50%;
+  transform: translateY(-50%) rotate(90deg);
+  transform-origin: right center;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(237, 233, 222, 0.42);
+  pointer-events: none;
+}
+
+@media (max-width: 860px) {
+  .me-hud-note,
+  .me-scroll-cue {
+    display: none;
+  }
+  .me-beat {
+    top: auto;
+    bottom: 5.5rem;
+    transform: none;
+    max-width: none;
+    right: clamp(1.25rem, 4vw, 4.5rem);
+  }
+}
+
+/* ==========================================================================
+   framed media — video lives in a contained frame inside a section,
+   never full bleed
+   ========================================================================== */
+
+.me-media {
+  margin: 0;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 10px;
+}
+.me-media-inner {
+  position: relative;
+  overflow: hidden;
+  background: #0a0b08;
+  aspect-ratio: 16 / 9;
+}
+.me-media video,
+.me-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.me-media-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 0.25rem 0.15rem;
+}
+
+/* products subbar */
+@media (max-width: 720px) {
+  .me-subbar-note {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   hero scene art — animations lifted from the Route D prototype.
+   Rain falls, the gauge LED blinks, heat shimmers, the sun pulses, voice bars
+   bounce, the call ring expands, the river glints.
+   ========================================================================== */
+
+.me-hero-scene {
+  isolation: isolate;
+}
+
+.me-scene-art {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.me-scene-art svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.me-scene-dots {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.me-scene-dots > div,
+.me-scene-dots canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.me-scene-note {
+  position: absolute;
+  right: clamp(1.25rem, 4vw, 4.5rem);
+  bottom: clamp(1rem, 2.5vw, 1.5rem);
+  z-index: 3;
+  margin: 0;
+  max-width: 46ch;
+  text-align: right;
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.8;
+  letter-spacing: 0.1em;
+  color: rgba(237, 233, 222, 0.42);
+}
+
+/* ---- rain ---- */
+@keyframes me-rainfall {
+  from { transform: translateY(-44px); }
+  to   { transform: translateY(0); }
+}
+.me-scene-art .rain  { animation: me-rainfall 620ms linear infinite; }
+.me-scene-art .rain-b{ animation: me-rainfall 880ms linear infinite; }
+@keyframes me-rainB {
+  from { transform: translateY(-40px); }
+  to   { transform: translateY(0); }
+}
+.me-scene-art .rb { animation: me-rainB 700ms linear infinite; }
+
+/* ---- gauge LED / live dot ---- */
+@keyframes me-blink {
+  0%, 45%   { opacity: 1; }
+  55%, 100% { opacity: 0.22; }
+}
+.me-scene-art .live { animation: me-blink 2.4s ease-in-out infinite; }
+
+@keyframes me-led {
+  0%, 42%   { opacity: 1; }
+  52%, 100% { opacity: 0.18; }
+}
+.me-scene-art .led { animation: me-led 2.6s ease-in-out infinite; }
+
+/* ---- water swell ---- */
+@keyframes me-swell {
+  0%, 100% { transform: translateY(3px); }
+  50%      { transform: translateY(-3px); }
+}
+.me-scene-art .swell { animation: me-swell 6s ease-in-out infinite; }
+
+/* ---- heat shimmer and sun ---- */
+@keyframes me-shimmerY {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  50%      { transform: translateY(-3px) scaleY(1.03); }
+}
+.me-scene-art .shim {
+  animation: me-shimmerY 4.4s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.me-scene-art .shim-b {
+  animation: me-shimmerY 6.2s ease-in-out infinite reverse;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes me-sunPulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50%      { opacity: 0.52; transform: scale(1.07); }
+}
+.me-scene-art .sunp {
+  animation: me-sunPulse 5s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* ---- voice bars and the call ring ---- */
+@keyframes me-vb {
+  0%, 100% { transform: scaleY(0.28); }
+  50%      { transform: scaleY(1); }
+}
+.me-scene-art .vb {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: me-vb 1.05s ease-in-out infinite;
+}
+@keyframes me-ring {
+  0%   { transform: scale(0.7); opacity: 0.5; }
+  70%  { opacity: 0; }
+  100% { transform: scale(1.85); opacity: 0; }
+}
+.me-scene-art .ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: me-ring 3.1s ease-out infinite;
+}
+
+/* ---- river glint and float ---- */
+@keyframes me-glint { to { stroke-dashoffset: -260; } }
+.me-scene-art .glint {
+  stroke-dasharray: 26 34;
+  animation: me-glint 9s linear infinite;
+}
+@keyframes me-bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+.me-scene-art .float { animation: me-bob 6.5s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .me-scene-art * { animation: none !important; }
+}
+
+@media (max-width: 860px) {
+  .me-scene-note { display: none; }
+}
+
+/* ==========================================================================
+   MEMotion host — timeline set pieces (score, density, leadtime, sentence).
+   The engine's palette is the prototype's dark scheme, so the panel stays
+   dark in every theme rather than half-matching the light ones.
+   ========================================================================== */
+.me-motion-panel {
+  background: #14160e;
+  border: 1px solid #2a2c21;
+  padding: clamp(1.1rem, 2.2vw, 1.75rem);
+  color: #ede9de;
+}
+.me-motion-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.me-motion-panel .me-label {
+  color: #6b6857;
+}
+.me-motion {
+  min-height: 220px;
+}
+.me-motion svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+/* the engine's own play/pause + scrub controls */
+.me-motion button {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: #9a9584;
+  background: transparent;
+  border: 1px solid #3a3d2f;
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+}
+.me-motion button:hover {
+  color: #ede9de;
+  border-color: #ede9de;
+}
+
+/* ==========================================================================
+   ambient score control — the browser-synthesised bed
+   ========================================================================== */
+
+.me-sound-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--line-2);
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.18s ease, border-color 0.18s ease;
+}
+.me-sound-btn:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.me-sound-eq {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;
+}
+.me-sound-eq i {
+  width: 2px;
+  height: 3px;
+  background: currentColor;
+  display: block;
+}
+.me-sound-eq[data-on='true'] i {
+  animation: me-eq 900ms ease-in-out infinite;
+  color: var(--laterite);
+}
+.me-sound-eq[data-on='true'] i:nth-child(2) { animation-delay: 120ms; }
+.me-sound-eq[data-on='true'] i:nth-child(3) { animation-delay: 240ms; }
+.me-sound-eq[data-on='true'] i:nth-child(4) { animation-delay: 360ms; }
+
+@keyframes me-eq {
+  0%, 100% { height: 3px; }
+  50%      { height: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .me-sound-eq[data-on='true'] i { animation: none; height: 7px; }
+}
+
+/* banner scenes carry headings inside the art, so fit instead of slice */
+.me-scene-fit .me-scene-art svg {
+  object-fit: contain;
+}
+
+/* ==========================================================================
+   low-poly valley — the Delta prototype's WebGL flythrough.
+   Warm dawn palette, so the beats are dark type on light ground.
+   ========================================================================== */
+
+.me-valley {
+  background: #ecccA4;
+  background: #eccfa8;
+}
+.me-valley-pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  min-height: 560px;
+  overflow: hidden;
+}
+.me-valley-gl {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.me-valley-beat {
+  position: absolute;
+  left: clamp(1.25rem, 6vw, 5.5rem);
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: min(640px, 60vw);
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+.me-valley-beat h1 {
+  font-size: clamp(2.6rem, 6.4vw, 5.4rem);
+  line-height: 0.98;
+  margin: 0;
+}
+.me-valley-beat h2 {
+  font-size: clamp(1.9rem, 3.8vw, 3.1rem);
+  line-height: 1.04;
+  margin: 0;
+}
+/* the CTA in the last beat is the one thing here that must be clickable */
+.me-valley-beat a {
+  pointer-events: auto;
+}
+
+@media (max-width: 860px) {
+  .me-valley-beat {
+    max-width: none;
+    right: clamp(1.25rem, 6vw, 5.5rem);
+  }
+}
+
+/* Delta diagrams keep their own warm-paper ground in every theme */
+.me-scene-figure {
+  margin: 0;
+  background: #f3f1e7;
+  border: 1px solid #ddd8c6;
+  padding: clamp(0.75rem, 1.6vw, 1.25rem);
+}
+.me-scene-figure .me-label {
+  color: #6e675c;
+}
+
+/* ==========================================================================
+   scroll storytelling: a pinned stage whose beats cross-fade on scrub
+   ========================================================================== */
+
+.me-story {
+  position: relative;
+}
+.me-story-pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  min-height: 560px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+.me-story-layer {
+  position: absolute;
+  inset: -10% 0;
+  pointer-events: none;
+  will-change: transform;
+}
+.me-story-stage {
+  position: relative;
+  width: 100%;
+  min-height: 46vh;
+}
+.me-story-beat {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  will-change: opacity, transform;
+}
+
+/* progress rail down the right edge */
+.me-story-rail {
+  position: absolute;
+  right: clamp(0.9rem, 2.4vw, 2rem);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: min(200px, 26vh);
+  background: color-mix(in srgb, var(--ink) 12%, transparent);
+}
+.me-story-rail span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--laterite);
+  transform-origin: top;
+  will-change: transform;
+}
+
+@media (max-width: 860px) {
+  .me-story-rail { display: none; }
+  .me-story-beat { position: relative; inset: auto; }
+  .me-story-stage { min-height: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .me-story-pin { position: relative; height: auto; min-height: 0; padding-block: 3rem; }
+  .me-story { height: auto !important; }
+  .me-story-beat { position: relative; inset: auto; opacity: 1 !important; transform: none !important; padding-block: 2rem; }
+  .me-story-layer { display: none; }
+}
+
+/* ==========================================================================
+   body diagrams from the prototype: drawn on the dark palette, so they keep
+   their own ground in every theme
+   ========================================================================== */
+.me-diagram {
+  margin: 0;
+  background: #14160e;
+  border: 1px solid #2a2c21;
+  padding: clamp(1rem, 2vw, 1.75rem);
+}
+.me-diagram-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 1.1rem;
+}
+.me-diagram .me-label { color: #6b6857; }
+.me-diagram-note { color: #c4622f !important; }
+.me-diagram-cap {
+  display: block;
+  margin-top: 1rem;
+  line-height: 1.7;
+  color: #6b6857 !important;
+  text-transform: none;
+  letter-spacing: 0.06em;
+}
+
+/* ==========================================================================
+   story video player: transport, scrubber, synthesised monsoon bed
+   ========================================================================== */
+
+.me-player {
+  margin: 0;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 10px;
+}
+.me-player-stage {
+  position: relative;
+  overflow: hidden;
+  background: #0a0b08;
+  aspect-ratio: 16 / 9;
+}
+.me-player-stage video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* centre control, fades out while playing and returns on hover */
+.me-player-big {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 72px;
+  height: 72px;
+  border-radius: 999px;
+  border: 1px solid rgba(237, 233, 222, 0.4);
+  background: rgba(10, 11, 8, 0.55);
+  backdrop-filter: blur(8px);
+  color: #ede9de;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: opacity 0.25s ease, background 0.2s ease, transform 0.2s ease;
+}
+.me-player-big:hover {
+  background: rgba(10, 11, 8, 0.8);
+  transform: translate(-50%, -50%) scale(1.05);
+}
+.me-player-big[data-hidden='true'] {
+  opacity: 0;
+}
+.me-player-stage:hover .me-player-big[data-hidden='true'] {
+  opacity: 1;
+}
+
+.me-player-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.7rem 0.25rem 0.35rem;
+}
+.me-player-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: transparent;
+  border: 0;
+  padding: 0.25rem;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: color 0.18s ease;
+}
+.me-player-btn:hover {
+  color: var(--ink);
+}
+.me-player-sound[aria-pressed='true'] {
+  color: var(--laterite);
+}
+.me-player-time {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
+  flex: 0 0 auto;
+}
+.me-player-track {
+  flex: 1 1 auto;
+  height: 3px;
+  background: var(--line);
+  cursor: pointer;
+  position: relative;
+}
+.me-player-track::before {
+  content: '';
+  position: absolute;
+  inset: -8px 0;
+}
+.me-player-track span {
+  display: block;
+  height: 100%;
+  background: var(--laterite);
+}
+.me-player-meta {
+  padding: 0 0.25rem;
+}
+.me-player-cap {
+  display: block;
+  padding: 0.5rem 0.25rem 0.25rem;
+  line-height: 1.7;
+  letter-spacing: 0.1em;
+}
+
+/* ==========================================================================
+   "the night the water came": full-bleed pinned canvas with cross-fading copy
+   ========================================================================== */
+
+.me-rise {
+  position: relative;
+  height: 420vh;
+  background: #080a07;
+}
+.me-rise-pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  min-height: 560px;
+  overflow: hidden;
+}
+.me-rise-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.me-rise-beat {
+  position: absolute;
+  left: clamp(1.25rem, 6vw, 5.5rem);
+  bottom: clamp(4rem, 12vh, 8rem);
+  max-width: min(620px, 64vw);
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+.me-rise-line {
+  color: #ede9de;
+  font-size: clamp(1.7rem, 3.6vw, 3rem);
+  line-height: 1.02;
+  margin: 16px 0 14px;
+}
+.me-rise-sub {
+  margin: 0;
+  max-width: 52ch;
+  font-size: clamp(0.9rem, 1.15vw, 1.05rem);
+  line-height: 1.6;
+  color: rgba(237, 233, 222, 0.66);
+}
+.me-rise-note {
+  position: absolute;
+  right: clamp(1.25rem, 4vw, 3rem);
+  bottom: clamp(1rem, 2.5vw, 1.75rem);
+  margin: 0;
+  max-width: 42ch;
+  text-align: right;
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.8;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(237, 233, 222, 0.34);
+}
+
+@media (max-width: 860px) {
+  .me-rise-beat { max-width: none; right: clamp(1.25rem, 6vw, 5.5rem); }
+  .me-rise-note { display: none; }
+}
+
+/* the terrain hero is a night reach, so its copy is bone over a soft dark scrim */
+.me-on-dark .me-beat::before {
+  content: '';
+  position: absolute;
+  inset: -14% -22% -22% -30%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 70% 60% at 28% 50%,
+    rgba(8, 10, 7, 0.72) 0%,
+    rgba(8, 10, 7, 0.4) 48%,
+    rgba(8, 10, 7, 0) 80%
+  );
+}
+.me-on-dark .me-beat { isolation: isolate; }
+
+/* ==========================================================================
+   brand mark: the waterline runs, so the reach reads as moving water
+   ========================================================================== */
+
+.me-mark-river {
+  opacity: 0.45;
+}
+.me-mark-flow {
+  /* one short lit segment chasing the course, looped */
+  stroke-dasharray: 5 27;
+  animation: me-mark-flow 3.4s linear infinite;
+}
+@keyframes me-mark-flow {
+  from { stroke-dashoffset: 32; }
+  to   { stroke-dashoffset: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .me-mark-river { opacity: 1; }
+  .me-mark-flow { animation: none; opacity: 0; }
+}
+
+/* ==========================================================================
+   Mission Control: the live operational surface, flagged as running
+   ========================================================================== */
+
+.me-mcc {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55em 1em;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+.me-mcc:hover {
+  border-color: currentColor;
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+.me-on-dark .me-mcc {
+  border-color: rgba(237, 233, 222, 0.32);
+}
+.me-mcc-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  flex: 0 0 auto;
+  animation: me-mcc-pulse 2.4s ease-in-out infinite;
+}
+@keyframes me-mcc-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.3; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .me-mcc-dot { animation: none; }
+}
+/* it is the first thing to go when the bar tightens */
+@media (max-width: 1240px) {
+  .me-mcc { display: none; }
+}
