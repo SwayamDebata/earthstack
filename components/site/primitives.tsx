@@ -164,39 +164,55 @@ export function SectionHead({ index, label }: { index: string; label: string }) 
 }
 
 /* ==========================================================================
-   Brand mark
+   Brand mark + typeface wordmark
    ========================================================================== */
 
 export function Mark({ size = 26 }: { size?: number }) {
+  const height = size;
+  const width = Math.round(size * (778 / 1361));
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 26 26"
-      fill="none"
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/modelearth-mark.png"
+      alt=""
+      width={width}
+      height={height}
       aria-hidden="true"
       className="me-mark"
-      style={{ flex: '0 0 auto' }}
-    >
-      <circle cx="13" cy="13" r="11.5" stroke="currentColor" strokeWidth="1.5" />
-      {/* the reach itself, held steady */}
-      <path
-        className="me-mark-river"
-        d="M1.9 10.4c3.6 1.6 6.6-1.5 10.2-.2 3.5 1.3 6.4 4.6 11.4 2.6"
-        stroke="var(--water)"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      />
-      {/* a short segment travelling the same course, so the line reads as
-          moving water rather than a drawn curve */}
-      <path
-        className="me-mark-flow"
-        d="M1.9 10.4c3.6 1.6 6.6-1.5 10.2-.2 3.5 1.3 6.4 4.6 11.4 2.6"
-        stroke="var(--water)"
-        strokeWidth="1.9"
-        strokeLinecap="round"
-      />
-    </svg>
+      style={{ flex: '0 0 auto', width: 'auto', height, objectFit: 'contain', display: 'block' }}
+    />
+  );
+}
+
+/** Stacked MODEL / EARTH typeface lockup. */
+export function Wordmark({ height = 22 }: { height?: number }) {
+  const width = Math.round(height * (1490 / 678));
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/modelearth-wordmark.png"
+      alt="ModelEarth"
+      width={width}
+      height={height}
+      className="me-wordmark"
+      style={{ flex: '0 0 auto', width: 'auto', height, objectFit: 'contain', display: 'block' }}
+    />
+  );
+}
+
+/** Mark + typeface, the standard brand lockup. */
+export function BrandLockup({
+  markSize = 28,
+  wordHeight = 22,
+}: {
+  markSize?: number;
+  wordHeight?: number;
+}) {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+      <Mark size={markSize} />
+      <Wordmark height={wordHeight} />
+    </span>
   );
 }
 

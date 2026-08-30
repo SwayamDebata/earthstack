@@ -1,6 +1,6 @@
 'use client';
 
-import { Mark, Reveal } from './primitives';
+import { BrandLockup, Reveal } from './primitives';
 
 const WAYS: { title: string; body: string }[] = [
   {
@@ -154,10 +154,7 @@ export function SiteFooter() {
                 color: 'var(--ink)',
               }}
             >
-              <Mark size={22} />
-              <span style={{ fontSize: 17, fontWeight: 600, letterSpacing: '-0.03em' }}>
-                ModelEarth
-              </span>
+              <BrandLockup markSize={28} wordHeight={24} />
             </div>
             <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.65, color: 'var(--muted)' }}>
               Flood early warning and operational command for districts, built where the data is

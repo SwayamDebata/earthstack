@@ -47,11 +47,9 @@ export default function PremiumFooter() {
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-5 mb-12">
           {/* Brand Column */}
           <div className="lg:col-span-2">
-            <Link href="/" className="mb-4 inline-flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-slate-900/80">
-                <BrandMark size={40} className="h-8 w-8 object-contain" />
-              </div>
-              <span className="text-xl font-bold gradient-text">ModelEarth</span>
+            <Link href="/" className="mb-4 inline-flex items-center gap-3" aria-label="ModelEarth home">
+              <BrandMark size={40} className="object-contain" />
+              <BrandMark variant="wordmark" size={28} className="object-contain" />
             </Link>
             <p className="mt-4 text-gray-400 max-w-sm">
               Early warning for districts that need lead time, not another dashboard. Start in the War Room, prove it in

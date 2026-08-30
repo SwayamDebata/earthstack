@@ -42,8 +42,11 @@ export const metadata: Metadata = {
     'ModelEarth: flood early warning and operational command for districts. Verified historical replay, live hydrology and risk in one surface.',
   metadataBase: new URL('https://www.modelearth.in'),
   icons: {
-    icon: [{ url: '/modelearth-favicon.svg', type: 'image/svg+xml' }],
-    apple: '/modelearth-favicon.svg',
+    icon: [
+      { url: '/modelearth-favicon.png', type: 'image/png', sizes: '32x32' },
+      { url: '/modelearth-icon.png', type: 'image/png', sizes: '64x64' },
+    ],
+    apple: '/modelearth-apple.png',
   },
 };
 

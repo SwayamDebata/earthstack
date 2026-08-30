@@ -8,17 +8,9 @@ import { motion } from 'framer-motion';
 export default function Header() {
   return (
     <header className="h-16 border-b border-white/10 glass-card flex items-center justify-between px-6">
-      <Link href="/" className="flex items-center gap-3 group">
-        <motion.div
-          className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-slate-900/80 backdrop-blur-sm"
-          whileHover={{ scale: 1.05, borderColor: 'rgba(45, 130, 255, 0.5)' }}
-          transition={{ type: 'spring', stiffness: 400 }}
-        >
-          <BrandMark size={36} className="h-8 w-8 object-contain" />
-        </motion.div>
-        <h1 className="text-xl font-bold gradient-text group-hover:opacity-80 transition-opacity">
-          ModelEarth
-        </h1>
+      <Link href="/" className="flex items-center gap-3 group" aria-label="ModelEarth home">
+        <BrandMark size={36} className="object-contain" />
+        <BrandMark variant="wordmark" size={26} className="object-contain" />
       </Link>
       
       <div className="flex items-center gap-4">

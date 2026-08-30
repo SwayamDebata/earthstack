@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Mark, THEMES, useTheme, type Theme } from './primitives';
+import { BrandLockup, THEMES, useTheme, type Theme } from './primitives';
 
 const TOP = [
   { href: '/', label: 'Home' },
@@ -124,11 +124,9 @@ export default function SiteNav() {
         <Link
           href="/"
           style={{ display: 'flex', alignItems: 'center', gap: 9, color: 'inherit', textDecoration: 'none', flex: '0 0 auto' }}
+          aria-label="ModelEarth home"
         >
-          <Mark size={22} />
-          <span style={{ fontFamily: 'var(--sans)', fontSize: 17, fontWeight: 600, letterSpacing: '-0.03em' }}>
-            ModelEarth
-          </span>
+          <BrandLockup markSize={28} wordHeight={24} />
         </Link>
 
         <ul className="me-nav-links" style={{ display: 'flex', listStyle: 'none', margin: 0, padding: 0, gap: 2 }}>
