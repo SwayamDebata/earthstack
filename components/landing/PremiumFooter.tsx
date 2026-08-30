@@ -49,7 +49,7 @@ export default function PremiumFooter() {
           <div className="lg:col-span-2">
             <Link href="/" className="mb-4 inline-flex items-center gap-3" aria-label="ModelEarth home">
               <BrandMark size={40} className="object-contain" />
-              <BrandMark variant="wordmark" size={28} className="object-contain" />
+              <span className="text-xl font-bold tracking-tight text-white">ModelEarth</span>
             </Link>
             <p className="mt-4 text-gray-400 max-w-sm">
               Early warning for districts that need lead time, not another dashboard. Start in the War Room, prove it in

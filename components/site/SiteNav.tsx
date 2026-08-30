@@ -126,7 +126,7 @@ export default function SiteNav() {
           style={{ display: 'flex', alignItems: 'center', gap: 9, color: 'inherit', textDecoration: 'none', flex: '0 0 auto' }}
           aria-label="ModelEarth home"
         >
-          <BrandLockup markSize={28} wordHeight={24} />
+          <BrandLockup markSize={26} />
         </Link>
 
         <ul className="me-nav-links" style={{ display: 'flex', listStyle: 'none', margin: 0, padding: 0, gap: 2 }}>

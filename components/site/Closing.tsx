@@ -154,7 +154,7 @@ export function SiteFooter() {
                 color: 'var(--ink)',
               }}
             >
-              <BrandLockup markSize={28} wordHeight={24} />
+              <BrandLockup markSize={22} />
             </div>
             <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.65, color: 'var(--muted)' }}>
               Flood early warning and operational command for districts, built where the data is

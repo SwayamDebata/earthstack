@@ -37,7 +37,12 @@ export default function HeroSection() {
       <nav className="absolute left-0 right-0 top-0 z-50 flex items-center justify-between px-6 py-6 md:px-10">
         <Link href="/" className="group flex cursor-pointer items-center gap-3" aria-label="ModelEarth home">
           <BrandMark size={40} className="object-contain transition-transform duration-500 group-hover:scale-110" priority />
-          <BrandMark variant="wordmark" size={28} className="object-contain" priority />
+          <div className="flex flex-col">
+            <span className="text-xl font-bold tracking-tight text-white md:text-2xl">ModelEarth</span>
+            <span className="hidden text-[11px] font-medium tracking-wide text-cyan-400/70 sm:block">
+              Climate intelligence
+            </span>
+          </div>
         </Link>
 
         <div className="flex items-center gap-3 md:gap-8">

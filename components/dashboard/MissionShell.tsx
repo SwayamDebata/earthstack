@@ -142,12 +142,14 @@ export default function MissionShell({ children }: { children: ReactNode }) {
             <div className="flex items-center gap-2.5">
               <BrandMark size={28} className="object-contain" />
               <div className="leading-none">
-                <BrandMark variant="wordmark" size={20} className="object-contain" />
+                <p className={`text-sm font-semibold tracking-wide ${std ? 'text-slate-900' : 'text-white'}`}>
+                  ModelEarth
+                </p>
                 <p
                   className={
                     std
-                      ? 'mt-1 text-[11px] font-medium text-slate-500'
-                      : 'mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-cyan-400/70'
+                      ? 'mt-0.5 text-[11px] font-medium text-slate-500'
+                      : 'mt-0.5 font-mono text-[10px] uppercase tracking-[0.22em] text-cyan-400/70'
                   }
                 >
                   {std ? 'District flood operations' : 'Mission Control · v1.0'}

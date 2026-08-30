@@ -164,12 +164,12 @@ export function SectionHead({ index, label }: { index: string; label: string }) 
 }
 
 /* ==========================================================================
-   Brand mark + typeface wordmark
+   Brand mark + title text
    ========================================================================== */
 
 export function Mark({ size = 26 }: { size?: number }) {
   const height = size;
-  const width = Math.round(size * (778 / 1361));
+  const width = Math.round(size * (624 / 1099));
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
@@ -184,34 +184,14 @@ export function Mark({ size = 26 }: { size?: number }) {
   );
 }
 
-/** Stacked MODEL / EARTH typeface lockup. */
-export function Wordmark({ height = 22 }: { height?: number }) {
-  const width = Math.round(height * (1490 / 678));
+/** Mark + “ModelEarth” title text — standard lockup. */
+export function BrandLockup({ markSize = 22 }: { markSize?: number }) {
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src="/modelearth-wordmark.png"
-      alt="ModelEarth"
-      width={width}
-      height={height}
-      className="me-wordmark"
-      style={{ flex: '0 0 auto', width: 'auto', height, objectFit: 'contain', display: 'block' }}
-    />
-  );
-}
-
-/** Mark + typeface, the standard brand lockup. */
-export function BrandLockup({
-  markSize = 28,
-  wordHeight = 22,
-}: {
-  markSize?: number;
-  wordHeight?: number;
-}) {
-  return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 9 }}>
       <Mark size={markSize} />
-      <Wordmark height={wordHeight} />
+      <span style={{ fontFamily: 'var(--sans)', fontSize: 17, fontWeight: 600, letterSpacing: '-0.03em' }}>
+        ModelEarth
+      </span>
     </span>
   );
 }
