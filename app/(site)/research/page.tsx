@@ -2,7 +2,7 @@
 
 import PageHero from '@/components/site/PageHero';
 import Evidence from '@/components/site/Evidence';
-import AuditStory from '@/components/site/AuditStory';
+import AuditScene from '@/components/site/AuditScene';
 import { SceneBanner, DiagramPanel } from '@/components/site/HeroScene';
 import MotionScene from '@/components/site/MotionScene';
 import { CallToAction } from '@/components/site/Closing';
@@ -42,7 +42,7 @@ export default function ResearchPage() {
       />
 
 
-      <AuditStory />
+      <AuditScene />
 
       <Evidence />
 

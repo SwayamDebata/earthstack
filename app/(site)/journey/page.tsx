@@ -2,6 +2,7 @@
 
 import PageHero from '@/components/site/PageHero';
 import AmbientScore from '@/components/site/AmbientScore';
+import JourneyStory from '@/components/site/JourneyStory';
 import DotField from '@/components/site/DotField';
 import { CallToAction } from '@/components/site/Closing';
 import { Chip, Reveal, SectionHead } from '@/components/site/primitives';
@@ -106,6 +107,8 @@ export default function JourneyPage() {
           <AmbientScore label="Ambient score" />
         </div>
       </section>
+
+      <JourneyStory />
 
       {/* the river, as a particle bed under the chapters */}
       <div style={{ background: 'var(--bg)', position: 'relative' }}>
