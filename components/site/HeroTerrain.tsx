@@ -27,9 +27,9 @@ type Terrain = {
 
 const BEATS = [
   {
-    kicker: 'Route D · real terrain',
+    kicker: '01 · the basin',
     title: 'This is your basin, not a rendering.',
-    body: 'Five hundred kilometres of the Mahanadi, the Brahmani and the Baitarani, at their real coordinates, with the five cities we alert on standing where they actually stand.',
+    body: 'Five hundred kilometres of the Mahanadi, the Brahmani and the Baitarani, with the five cities we alert on standing where they actually stand.',
     a: 0.0,
     b: 0.2,
   },
@@ -50,7 +50,7 @@ const BEATS = [
   {
     kicker: '04 · the question',
     title: '“Is that our river?”',
-    body: 'It is the first thing anyone in an OSDMA room asks about a demo. Every invented valley answers no. This one answers yes, and the answer is checkable against a coordinate.',
+    body: 'It is the first thing anyone in an OSDMA room asks about a demo. Every invented valley answers no. This one answers yes.',
     a: 0.78,
     b: 1.0,
   },
@@ -63,15 +63,11 @@ export default function HeroTerrain() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pinsRef = useRef<HTMLDivElement>(null);
   const beatRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const hudRef = useRef<{ lat: HTMLElement | null; lon: HTMLElement | null; alt: HTMLElement | null; beat: HTMLElement | null }>({
-    lat: null,
-    lon: null,
+  const hudRef = useRef<{ alt: HTMLElement | null; beat: HTMLElement | null }>({
     alt: null,
     beat: null,
   });
 
-  const [points, setPoints] = useState(0);
-  const [grid, setGrid] = useState('');
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
@@ -222,8 +218,6 @@ export default function HeroTerrain() {
 
       const COUNT = PS.length;
       if (disposed) return;
-      setPoints(COUNT);
-      setGrid(`${NX} × ${NY}`);
 
       /* ---- shaders ---- */
       const sh = (type: number, src: string) => {
@@ -534,12 +528,10 @@ export default function HeroTerrain() {
           el.style.transform = `translateY(${sft.toFixed(1)}px)`;
         }
 
-        if (hud.lat) {
-          hud.lat.textContent = `${C.lat.toFixed(4)}°N`;
-          hud.lon!.textContent = `${C.lon.toFixed(4)}°E`;
-          hud.alt!.textContent = `${C.alt.toFixed(1)} km`;
+        if (hud.alt) {
+          hud.alt.textContent = `${C.alt.toFixed(1)} km`;
           const bi = Math.min(BEAT_NAMES.length - 1, Math.floor(prog01 * BEAT_NAMES.length));
-          if (hud.beat!.textContent !== BEAT_NAMES[bi]) hud.beat!.textContent = BEAT_NAMES[bi];
+          if (hud.beat && hud.beat.textContent !== BEAT_NAMES[bi]) hud.beat.textContent = BEAT_NAMES[bi];
         }
 
         raf = requestAnimationFrame(frame);
@@ -636,26 +628,11 @@ export default function HeroTerrain() {
           </div>
         ))}
 
-        {/* instrument readout */}
+        {/* reach readout */}
         <dl className="me-hud">
-          <div>
-            <dt>CAMERA</dt>
-            <dd>
-              <b ref={(el) => { hudRef.current.lat = el; }}>21.5721°N</b>{' '}
-              <b ref={(el) => { hudRef.current.lon = el; }}>83.8700°E</b>
-            </dd>
-          </div>
           <div>
             <dt>ALT</dt>
             <dd ref={(el) => { hudRef.current.alt = el; }}>19.0 km</dd>
-          </div>
-          <div>
-            <dt>GRID</dt>
-            <dd>{grid || '404 × 328'}</dd>
-          </div>
-          <div>
-            <dt>POINTS</dt>
-            <dd>{points ? points.toLocaleString() : '...'}</dd>
           </div>
           <div>
             <dt>REACH</dt>

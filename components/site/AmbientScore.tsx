@@ -3,12 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 /* ==========================================================================
-   The ambient bed, synthesised in the browser, ported from the prototype.
-
-   No audio file and no licence: a brown-noise river under a slowly sweeping
-   lowpass, a low drone of two detuned sines a fifth apart, and a sparse minor
-   pentatonic bell. On by default; see the effect below for how that squares
-   with browser autoplay policy.
+   Browser-synthesised bed: brown-noise water, a low fifth drone, and a sparse
+   bell. On by default; resumes on first gesture if autoplay is blocked.
    ========================================================================== */
 
 type Graph = {
@@ -29,7 +25,6 @@ function buildGraph(): Graph | null {
 
   const started: { stop: (when?: number) => void }[] = [];
 
-  // river: looping filtered noise, brown-ish so it reads as water not hiss
   const len = ctx.sampleRate * 4;
   const buf = ctx.createBuffer(1, len, ctx.sampleRate);
   const d = buf.getChannelData(0);
@@ -63,7 +58,6 @@ function buildGraph(): Graph | null {
   lfo.start();
   started.push(lfo);
 
-  // drone: two detuned sines a fifth apart, low, each with its own tremolo
   [55, 82.4].forEach((f, i) => {
     const o = ctx.createOscillator();
     o.type = 'sine';
@@ -83,12 +77,11 @@ function buildGraph(): Graph | null {
     started.push(o, trem);
   });
 
-  // bell: a sparse minor pentatonic, one note every few seconds
   const SCALE = [220, 261.6, 293.7, 329.6, 392, 440, 523.3];
   let timer = 0;
   const bell = () => {
     timer = window.setTimeout(bell, 2600 + Math.random() * 5200);
-    if (master.gain.value < 0.01) return; // keep the loop alive while muted
+    if (master.gain.value < 0.01) return;
     const f = SCALE[(Math.random() * SCALE.length) | 0];
     const o = ctx.createOscillator();
     o.type = 'triangle';
@@ -126,15 +119,12 @@ function buildGraph(): Graph | null {
   };
 }
 
-export default function AmbientScore({ label = 'Ambient score' }: { label?: string }) {
+/** Icon-only listen control — audio on, no label text. */
+export default function AmbientScore() {
   const graph = useRef<Graph | null>(null);
-  const [on, setOn] = useState(true); // on by default
+  const [on, setOn] = useState(true);
   const [unavailable, setUnavailable] = useState(false);
 
-  /* Start the score on load. Browsers refuse an AudioContext until the page has
-     been interacted with, so if the context comes up suspended we arm a
-     one-shot listener and start on the first gesture instead. The control still
-     reads "on", because that is the state the moment sound is permitted. */
   useEffect(() => {
     let armed = false;
 
@@ -163,7 +153,6 @@ export default function AmbientScore({ label = 'Ambient score' }: { label?: stri
       start();
     };
 
-    // try immediately; fall back to the first gesture if the browser blocks it
     const probe = buildGraph();
     if (!probe) {
       setUnavailable(true);
@@ -214,16 +203,21 @@ export default function AmbientScore({ label = 'Ambient score' }: { label?: stri
       type="button"
       onClick={toggle}
       aria-pressed={on}
-      className="me-sound-btn"
-      title="A drone, a river and a sparse bell, generated in your browser"
+      aria-label={on ? 'Mute sound' : 'Play sound'}
+      title={on ? 'Mute' : 'Play'}
+      className="me-listen"
+      data-on={on ? 'true' : 'false'}
     >
-      <span className="me-sound-eq" aria-hidden="true" data-on={on ? 'true' : 'false'}>
-        <i />
-        <i />
-        <i />
-        <i />
+      <span className="me-listen-disc" aria-hidden="true">
+        <span className="me-listen-ring" />
+        <span className="me-listen-wave" data-on={on ? 'true' : 'false'}>
+          <i />
+          <i />
+          <i />
+          <i />
+          <i />
+        </span>
       </span>
-      {label} · {on ? 'on' : 'off'}
     </button>
   );
 }

@@ -48,7 +48,6 @@ export default function ThesisPage() {
             <SceneFigure
               scene="deltaSplit"
               maxWidth={1320}
-              caption="Illustrative schematic. Not a survey of any specific basin."
             />
           </Reveal>
         </div>

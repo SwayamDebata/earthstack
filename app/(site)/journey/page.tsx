@@ -89,7 +89,7 @@ export default function JourneyPage() {
 
       <section style={{ background: 'var(--bg)', paddingBlock: 'clamp(1.5rem, 3vw, 2.25rem)' }}>
         <div className="me-wrap">
-          <AmbientScore label="Ambient score" />
+          <AmbientScore />
         </div>
       </section>
 

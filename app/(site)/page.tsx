@@ -4,112 +4,19 @@ import Link from 'next/link';
 import HeroTerrain from '@/components/site/HeroTerrain';
 import Ledger from '@/components/site/Ledger';
 import VideoFrame from '@/components/site/VideoFrame';
-import MotionScene from '@/components/site/MotionScene';
 import { CallToAction } from '@/components/site/Closing';
-import { Caption, Chip, Reveal, SectionHead } from '@/components/site/primitives';
-import { Num } from '@/components/site/scroll';
-
-const LAYERS = [
-  {
-    tag: 'Real',
-    title: 'Horizontal geography',
-    body: 'The bounding box, the five city coordinates and the three river courses are real positions. Cuttack sits at 20.4625°N, 85.8830°E in the scene because that is where Cuttack is.',
-    accent: true,
-  },
-  {
-    tag: 'Interpolated',
-    title: 'Vertical relief',
-    body: 'The surface is fitted to documented spot heights: Hirakud at 192 m, Sambalpur 135 m, Cuttack 36 m, Puri near sea level, with the valleys carved along the real courses. A plausible surface, not a survey.',
-    accent: false,
-  },
-  {
-    tag: 'One pull away',
-    title: 'True elevation',
-    body: 'NRSC CartoDEM or SRTM resampled onto this exact grid replaces the interpolated layer. Same renderer, same coordinates, one data file. Public data, no licence cost.',
-    accent: false,
-  },
-];
-
-const DENSITY: [string, string][] = [
-  ['440 × 378 km', 'Study box'],
-  ['43,616', 'Grid cells'],
-  ['3', 'River courses traced'],
-  ['0', 'External libraries loaded'],
-];
+import { Chip, Reveal, SectionHead } from '@/components/site/primitives';
 
 export default function HomePage() {
   return (
     <>
       <HeroTerrain />
 
-      {/* ---- 01 · what you just looked at ---- */}
+      {/* ---- 01 · why a real basin changes the room ---- */}
       <section className="me-band" style={{ background: 'var(--bg)' }}>
         <div className="me-wrap">
           <Reveal>
-            <SectionHead index="01" label="What you just looked at" />
-          </Reveal>
-
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: 'clamp(2rem, 5vw, 4.5rem)',
-              alignItems: 'start',
-              marginBottom: '3rem',
-            }}
-          >
-            <Reveal>
-              <h2 className="me-display me-d2" style={{ maxWidth: '17ch' }}>
-                The hero is labelled like every other number on this site.
-              </h2>
-            </Reveal>
-            <Reveal delay={80}>
-              <p className="me-lede">
-                A terrain you cannot audit is decoration. So here is exactly which parts of that
-                scene are measured, which are interpolated, and what it would take to make the rest
-                real.
-              </p>
-            </Reveal>
-          </div>
-
-          <Reveal delay={110}>
-            <div className="me-hairgrid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))' }}>
-              {LAYERS.map((l) => (
-                <div key={l.tag}>
-                  <p
-                    className="me-mono"
-                    style={{
-                      fontSize: 10,
-                      letterSpacing: '0.16em',
-                      textTransform: 'uppercase',
-                      color: l.accent ? 'var(--laterite)' : 'var(--faint)',
-                      marginBottom: 14,
-                    }}
-                  >
-                    {l.tag}
-                  </p>
-                  <h3 className="me-h" style={{ fontSize: 17, marginBottom: 10 }}>
-                    {l.title}
-                  </h3>
-                  <p style={{ margin: 0, fontSize: 14, lineHeight: 1.62, color: 'var(--muted)' }}>
-                    {l.body}
-                  </p>
-                </div>
-              ))}
-            </div>
-            <Caption>
-              Vertical exaggeration ×14 throughout, because 900 m of relief across 440 km is
-              invisible at true scale. Stated here rather than hidden.
-            </Caption>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ---- 02 · why a real basin changes the room ---- */}
-      <section className="me-band" style={{ background: 'var(--bg-2)' }}>
-        <div className="me-wrap">
-          <Reveal>
-            <SectionHead index="02" label="Why a real basin changes the room" />
+            <SectionHead index="01" label="Why a real basin changes the room" />
           </Reveal>
 
           <div
@@ -137,7 +44,6 @@ export default function HomePage() {
             </Reveal>
 
             <Reveal delay={90}>
-              {/* footage sits framed inside the section, not bled across it */}
               <VideoFrame
                 src720="/videos/basin-hero-720.mp4"
                 src1080="/videos/basin-hero-1080.mp4"
@@ -146,42 +52,14 @@ export default function HomePage() {
               />
             </Reveal>
           </div>
-
-          <Reveal delay={130}>
-            <div
-              className="me-hairgrid"
-              style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', marginTop: 'clamp(2.5rem, 5vw, 4rem)' }}
-            >
-              {DENSITY.map(([v, k]) => (
-                <div key={k}>
-                  <p className="me-num" style={{ fontSize: 'clamp(1.5rem, 2.4vw, 2rem)' }}>
-                    <Num value={v} />
-                  </p>
-                  <p style={{ margin: '10px 0 0', fontSize: 13, color: 'var(--muted)' }}>{k}</p>
-                </div>
-              ))}
-            </div>
-            <Caption>Measurement density, per scoring cycle. The whole company, in one count.</Caption>
-          </Reveal>
-
-          <Reveal delay={150}>
-            <div style={{ marginTop: 'clamp(2rem, 4vw, 3rem)' }}>
-              <MotionScene
-                scene="density"
-                duration={11}
-                label="Measurement density, per scoring cycle"
-                note="The whole company, in one count"
-              />
-            </div>
-          </Reveal>
         </div>
       </section>
 
-      {/* ---- 03 · what runs on that ground ---- */}
-      <section className="me-band" style={{ background: 'var(--bg)', paddingBottom: 0 }}>
+      {/* ---- 02 · what runs on that ground ---- */}
+      <section className="me-band" style={{ background: 'var(--bg-2)', paddingBottom: 0 }}>
         <div className="me-wrap">
           <Reveal>
-            <SectionHead index="03" label="What runs on that ground" />
+            <SectionHead index="02" label="What runs on that ground" />
           </Reveal>
           <Reveal>
             <h2 className="me-display me-d2" style={{ maxWidth: '18ch', marginBottom: '1.25rem' }}>
@@ -201,11 +79,11 @@ export default function HomePage() {
 
       <Ledger />
 
-      {/* ---- 04 · the position ---- */}
-      <section className="me-band" style={{ background: 'var(--bg-2)' }}>
+      {/* ---- 03 · the position ---- */}
+      <section className="me-band" style={{ background: 'var(--bg)' }}>
         <div className="me-wrap">
           <Reveal>
-            <SectionHead index="04" label="The position, August 2026" />
+            <SectionHead index="03" label="The position, August 2026" />
           </Reveal>
           <Reveal>
             <h2 className="me-display me-d2" style={{ maxWidth: '20ch', marginBottom: '1.5rem' }}>
