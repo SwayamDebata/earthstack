@@ -297,11 +297,6 @@ export default function RisingWater() {
             <p className="me-rise-sub">{b.sub}</p>
           </div>
         ))}
-
-        <p className="me-rise-note">
-          Illustrative scene. The levels named are the real Akhuapada danger level and the reading
-          from 19 August 2026.
-        </p>
       </div>
     </section>
   );

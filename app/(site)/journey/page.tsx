@@ -70,21 +70,6 @@ const CHAPTERS: Chapter[] = [
   },
 ];
 
-/* These two slots are the founder's own memory. They were deliberately left
-   unwritten in the prototype and stay that way here. */
-const DRAFT_SLOTS = [
-  {
-    after: 'Growing up',
-    label: 'Draft slot · not written for you',
-    body: 'One specific memory belongs here and only you have it. A year the water came into the house. A night the family stayed awake. The first time you saw the river do something nobody expected. Two or three sentences, plainly told, and this becomes the strongest paragraph on the site.',
-  },
-  {
-    after: 'The decision',
-    label: 'Draft slot · date needed',
-    body: 'The actual month you wrote the first line, and what you were doing at the time. A date here makes the whole page real.',
-  },
-];
-
 const NOT_YET: [string, string][] = [
   ['Cities alerting in production', '5'],
   ['Districts running a full monsoon on it', '0'],
@@ -120,61 +105,38 @@ export default function JourneyPage() {
       <section className="me-band" style={{ background: 'var(--bg)', paddingTop: 'clamp(2rem, 4vw, 3rem)' }}>
         <div className="me-wrap">
           <ol style={{ listStyle: 'none', margin: 0, padding: 0, borderTop: '1px solid var(--line)' }}>
-            {CHAPTERS.map((c) => {
-              const slot = DRAFT_SLOTS.find((d) => d.after === c.when);
-              return (
-                <li key={c.when}>
-                  <Reveal>
-                    <article
-                      style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                        gap: '1.25rem clamp(2rem, 5vw, 4rem)',
-                        padding: 'clamp(1.75rem, 3.5vw, 2.75rem) 0',
-                        borderBottom: slot ? 'none' : '1px solid var(--line)',
-                      }}
-                    >
-                      <div>
-                        <p className="me-eyebrow" style={{ marginBottom: 14 }}>
-                          {c.when}
+            {CHAPTERS.map((c) => (
+              <li key={c.when}>
+                <Reveal>
+                  <article
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                      gap: '1.25rem clamp(2rem, 5vw, 4rem)',
+                      padding: 'clamp(1.75rem, 3.5vw, 2.75rem) 0',
+                      borderBottom: '1px solid var(--line)',
+                    }}
+                  >
+                    <div>
+                      <p className="me-eyebrow" style={{ marginBottom: 14 }}>
+                        {c.when}
+                      </p>
+                      <h2 className="me-display me-d3" style={{ marginBottom: 14 }}>
+                        {c.title}
+                      </h2>
+                      {c.chip && <Chip kind={c.chip}>{c.chipText}</Chip>}
+                    </div>
+                    <div>
+                      {c.paras.map((p) => (
+                        <p key={p.slice(0, 24)} className="me-body" style={{ marginBottom: '1rem', maxWidth: 'none' }}>
+                          {p}
                         </p>
-                        <h2 className="me-display me-d3" style={{ marginBottom: 14 }}>
-                          {c.title}
-                        </h2>
-                        {c.chip && <Chip kind={c.chip}>{c.chipText}</Chip>}
-                      </div>
-                      <div>
-                        {c.paras.map((p) => (
-                          <p key={p.slice(0, 24)} className="me-body" style={{ marginBottom: '1rem', maxWidth: 'none' }}>
-                            {p}
-                          </p>
-                        ))}
-                      </div>
-                    </article>
-                  </Reveal>
-
-                  {slot && (
-                    <Reveal>
-                      <div
-                        style={{
-                          border: '1px dashed var(--line-2)',
-                          background: 'color-mix(in srgb, var(--laterite) 4%, transparent)',
-                          padding: 'clamp(1.1rem, 2.2vw, 1.6rem)',
-                          margin: '0 0 clamp(1.75rem, 3.5vw, 2.75rem)',
-                        }}
-                      >
-                        <p className="me-label" style={{ color: 'var(--laterite)', marginBottom: 10 }}>
-                          {slot.label}
-                        </p>
-                        <p style={{ margin: 0, fontSize: 14, lineHeight: 1.65, color: 'var(--muted)', maxWidth: '72ch' }}>
-                          {slot.body}
-                        </p>
-                      </div>
-                    </Reveal>
-                  )}
-                </li>
-              );
-            })}
+                      ))}
+                    </div>
+                  </article>
+                </Reveal>
+              </li>
+            ))}
           </ol>
         </div>
       </section>

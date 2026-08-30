@@ -218,9 +218,8 @@ export function SiteFooter() {
             maxWidth: '100ch',
           }}
         >
-          Terrain: coordinates and river courses real; relief interpolated from documented spot
-          elevations, not a DEM. Data: {SOURCES}. Derived risk product; no raw data resale. Advisory
-          only. Does not override IMD, CWC or OSDMA warnings.
+          Data: {SOURCES}. Derived risk product; no raw data resale. Advisory only. Does not override
+          IMD, CWC or OSDMA warnings.
         </p>
 
         <p

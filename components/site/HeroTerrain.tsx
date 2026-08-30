@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 
    Real geography: the bounding box, the five city coordinates and the three
    river courses are true positions. The relief is interpolated from documented
-   spot elevations, so it is not a DEM, and the page says so out loud.
+   spot elevations (not a DEM).
 
    Ported from the Route D prototype. No libraries: raw WebGL, one point cloud,
    a keyframed camera driven by window scroll.
@@ -662,11 +662,6 @@ export default function HeroTerrain() {
             <dd ref={(el) => { hudRef.current.beat = el; }}>01 · HIRAKUD</dd>
           </div>
         </dl>
-
-        <p className="me-hud-note">
-          Coordinates and river courses real · relief interpolated from documented spot elevations,
-          not a DEM · vertical ×14
-        </p>
 
         <span className="me-scroll-cue">Scroll to fly the reach</span>
       </div>

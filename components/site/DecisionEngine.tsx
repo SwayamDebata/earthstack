@@ -1,6 +1,6 @@
 'use client';
 
-import { Caption, Chip, Reveal, SectionHead } from './primitives';
+import { Chip, Reveal, SectionHead } from './primitives';
 
 const EVIDENCE: { k: string; v: string; sub?: string }[] = [
   { k: 'Rain 6 h', v: '78 mm' },
@@ -232,13 +232,6 @@ export default function DecisionEngine() {
             </div>
           </Reveal>
         </div>
-
-        <Reveal delay={160}>
-          <Caption>
-            Interface mockup with sample values. The layout is the product; the numbers here are
-            illustrative. Advisory only - does not override IMD, CWC or OSDMA.
-          </Caption>
-        </Reveal>
       </div>
     </section>
   );

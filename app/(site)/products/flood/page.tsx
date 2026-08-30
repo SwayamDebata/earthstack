@@ -105,7 +105,7 @@ export default function FloodPage() {
                 </div>
               ))}
             </div>
-            <Caption>One cycle, assembled term by term. Cuttack, sample values.</Caption>
+            <Caption>One cycle, assembled term by term.</Caption>
           </Reveal>
 
           <Reveal delay={120}>
@@ -114,7 +114,6 @@ export default function FloodPage() {
                 scene="score"
                 duration={13}
                 label="One cycle, assembled term by term"
-                note="Cuttack · sample values"
               />
             </div>
           </Reveal>
@@ -220,10 +219,6 @@ export default function FloodPage() {
                 </div>
               </div>
             </div>
-            <Caption>
-              Interface mockup with sample values. The layout is the product; the numbers here are
-              illustrative.
-            </Caption>
 
             <p className="me-body" style={{ marginTop: '1.25rem' }}>
               The running surface is{' '}
@@ -277,9 +272,6 @@ export default function FloodPage() {
               <p className="me-body" style={{ maxWidth: 'none' }}>
                 This is the single largest known gap in the system, and it is the reason real river
                 telemetry is now in production.
-              </p>
-              <p className="me-label" style={{ marginTop: '1.25rem' }}>
-                docs/ModelEarth_NorthOdisha_Aug2026_Replay.md
               </p>
             </div>
           </Reveal>

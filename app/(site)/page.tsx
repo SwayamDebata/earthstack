@@ -142,9 +142,7 @@ export default function HomePage() {
                 src720="/videos/basin-hero-720.mp4"
                 src1080="/videos/basin-hero-1080.mp4"
                 poster="/posters/basin-hero.jpg"
-                label="Mahanadi reach · pre-render"
-                note="Vertical ×14"
-                caption="The same reach the flythrough above renders live in WebGL, captured as footage for devices without it."
+                label="Mahanadi reach"
               />
             </Reveal>
           </div>

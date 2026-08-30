@@ -308,7 +308,7 @@ export default function StoryVideo({
           className="me-player-btn me-player-sound"
           aria-pressed={sound}
           aria-label={sound ? 'Mute monsoon bed' : 'Play monsoon bed'}
-          title="Rain, thunder and a sparse bell, synthesised in your browser"
+          title="Ambient rain bed"
         >
           <svg width="13" height="12" viewBox="0 0 13 12" aria-hidden="true" fill="none">
             <path d="M1 4.5h2.2L6 2v8L3.2 7.5H1z" fill="currentColor" />

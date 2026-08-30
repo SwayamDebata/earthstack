@@ -80,8 +80,7 @@ export default function MonsoonNight() {
                 src720="/videos/monsoon-night-720.mp4"
                 src1080="/videos/monsoon-night-1080.mp4"
                 poster="/posters/monsoon-night.jpg"
-                label="One monsoon night · Mahanadi · illustration, not footage of a real event"
-                caption="The night the four beats below describe. Everything the engine sees in that window is a number; this is what it looks like from the bank. Sound is a monsoon bed synthesised in your browser."
+                label="Monsoon night · Mahanadi"
               />
             </div>
           </Reveal>

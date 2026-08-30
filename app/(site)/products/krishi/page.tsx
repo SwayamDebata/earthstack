@@ -35,7 +35,7 @@ const STANDS: [string, string][] = [
   ['Six-language delivery, voice included', 'Yes'],
   ['Agentic orchestration behind the advice', 'Yes'],
   ['Sensor card inside the app', 'Demo mode'],
-  ['WhatsApp delivery', 'Twilio sandbox'],
+  ['WhatsApp delivery', 'Sandbox'],
   ['Farmers enrolled through a district programme', 'Not yet'],
 ];
 
@@ -45,7 +45,6 @@ export default function KrishiPage() {
       <HeroScene
         scene="krishi"
         scrim="8,11,6"
-        note="Screens are design mockups with sample values. WhatsApp runs on a Twilio sandbox. Advisory only."
       >
         <SceneHead
           eyebrow="Product 03"
@@ -173,10 +172,6 @@ export default function KrishiPage() {
                 </div>
               </div>
             </div>
-            <Caption>
-              Screens are design mockups with sample values. Odia shown. WhatsApp delivery runs on a
-              Twilio sandbox and reaches nobody until a recipient joins it.
-            </Caption>
           </Reveal>
         </div>
       </section>
