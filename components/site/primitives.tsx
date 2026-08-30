@@ -11,10 +11,10 @@ import {
 } from 'react';
 
 /* ==========================================================================
-   Theme - paper (warm light) · white (clean) · void (dark)
+   Theme - paper (warm light) · void (dark)
    ========================================================================== */
 
-export const THEMES = ['paper', 'white', 'void'] as const;
+export const THEMES = ['paper', 'void'] as const;
 export type Theme = (typeof THEMES)[number];
 
 const STORAGE_KEY = 'modelearth-theme';
@@ -26,17 +26,20 @@ const ThemeCtx = createContext<{ theme: Theme; setTheme: (t: Theme) => void }>({
 
 export const useTheme = () => useContext(ThemeCtx);
 
+function resolveTheme(raw: string | null): Theme | null {
+  if (raw === 'paper' || raw === 'void') return raw;
+  // Retired “white” theme maps to paper.
+  if (raw === 'white') return 'paper';
+  return null;
+}
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('paper');
 
-  // Read the stored preference after mount. Server renders `paper` either way,
-  // so there is nothing to mismatch.
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored && (THEMES as readonly string[]).includes(stored)) {
-        setThemeState(stored as Theme);
-      }
+      const next = resolveTheme(localStorage.getItem(STORAGE_KEY));
+      if (next) setThemeState(next);
     } catch {
       /* private mode / blocked storage - the default stands */
     }
@@ -51,7 +54,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Keep the browser UI (scrollbars, form controls) in step with the theme.
   useEffect(() => {
     document.documentElement.style.colorScheme = theme === 'void' ? 'dark' : 'light';
     return () => {
@@ -189,7 +191,16 @@ export function BrandLockup({ markSize = 22 }: { markSize?: number }) {
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 9 }}>
       <Mark size={markSize} />
-      <span style={{ fontFamily: 'var(--sans)', fontSize: 17, fontWeight: 600, letterSpacing: '-0.03em' }}>
+      <span
+        style={{
+          fontFamily: 'var(--sans)',
+          fontSize: 17,
+          fontWeight: 600,
+          letterSpacing: '-0.03em',
+          // Mark is circle-over-e; nudge text down to sit with the letter, not the sphere.
+          transform: 'translateY(3px)',
+        }}
+      >
         ModelEarth
       </span>
     </span>

@@ -26,7 +26,6 @@ const PRODUCTS = [
    control explains itself without a label. */
 const SWATCH: Record<Theme, { bg: string; ring: string; title: string }> = {
   paper: { bg: '#f2f0e4', ring: '#c6c1a8', title: 'Paper, warm light' },
-  white: { bg: '#ffffff', ring: '#d3d0c6', title: 'White, clean light' },
   void: { bg: '#0a0b08', ring: '#3a3d2f', title: 'Void, dark' },
 };
 
@@ -96,26 +95,14 @@ export default function SiteNav() {
 
   useEffect(() => setOpen(false), [pathname]);
 
-  // The home hero is a night reach, and its colours do not follow the theme,
-  // so the bar over it takes fixed bone rather than a theme token.
+  // The home hero is a night reach; bar type stays bone until you scroll past it.
   const overHero = isHome && !lifted;
-  const solid = !overHero;
   const HERO_INK = '#ede9de';
 
   return (
     <header
-      className={overHero ? 'me-on-dark' : undefined}
-      style={{
-        position: 'fixed',
-        insetInline: 0,
-        top: 0,
-        zIndex: 60,
-        borderBottom: `1px solid ${solid ? 'var(--line)' : 'transparent'}`,
-        background: solid ? 'color-mix(in srgb, var(--bg) 90%, transparent)' : 'transparent',
-        backdropFilter: solid ? 'blur(14px) saturate(1.2)' : 'none',
-        transition: 'background .3s ease, border-color .3s ease',
-        color: overHero ? HERO_INK : 'var(--ink)',
-      }}
+      className={`me-site-nav${overHero ? ' me-on-dark' : ''}`}
+      data-lifted={lifted || !isHome ? 'true' : 'false'}
     >
       <nav
         className="me-wrap"
