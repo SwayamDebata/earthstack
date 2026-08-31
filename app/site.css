@@ -563,8 +563,12 @@
   position: absolute;
   left: clamp(1.25rem, 4vw, 4.5rem);
   top: 50%;
-  transform: translateY(-50%);
-  max-width: min(620px, 62vw);
+  /* the scene writes --nudge; the centring stays here */
+  transform: translateY(calc(-50% + var(--nudge, 0px)));
+  max-width: min(680px, 58vw);
+  /* never taller than the pin it sits in, whatever the copy grows to */
+  max-height: calc(100svh - 11rem);
+  overflow: hidden;
   opacity: 0;
   pointer-events: none;
   will-change: opacity, transform;
@@ -574,17 +578,17 @@
   margin-bottom: 1.15rem;
 }
 .me-beat h1 {
-  font-size: clamp(2.1rem, 4.6vw, 4.1rem);
-  line-height: 1.0;
-  margin: 0 0 1rem;
+  font-size: clamp(1.75rem, 3.5vw, 3.05rem);
+  line-height: 1.03;
+  margin: 0 0 1.1rem;
   text-wrap: balance;
 }
 .me-beat p {
   margin: 0;
-  font-size: clamp(0.95rem, 1.2vw, 1.1rem);
-  line-height: 1.62;
+  font-size: clamp(0.9rem, 1.05vw, 1.02rem);
+  line-height: 1.6;
   color: rgba(237, 233, 222, 0.78);
-  max-width: 52ch;
+  max-width: 48ch;
 }
 
 /* city pins, projected from world space every frame */
@@ -628,23 +632,28 @@
 }
 
 /* instrument readout, bottom left — no frame, no rules */
+/* Top right, under the bar. The copy owns the left and the foot of the frame,
+   and the readout was colliding with it once the layout narrowed. */
 .me-hud {
   position: absolute;
-  left: clamp(1.25rem, 4vw, 4.5rem);
-  bottom: clamp(1.25rem, 3vw, 2.25rem);
+  right: clamp(1.25rem, 4vw, 4.5rem);
+  top: clamp(5.5rem, 9vh, 7rem);
   margin: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem 1.75rem;
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: end;
+  gap: 0.3rem 1rem;
+  text-align: right;
   font-family: var(--mono);
   font-size: 10.5px;
   letter-spacing: 0.12em;
   font-variant-numeric: tabular-nums;
 }
 .me-hud > div {
-  display: flex;
-  gap: 0.6rem;
+  display: contents;
 }
+.me-hud dt { text-align: right; }
+.me-hud dd { text-align: right; }
 .me-hud dt {
   margin: 0;
   color: rgba(237, 233, 222, 0.45);
@@ -661,6 +670,7 @@
   position: absolute;
   right: clamp(1.25rem, 4vw, 4.5rem);
   bottom: clamp(1.25rem, 3vw, 2.25rem);
+  z-index: 2;
   margin: 0;
   max-width: 40ch;
   text-align: right;
@@ -693,11 +703,13 @@
   }
   .me-beat {
     top: auto;
-    bottom: 5.5rem;
-    transform: none;
+    bottom: 4rem;
+    transform: translateY(var(--nudge, 0px));
     max-width: none;
+    max-height: calc(100svh - 12rem);
     right: clamp(1.25rem, 4vw, 4.5rem);
   }
+  .me-hud { font-size: 9.5px; gap: 0.25rem 0.7rem; }
 }
 
 /* ==========================================================================

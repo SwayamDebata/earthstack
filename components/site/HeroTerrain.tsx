@@ -25,32 +25,36 @@ type Terrain = {
   h_b64: string;
 };
 
+/* The hero tells the positioning, not a defence of the rendering. The scene is
+   a real basin, and the copy uses that as the ground the planetary claim lands
+   on, rather than arguing about whether the terrain is genuine. Every figure
+   here is already published and labelled elsewhere on the site. */
 const BEATS = [
   {
-    kicker: '01 · the basin',
-    title: 'This is your basin, not a rendering.',
-    body: 'Five hundred kilometres of the Mahanadi, the Brahmani and the Baitarani, with the five cities we alert on standing where they actually stand.',
+    kicker: 'ModelEarth · planetary-scale resilience intelligence',
+    title: 'Earth is already instrumented. The warning still does not arrive.',
+    body: 'Satellites overhead, gauges in the water, thirty years of record on disk. Observation stopped being the hard part decades ago. What is missing is the layer that turns all of it into a decision somebody can act on tonight.',
     a: 0.0,
     b: 0.2,
   },
   {
-    kicker: '02 · the reach',
-    title: 'From Hirakud to the Bay, in one continuous shot.',
-    body: 'The camera never cuts. Every claim on this site happens somewhere on the ground you are flying over, and you can check where.',
+    kicker: '02 · the climate intelligence layer',
+    title: 'We sit between the observation and the decision.',
+    body: 'One engine takes what the sky, the rivers and the historical record already know, resolves it against each location’s own thirty-year baseline, and issues a call with the reasoning attached. Hazard-agnostic by design.',
     a: 0.24,
     b: 0.44,
   },
   {
-    kicker: '03 · the five',
-    title: 'Bhubaneswar. Cuttack. Puri. Sambalpur. Rourkela.',
-    body: 'Scored every thirty minutes, every day of the year. Not a coverage map drawn for a slide, but the actual alerting set, pinned to the actual places.',
+    kicker: '03 · planetary resilience intelligence',
+    title: 'Planetary means the ungauged parts too.',
+    body: 'Most of the world’s rivers have no reliable gauge and no local model, and that is exactly where a warning is worth the most. This is built to make a defensible call from a thin record, and to sharpen as the record fills in.',
     a: 0.5,
     b: 0.72,
   },
   {
-    kicker: '04 · the question',
-    title: '“Is that our river?”',
-    body: 'It is the first thing anyone in an OSDMA room asks about a demo. Every invented valley answers no. This one answers yes.',
+    kicker: '04 · resilience',
+    title: 'Measured in hours of warning, not points of accuracy.',
+    body: 'The unit that matters is lead time: the hours a district gets to move people and grain before the water arrives. That is the number this whole system exists to produce.',
     a: 0.78,
     b: 1.0,
   },
@@ -521,11 +525,17 @@ export default function HeroTerrain() {
           let sft = 22;
           if (prog01 >= B.a && prog01 <= B.b) {
             const u = (prog01 - B.a) / (B.b - B.a);
-            o = Math.min(1, Math.min(u / 0.2, (1 - u) / 0.22));
+            // The first beat is the page's headline and must be legible the
+            // moment the page opens, so it skips the fade-in and only fades out.
+            const rise = k === 0 ? 1 : u / 0.2;
+            o = Math.min(1, Math.min(rise, (1 - u) / 0.22));
             sft = 22 * (1 - o);
           }
           el.style.opacity = o.toFixed(3);
-          el.style.transform = `translateY(${sft.toFixed(1)}px)`;
+          // Hand the nudge to CSS as a variable rather than writing transform
+          // directly: the desktop rule centres the beat with translateY(-50%),
+          // and setting transform here would silently drop that centring.
+          el.style.setProperty('--nudge', `${sft.toFixed(1)}px`);
         }
 
         if (hud.alt) {
