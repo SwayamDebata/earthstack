@@ -7,9 +7,8 @@ import { BrandLockup, THEMES, useTheme, type Theme } from './primitives';
 
 const TOP = [
   { href: '/', label: 'Home' },
-  { href: '/thesis', label: 'Thesis' },
-  { href: '/products/flood', label: 'Products', match: '/products' },
   { href: '/research', label: 'Research' },
+  { href: '/products/flood', label: 'Products', match: '/products' },
   { href: '/journey', label: 'Journey' },
   { href: '/about', label: 'About' },
 ];

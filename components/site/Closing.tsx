@@ -190,7 +190,7 @@ export function SiteFooter() {
                 ['Mission Control', '/dashboard'],
                 ['Flood Ops', '/products/flood'],
                 ['Heat Ops', '/products/heat'],
-                ['Research', '/research'],
+                ['Evidence', '/research#evidence'],
                 ['Journey', '/journey'],
               ].map(([label, href]) => (
                 <li key={label}>

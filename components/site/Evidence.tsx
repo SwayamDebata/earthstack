@@ -103,7 +103,7 @@ export default function Evidence() {
     <section id="evidence" className="me-band" style={{ background: 'var(--bg-2)' }}>
       <div className="me-wrap">
         <Reveal>
-          <SectionHead index="01" label="The audit that cost us our best number" />
+          <SectionHead index="05" label="The audit that cost us our best number" />
         </Reveal>
 
         {/* ---- the audit ---- */}

@@ -8,7 +8,7 @@ const MEASURED = [
   {
     value: '0 / 12',
     title: 'CWC river stations that were decision-grade on day one',
-    body: 'Feeds stalled 84 days, five sensors flatlined, one reading minus 834 m.',
+    body: 'Not one of them could be trusted to move a score on the day we started ingesting.',
   },
   {
     value: '34.6%',

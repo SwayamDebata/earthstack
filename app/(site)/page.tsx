@@ -123,7 +123,7 @@ export default function HomePage() {
           <Reveal delay={130}>
             <p className="me-body" style={{ marginTop: '2rem' }}>
               Every claim on this site carries one of those labels.{' '}
-              <Link href="/research" className="me-link">
+              <Link href="/research#evidence" className="me-link">
                 Read the evidence
               </Link>{' '}
               before you believe the thesis, including the numbers that went against us.
