@@ -10,7 +10,6 @@ const TOP = [
   { href: '/thesis', label: 'Thesis' },
   { href: '/products/flood', label: 'Products', match: '/products' },
   { href: '/research', label: 'Research' },
-  { href: '/story', label: 'Story' },
   { href: '/journey', label: 'Journey' },
   { href: '/about', label: 'About' },
 ];

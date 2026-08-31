@@ -2,7 +2,10 @@
 
 import PageHero from '@/components/site/PageHero';
 import AmbientScore from '@/components/site/AmbientScore';
+import ValleyHero from '@/components/site/ValleyHero';
 import JourneyStory from '@/components/site/JourneyStory';
+import RisingWater from '@/components/site/RisingWater';
+import MonsoonNight from '@/components/site/MonsoonNight';
 import DotField from '@/components/site/DotField';
 import { CallToAction } from '@/components/site/Closing';
 import { Chip, Reveal, SectionHead } from '@/components/site/primitives';
@@ -16,20 +19,14 @@ type Chapter = {
   chipText?: string;
 };
 
+/* The 1999 chapter and the "rivers decide the year" paragraph used to open
+   this list. Both are now told by the JourneyStory scene above, so the written
+   chapters pick up where the scene leaves off instead of restating it. */
 const CHAPTERS: Chapter[] = [
-  {
-    when: 'How it began · October 1999',
-    title: 'The storm everyone in Odisha measures time against.',
-    paras: [
-      'A super cyclone crossed the coast and took thousands of lives. The models had seen it. The satellites had seen it. What did not happen was the last step: the warning reaching the households that needed to move.',
-      'Every person who grew up here after that grew up with the same fact in the background. The technology was never the missing piece.',
-    ],
-  },
   {
     when: 'Growing up',
     title: 'Where the rivers decide the year.',
     paras: [
-      'The Mahanadi does not surprise anyone. It rises on a schedule the whole state knows, and the year is planned around it: when to plant, when to move the animals, when to sleep lightly.',
       'What nobody has is the one thing that would change the night itself, which is knowing whether this rain is the one.',
     ],
   },
@@ -81,6 +78,9 @@ const NOT_YET: [string, string][] = [
 export default function JourneyPage() {
   return (
     <>
+      {/* the valley, before any of the words */}
+      <ValleyHero />
+
       <PageHero
         eyebrow="The journey"
         title="It did not start as a company."
@@ -141,32 +141,48 @@ export default function JourneyPage() {
         </div>
       </section>
 
-      {/* ---- the only metric that matters ---- */}
-      <section className="me-band" style={{ background: 'var(--bg-2)', position: 'relative', overflow: 'hidden' }}>
+      {/* ---- one night on that river, at full bleed ---- */}
+      <RisingWater />
+
+      {/* ---- and what the engine was doing through it ---- */}
+      <section className="me-band" style={{ background: 'var(--bg)', paddingBottom: 0 }}>
+        <div className="me-wrap">
+          <Reveal>
+            <SectionHead index="01" label="Explained simply" />
+          </Reveal>
+          <Reveal>
+            <h2 className="me-display me-d2" style={{ maxWidth: '18ch', marginBottom: '1.25rem' }}>
+              How a flood warning actually gets made.
+            </h2>
+          </Reveal>
+          <Reveal delay={70}>
+            <p className="me-lede">
+              Four moments in one August, on one stretch of the Mahanadi. No jargon, just what the
+              engine sees, and when. Most of the year nothing happens, and that is what makes the
+              one day legible.
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
+      <MonsoonNight />
+
+      {/* ---- what it has not reached. The ripple bed moved here from the
+              "one family, one more day" band, which the JourneyStory scene
+              already closes on. ---- */}
+      <section
+        className="me-band"
+        style={{ background: 'var(--bg-2)', position: 'relative', overflow: 'hidden' }}
+      >
         <div
           aria-hidden="true"
-          style={{ position: 'absolute', inset: 0, opacity: 0.5, pointerEvents: 'none' }}
+          style={{ position: 'absolute', inset: 0, opacity: 0.42, pointerEvents: 'none' }}
         >
           <DotField mode="ripple" accent="#E0A05A" base="#4A4D3C" max={2400} height="100%" />
         </div>
         <div className="me-wrap" style={{ position: 'relative' }}>
           <Reveal>
-            <p className="me-eyebrow" style={{ marginBottom: 20 }}>
-              The only metric that matters
-            </p>
-            <h2 className="me-display me-d2" style={{ maxWidth: '20ch' }}>
-              One family, one more day. Everything else on this site is instrumentation for that
-              sentence.
-            </h2>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ---- what it has not reached ---- */}
-      <section className="me-band" style={{ background: 'var(--bg)' }}>
-        <div className="me-wrap">
-          <Reveal>
-            <SectionHead index="01" label="What the journey has not reached yet" />
+            <SectionHead index="02" label="What the journey has not reached yet" />
           </Reveal>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'clamp(2rem, 5vw, 4.5rem)', alignItems: 'start' }}>

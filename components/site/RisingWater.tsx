@@ -31,7 +31,7 @@ const BEATS = [
   {
     time: 'The only deadline',
     line: 'The warning has to arrive before the water does.',
-    sub: 'Everything else on this site is instrumentation for that sentence.',
+    sub: 'Forty-eight hours of lead is about two days of usable road. That is the entire margin, and it is why the engine runs on the dry days too.',
   },
 ];
 

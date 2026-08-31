@@ -191,7 +191,7 @@ export function SiteFooter() {
                 ['Flood Ops', '/products/flood'],
                 ['Heat Ops', '/products/heat'],
                 ['Research', '/research'],
-                ['Story', '/story'],
+                ['Journey', '/journey'],
               ].map(([label, href]) => (
                 <li key={label}>
                   <a href={href} className="me-link" style={{ fontSize: 13.5 }}>
