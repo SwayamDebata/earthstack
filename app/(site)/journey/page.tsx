@@ -7,7 +7,6 @@ import JourneyStory from '@/components/site/JourneyStory';
 import RisingWater from '@/components/site/RisingWater';
 import MonsoonNight from '@/components/site/MonsoonNight';
 import DotField from '@/components/site/DotField';
-import { CallToAction } from '@/components/site/Closing';
 import { Chip, Reveal, SectionHead } from '@/components/site/primitives';
 import { Num } from '@/components/site/scroll';
 
@@ -238,7 +237,6 @@ export default function JourneyPage() {
         </div>
       </section>
 
-      <CallToAction />
     </>
   );
 }

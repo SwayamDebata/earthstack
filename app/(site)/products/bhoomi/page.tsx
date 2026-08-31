@@ -2,7 +2,6 @@
 
 import Image from 'next/image';
 import HeroScene, { SceneHead, DiagramPanel } from '@/components/site/HeroScene';
-import { CallToAction } from '@/components/site/Closing';
 import { Chip, Reveal, SectionHead } from '@/components/site/primitives';
 
 const STATS: { v: string; k: string }[] = [
@@ -195,7 +194,6 @@ export default function BhoomiPage() {
         </div>
       </section>
 
-      <CallToAction />
     </>
   );
 }

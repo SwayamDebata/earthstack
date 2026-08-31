@@ -191,6 +191,7 @@ export function SiteFooter() {
                 ['Flood Ops', '/products/flood'],
                 ['Heat Ops', '/products/heat'],
                 ['Evidence', '/research#evidence'],
+                ['Blog', '/blog'],
                 ['Journey', '/journey'],
               ].map(([label, href]) => (
                 <li key={label}>

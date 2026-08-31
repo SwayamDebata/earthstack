@@ -3,7 +3,6 @@
 import PageHero from '@/components/site/PageHero';
 import { SceneBanner, DiagramPanel } from '@/components/site/HeroScene';
 import About from '@/components/site/About';
-import { CallToAction } from '@/components/site/Closing';
 import { Reveal, SectionHead } from '@/components/site/primitives';
 
 const AUDIENCES = [
@@ -124,7 +123,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <CallToAction />
     </>
   );
 }

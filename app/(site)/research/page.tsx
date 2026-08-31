@@ -9,7 +9,6 @@ import DecisionEngine from '@/components/site/DecisionEngine';
 import Evidence from '@/components/site/Evidence';
 import AuditScene from '@/components/site/AuditScene';
 import MotionScene from '@/components/site/MotionScene';
-import { CallToAction } from '@/components/site/Closing';
 import { Caption, Chip, Reveal, SectionHead } from '@/components/site/primitives';
 
 /* The "84 days" and "5 stuck" rows, and a "0 of 12" row, used to live here too.
@@ -337,7 +336,6 @@ export default function ResearchPage() {
         </div>
       </section>
 
-      <CallToAction />
     </>
   );
 }

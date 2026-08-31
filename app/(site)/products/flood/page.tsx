@@ -3,7 +3,6 @@
 import MotionScene from '@/components/site/MotionScene';
 import Link from 'next/link';
 import HeroScene, { SceneHead, DiagramPanel } from '@/components/site/HeroScene';
-import { CallToAction } from '@/components/site/Closing';
 import { Caption, Chip, Reveal, SectionHead } from '@/components/site/primitives';
 
 const STATS: { v: string; unit?: string; k: string; kind?: 'live' | 'backtest' }[] = [
@@ -330,7 +329,6 @@ export default function FloodPage() {
         </div>
       </section>
 
-      <CallToAction />
     </>
   );
 }

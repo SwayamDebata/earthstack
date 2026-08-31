@@ -2,7 +2,6 @@
 
 import DotField from '@/components/site/DotField';
 import HeroScene, { SceneHead, DiagramPanel } from '@/components/site/HeroScene';
-import { CallToAction } from '@/components/site/Closing';
 import { Caption, Chip, Reveal, SectionHead } from '@/components/site/primitives';
 
 const STATS: { v: string; k: string }[] = [
@@ -178,7 +177,6 @@ export default function HeatPage() {
         </div>
       </section>
 
-      <CallToAction />
     </>
   );
 }

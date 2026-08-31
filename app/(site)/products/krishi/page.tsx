@@ -2,7 +2,6 @@
 
 import MotionScene from '@/components/site/MotionScene';
 import HeroScene, { SceneHead, DiagramPanel } from '@/components/site/HeroScene';
-import { CallToAction } from '@/components/site/Closing';
 import { Caption, Chip, Reveal, SectionHead } from '@/components/site/primitives';
 
 const OFFICER = [
@@ -251,7 +250,6 @@ export default function KrishiPage() {
         </div>
       </section>
 
-      <CallToAction />
     </>
   );
 }
