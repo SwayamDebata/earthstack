@@ -17,7 +17,9 @@ export type Post = {
   slug: string;
   title: string;
   kicker: string;
-  cover: string; // key into COVERS
+  cover: string; // key into COVERS, used when there is no painted plate
+  image?: string; // painted plate under /story/abstract
+  imageAlt?: string;
   date: string; // ISO
   dateLabel: string;
   mins: number;
@@ -32,6 +34,9 @@ export const POSTS: Post[] = [
     title: 'Why a cloudburst in Nepal becomes a problem on the Indian plain',
     kicker: 'Explainer',
     cover: 'upstream',
+    image: '/story/abstract/me-abstract-06-monsoon-wall.jpg',
+    imageAlt:
+      'A wall of monsoon rain falling from the hills onto flooded paddy, with a single figure walking the bund',
     date: '2026-08-28',
     dateLabel: '28 August 2026',
     mins: 7,
@@ -88,6 +93,9 @@ export const POSTS: Post[] = [
     title: 'Odisha has already solved the last mile once',
     kicker: 'Field notes',
     cover: 'lastmile',
+    image: '/story/abstract/me-abstract-08-last-mile.jpg',
+    imageAlt:
+      'An older woman reading a lit phone in a doorway while floodwater stands in the yard outside',
     date: '2026-08-24',
     dateLabel: '24 August 2026',
     mins: 5,
@@ -136,6 +144,9 @@ export const POSTS: Post[] = [
     title: 'We audited our own 99.3% and it did not survive',
     kicker: 'Evidence',
     cover: 'audit',
+    image: '/story/abstract/me-abstract-02-night-watch.jpg',
+    imageAlt:
+      'A lone analyst at a desk of screens at night, a river map on the glass behind them',
     date: '2026-08-19',
     dateLabel: '19 August 2026',
     mins: 6,
@@ -197,6 +208,9 @@ export const POSTS: Post[] = [
     title: 'Zero of twelve gauges were telling the truth',
     kicker: 'Field notes',
     cover: 'gauges',
+    image: '/story/abstract/me-abstract-04-gauge-honesty.jpg',
+    imageAlt:
+      'A staff gauge standing in a flat river, an unfinished bridge behind it in the haze',
     date: '2026-07-28',
     dateLabel: '28 July 2026',
     mins: 5,
@@ -249,6 +263,9 @@ export const POSTS: Post[] = [
     title: 'Why we will not say seventy-two hours',
     kicker: 'How we work',
     cover: 'leadtime',
+    image: '/story/abstract/me-abstract-10-lead-time.jpg',
+    imageAlt:
+      'A figure standing in a flooded street at dawn, contour bands of water drawn across the foreground',
     date: '2026-06-30',
     dateLabel: '30 June 2026',
     mins: 4,

@@ -6,10 +6,16 @@ import { useCallback, useEffect, useRef, useState } from 'react';
    The story video, with a real transport: play/pause, a scrubbable progress
    bar, elapsed time and a sound toggle.
 
-   The footage has no audio track, so the "sound" is a monsoon bed synthesised
-   in the browser: rain as bandpassed noise, a low thunder rumble that swells
-   every so often, and the same sparse bell as the journey score. It follows
-   the video's play state, and starts muted because unrequested sound is rude.
+   None of the footage carries an audio track, so the "sound" is synthesised in
+   the browser. Two scores, picked per video:
+
+     monsoon  rain as bandpassed noise, a low thunder rumble that swells every
+              so often, and the same sparse bell as the journey score.
+     field    a warm drone under the same pentatonic, no weather in it. For the
+              product films, where rain would be telling the wrong story.
+
+   Either way it follows the video's play state, so audio never runs over a
+   paused picture.
    ========================================================================== */
 
 type Bed = { ctx: AudioContext; master: GainNode; stop: () => void };
@@ -128,6 +134,135 @@ function buildMonsoonBed(): Bed | null {
   };
 }
 
+/* ---------------------------------------------------------------------------
+   The field score: a product film wants music, not weather. A slow open fifth
+   under the same pentatonic the rest of the site sings in, so it reads as the
+   same instrument family as the journey and monsoon beds without the rain.
+   --------------------------------------------------------------------------- */
+function buildFieldBed(): Bed | null {
+  const AC: typeof AudioContext | undefined =
+    window.AudioContext ??
+    (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+  if (!AC) return null;
+
+  const ctx = new AC();
+  const master = ctx.createGain();
+  master.gain.value = 0;
+  master.connect(ctx.destination);
+  const started: { stop: (w?: number) => void }[] = [];
+  const timers: number[] = [];
+
+  // ---- pad: an open fifth plus its octave, detuned so it beats slowly ----
+  const padLp = ctx.createBiquadFilter();
+  padLp.type = 'lowpass';
+  padLp.frequency.value = 780;
+  padLp.Q.value = 0.7;
+  const padG = ctx.createGain();
+  padG.gain.value = 0.17;
+  padLp.connect(padG);
+  padG.connect(master);
+
+  const VOICES: [number, number][] = [
+    [110, 0],
+    [110, 7],
+    [164.81, -5],
+    [220, 4],
+  ];
+  for (const [hz, cents] of VOICES) {
+    const o = ctx.createOscillator();
+    o.type = 'triangle';
+    o.frequency.value = hz;
+    o.detune.value = cents;
+    const g = ctx.createGain();
+    g.gain.value = 0.24;
+    o.connect(g);
+    g.connect(padLp);
+    o.start();
+    started.push(o);
+  }
+
+  // the filter opens and closes on a very long cycle, so the pad never sits still
+  const sweep = ctx.createOscillator();
+  sweep.frequency.value = 0.035;
+  const sweepG = ctx.createGain();
+  sweepG.gain.value = 300;
+  sweep.connect(sweepG);
+  sweepG.connect(padLp.frequency);
+  sweep.start();
+  started.push(sweep);
+
+  // ---- air: a whisper of low noise, so the pad has ground under it ----
+  const len = ctx.sampleRate * 4;
+  const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * 0.9;
+  const air = ctx.createBufferSource();
+  air.buffer = buf;
+  air.loop = true;
+  const airLp = ctx.createBiquadFilter();
+  airLp.type = 'lowpass';
+  airLp.frequency.value = 340;
+  const airG = ctx.createGain();
+  airG.gain.value = 0.05;
+  air.connect(airLp);
+  airLp.connect(airG);
+  airG.connect(master);
+  air.start();
+  started.push(air);
+
+  // ---- melody: the site pentatonic, spaced far enough apart to stay calm ----
+  const SCALE = [220, 261.6, 293.7, 329.6, 392, 440];
+  const note = () => {
+    timers.push(window.setTimeout(note, 3200 + Math.random() * 4200));
+    const f = SCALE[(Math.random() * SCALE.length) | 0];
+    const o = ctx.createOscillator();
+    o.type = 'triangle';
+    o.frequency.value = f;
+    const g = ctx.createGain();
+    const now = ctx.currentTime;
+    g.gain.setValueAtTime(0, now);
+    g.gain.linearRampToValueAtTime(0.05, now + 0.35);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + 5);
+    const lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 1300;
+    o.connect(lp);
+    lp.connect(g);
+    g.connect(master);
+    o.start(now);
+    o.stop(now + 5.2);
+  };
+  timers.push(window.setTimeout(note, 900));
+
+  return {
+    ctx,
+    master,
+    stop: () => {
+      timers.forEach((t) => window.clearTimeout(t));
+      started.forEach((n) => {
+        try {
+          n.stop();
+        } catch {
+          /* already stopped */
+        }
+      });
+      void ctx.close();
+    },
+  };
+}
+
+type Score = 'monsoon' | 'field';
+
+const BEDS: Record<Score, () => Bed | null> = {
+  monsoon: buildMonsoonBed,
+  field: buildFieldBed,
+};
+
+const BED_LABEL: Record<Score, string> = {
+  monsoon: 'Ambient rain bed',
+  field: 'Ambient score',
+};
+
 const fmt = (s: number) => {
   if (!Number.isFinite(s)) return '0:00';
   const m = Math.floor(s / 60);
@@ -140,12 +275,14 @@ export default function StoryVideo({
   poster,
   label,
   caption,
+  score = 'monsoon',
 }: {
   src720: string;
   src1080?: string;
   poster: string;
-  label: string;
+  label?: string;
   caption?: string;
+  score?: Score;
 }) {
   const vidRef = useRef<HTMLVideoElement>(null);
   const bedRef = useRef<Bed | null>(null);
@@ -174,14 +311,14 @@ export default function StoryVideo({
 
   const toggleSound = useCallback(() => {
     if (!bedRef.current) {
-      bedRef.current = buildMonsoonBed();
+      bedRef.current = BEDS[score]();
       if (!bedRef.current) return;
     }
     void bedRef.current.ctx.resume();
     const next = !sound;
     setSound(next);
     rampBed(next && playing);
-  }, [sound, playing, rampBed]);
+  }, [sound, playing, rampBed, score]);
 
   const togglePlay = useCallback(() => {
     const v = vidRef.current;
@@ -200,7 +337,7 @@ export default function StoryVideo({
       setPlaying(true);
       if (!sound) return;
       // pressing play is the user gesture, so the context may start here
-      if (!bedRef.current) bedRef.current = buildMonsoonBed();
+      if (!bedRef.current) bedRef.current = BEDS[score]();
       void bedRef.current?.ctx.resume();
       rampBed(true);
     };
@@ -226,7 +363,7 @@ export default function StoryVideo({
       v.removeEventListener('loadedmetadata', onMeta);
       v.removeEventListener('durationchange', onMeta);
     };
-  }, [sound, rampBed]);
+  }, [sound, rampBed, score]);
 
   // pause when it scrolls away, so audio never plays off screen
   useEffect(() => {
@@ -307,8 +444,8 @@ export default function StoryVideo({
           onClick={toggleSound}
           className="me-player-btn me-player-sound"
           aria-pressed={sound}
-          aria-label={sound ? 'Mute monsoon bed' : 'Play monsoon bed'}
-          title="Ambient rain bed"
+          aria-label={`${sound ? 'Mute' : 'Play'} ${BED_LABEL[score].toLowerCase()}`}
+          title={BED_LABEL[score]}
         >
           <svg width="13" height="12" viewBox="0 0 13 12" aria-hidden="true" fill="none">
             <path d="M1 4.5h2.2L6 2v8L3.2 7.5H1z" fill="currentColor" />
@@ -325,9 +462,11 @@ export default function StoryVideo({
         </button>
       </div>
 
-      <div className="me-player-meta">
-        <span className="me-label">{label}</span>
-      </div>
+      {label && (
+        <div className="me-player-meta">
+          <span className="me-label">{label}</span>
+        </div>
+      )}
       {caption && <figcaption className="me-label me-player-cap">{caption}</figcaption>}
     </figure>
   );

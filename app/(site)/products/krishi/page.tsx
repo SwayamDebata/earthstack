@@ -1,6 +1,7 @@
 'use client';
 
 import MotionScene from '@/components/site/MotionScene';
+import StoryVideo from '@/components/site/StoryVideo';
 import HeroScene, { SceneHead, DiagramPanel } from '@/components/site/HeroScene';
 import { Caption, Chip, Reveal, SectionHead } from '@/components/site/primitives';
 
@@ -54,6 +55,21 @@ export default function KrishiPage() {
         />
       </HeroScene>
 
+      {/* ---- the film: what KrishiOS is, before any of the argument ---- */}
+      <section className="me-band" style={{ background: 'var(--bg)', paddingBottom: 0 }}>
+        <div className="me-wrap">
+          <Reveal>
+            <div style={{ maxWidth: 880, marginInline: 'auto' }}>
+              <StoryVideo
+                src720="/videos/krishios-film-720.mp4"
+                src1080="/videos/krishios-film-1080.mp4"
+                poster="/posters/krishios-film.jpg"
+                score="field"
+              />
+            </div>
+          </Reveal>
+        </div>
+      </section>
 
       {/* ---- officer vs household ---- */}
       <section className="me-band" style={{ background: 'var(--bg)' }}>

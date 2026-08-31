@@ -1,20 +1,46 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import PageHero from '@/components/site/PageHero';
 import BlogAmbience from '@/components/site/BlogAmbience';
 import { POSTS, type Post } from '@/components/site/posts';
 import { COVERS } from '@/components/site/covers';
 import { Reveal } from '@/components/site/primitives';
 
-function Card({ post, big = false }: { post: Post; big?: boolean }) {
+function Card({
+  post,
+  big = false,
+  flip = false,
+}: {
+  post: Post;
+  big?: boolean;
+  flip?: boolean;
+}) {
   return (
-    <Link href={`/blog/${post.slug}`} className={`me-post-card${big ? ' me-post-card-big' : ''}`}>
-      <div
-        className="me-post-cover"
-        aria-hidden="true"
-        dangerouslySetInnerHTML={{ __html: COVERS[post.cover] ?? '' }}
-      />
+    <Link
+      href={`/blog/${post.slug}`}
+      className={`me-post-card${big ? ' me-post-card-big' : ''}${flip ? ' me-post-card-flip' : ''}`}
+    >
+      {/* a painted plate where the post has one, the drawn cover otherwise */}
+      {post.image ? (
+        <div className="me-post-cover">
+          <Image
+            src={post.image}
+            alt={post.imageAlt ?? ''}
+            fill
+            sizes={big ? '(max-width: 900px) 100vw, 900px' : '(max-width: 900px) 100vw, 460px'}
+            priority={big}
+            className="me-post-plate"
+          />
+        </div>
+      ) : (
+        <div
+          className="me-post-cover"
+          aria-hidden="true"
+          dangerouslySetInnerHTML={{ __html: COVERS[post.cover] ?? '' }}
+        />
+      )}
       <div className="me-post-card-body">
         <span className="me-label me-post-kicker">{post.kicker}</span>
         <h2 className="me-post-card-h">{post.title}</h2>
@@ -51,10 +77,10 @@ export default function BlogIndex() {
             </Reveal>
 
             {featured.length > 0 && (
-              <div className="me-post-grid" style={{ marginTop: 'clamp(1.5rem, 3vw, 2.5rem)' }}>
+              <div className="me-post-stack">
                 {featured.map((p, i) => (
                   <Reveal key={p.slug} delay={i * 80}>
-                    <Card post={p} />
+                    <Card post={p} big flip={i % 2 === 0} />
                   </Reveal>
                 ))}
               </div>

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import BlogAmbience from '@/components/site/BlogAmbience';
 import { POSTS, getPost } from '@/components/site/posts';
@@ -47,6 +48,23 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
               {post.dateLabel} · {post.mins} min read · Swayam Debata
             </p>
           </div>
+
+          {/* the plate sits under the title and above the text, so the page
+              still opens on words rather than on a picture */}
+          {post.image && (
+            <div className="me-measure">
+              <div className="me-post-plate-lead">
+                <Image
+                  src={post.image}
+                  alt={post.imageAlt ?? ''}
+                  fill
+                  sizes="(max-width: 900px) 100vw, 760px"
+                  priority
+                  className="me-post-plate"
+                />
+              </div>
+            </div>
+          )}
         </header>
 
         <div className="me-measure me-prose">
