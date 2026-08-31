@@ -157,7 +157,7 @@ export default function SiteNav() {
             Mission Control
           </Link>
           <Link
-            href="/about#contact"
+            href="/about#contact-direct"
             className="me-btn me-btn-primary me-nav-cta"
             style={
               overHero
@@ -321,6 +321,21 @@ export default function SiteNav() {
           <div style={{ marginTop: '1.1rem' }}>
             <ThemeSwitch />
           </div>
+          <Link
+            href="/about#contact-direct"
+            className="me-btn me-btn-primary"
+            style={{
+              display: 'inline-flex',
+              marginTop: '1.25rem',
+              fontSize: 14,
+              padding: '0.75em 1.2em',
+              width: '100%',
+              justifyContent: 'center',
+              boxSizing: 'border-box',
+            }}
+          >
+            Request a pilot
+          </Link>
         </div>
       )}
     </header>
