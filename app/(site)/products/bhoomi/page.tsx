@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import HeroScene, { SceneHead, DiagramPanel } from '@/components/site/HeroScene';
 import { CallToAction } from '@/components/site/Closing';
 import { Chip, Reveal, SectionHead } from '@/components/site/primitives';
@@ -103,6 +104,37 @@ export default function BhoomiPage() {
               fastest way to lose a district&rsquo;s trust permanently.
             </p>
           </Reveal>
+
+          <Reveal delay={85}>
+            <figure
+              style={{
+                margin: '0 0 clamp(1.75rem, 3.5vw, 2.5rem)',
+                maxWidth: 560,
+                width: '100%',
+              }}
+            >
+              <div
+                style={{
+                  position: 'relative',
+                  width: '100%',
+                  aspectRatio: '16 / 10',
+                  overflow: 'hidden',
+                  border: '1px solid var(--line)',
+                  background: '#1a1210',
+                }}
+              >
+                <Image
+                  src="/bhoomi-g1-dev.jpg"
+                  alt="Bhoomi G1 development prototype"
+                  fill
+                  sizes="(max-width: 640px) 100vw, 560px"
+                  style={{ objectFit: 'cover', objectPosition: 'center 42%' }}
+                  priority={false}
+                />
+              </div>
+            </figure>
+          </Reveal>
+
           <Reveal delay={90}>
             <div style={{ margin: 'clamp(1.5rem, 3vw, 2.25rem) 0' }}>
               <DiagramPanel scene="bhoomiSpec" label="What is actually specified" note="Design and BOM" />
