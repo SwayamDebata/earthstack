@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { readAccent } from './accent';
 
 /* ==========================================================================
    The reading-page ambience.
@@ -32,7 +33,8 @@ export default function BlogAmbience() {
 
     // haze banks: big, soft, and slower than the eye tracks. Two tints, so the
     // page breathes warm and cool rather than just getting dirtier.
-    const TINTS = ['196, 98, 47', '79, 168, 156', '224, 160, 90'];
+    const AC = readAccent();
+    const TINTS = [AC.accent.join(', '), '79, 168, 156', AC.hi.join(', ')];
     const BANKS = Array.from({ length: 9 }, (_, i) => ({
       x: rnd(i),
       y: 0.08 + rnd(i + 20) * 0.84,

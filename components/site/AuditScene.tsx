@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { readAccent } from './accent';
 
 /* ==========================================================================
    The relabel audit, as an animation rather than a paragraph.
@@ -20,7 +21,8 @@ const BASIN_COLOR: Record<Basin, string> = {
   Baitarani: '#4fa89c',
   Brahmani: '#7fb08a',
   Rushikulya: '#8e9a93',
-  Mahanadi: '#c4622f',
+  // resolved from the accent at draw time; the other three are categorical
+  Mahanadi: '',
 };
 
 /* schematic courses in 0..1 space, west to east */
@@ -87,6 +89,8 @@ export default function AuditScene() {
     const sec = secRef.current;
     if (!cv || !sec) return;
     const ctx = cv.getContext('2d');
+    // the hue comes from the stylesheet, so site.css stays the only place it lives
+    const AC = readAccent();
     if (!ctx) return;
 
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -163,7 +167,7 @@ export default function AuditScene() {
         const revealed = seg(p, 0.5, 0.72);
         const isM = basin === 'Mahanadi';
         ctx.strokeStyle = isM
-          ? `rgba(196, 98, 47, ${0.32 + 0.5 * revealed})`
+          ? AC.rgba(AC.accent, 0.32 + 0.5 * revealed)
           : `rgba(140, 152, 146, ${0.16 + 0.42 * revealed})`;
         ctx.lineWidth = isM ? 2.4 : 1.8;
         ctx.beginPath();
@@ -178,7 +182,7 @@ export default function AuditScene() {
           const [lx, ly] = P(...alongRiver(basin, 0.06));
           ctx.font = '500 10px ui-monospace, JetBrains Mono, monospace';
           ctx.fillStyle = isM
-            ? `rgba(196, 98, 47, ${revealed})`
+            ? AC.rgba(AC.accent, revealed)
             : `rgba(154, 149, 132, ${revealed * 0.9})`;
           ctx.fillText(basin.toUpperCase(), lx, ly - 8);
         }
@@ -191,7 +195,7 @@ export default function AuditScene() {
         const b = box();
         const rr = 0.30 * b.w * ease(ringP);
         ctx.setLineDash([6, 7]);
-        ctx.strokeStyle = `rgba(224, 160, 90, ${0.75 * ringP * (1 - seg(p, 0.72, 0.9))})`;
+        ctx.strokeStyle = AC.rgba(AC.hi, 0.75 * ringP * (1 - seg(p, 0.72, 0.9)));
         ctx.lineWidth = 1.3;
         ctx.beginPath();
         ctx.arc(cx, cy, rr, 0, Math.PI * 2);
@@ -199,7 +203,7 @@ export default function AuditScene() {
         ctx.setLineDash([]);
         if (ringP > 0.6) {
           ctx.font = '500 10px ui-monospace, JetBrains Mono, monospace';
-          ctx.fillStyle = `rgba(224, 160, 90, ${(ringP - 0.6) / 0.4})`;
+          ctx.fillStyle = AC.rgba(AC.hi, (ringP - 0.6) / 0.4);
           ctx.fillText('120 km SNAP RADIUS', cx - rr + 6, cy - rr + 16);
         }
       }
@@ -217,12 +221,13 @@ export default function AuditScene() {
         const isM = e.basin === 'Mahanadi';
         // at the end everything but the single Mahanadi event falls away
         const alpha = isM ? 1 : 1 - dim * 0.88;
-        const col = own < 0.15 ? '#e0a05a' : BASIN_COLOR[e.basin];
+        const col =
+          own < 0.15 ? AC.rgba(AC.hi, 1) : BASIN_COLOR[e.basin] || AC.rgba(AC.accent, 1);
 
         if (isM && dim > 0.2) {
           ctx.beginPath();
           ctx.arc(x, y, 9 + Math.sin(t * 2.4) * 2.5, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(196, 98, 47, ${0.18 * dim})`;
+          ctx.fillStyle = AC.rgba(AC.accent, 0.18 * dim);
           ctx.fill();
         }
         ctx.beginPath();
@@ -247,7 +252,7 @@ export default function AuditScene() {
       if (dim > 0.25) {
         const [mx, my] = P(...alongRiver('Mahanadi', 0.5));
         ctx.font = '500 11px ui-monospace, JetBrains Mono, monospace';
-        ctx.fillStyle = `rgba(224,160,90,${dim})`;
+        ctx.fillStyle = AC.rgba(AC.hi, dim);
         ctx.fillText('1 OF 143 IS MAHANADI', mx - 60, my + 30);
       }
 
@@ -312,7 +317,7 @@ export default function AuditScene() {
               }}
               className="me-audit-beat"
             >
-              <span className="me-eyebrow" style={{ color: '#e0a05a' }}>
+              <span className="me-eyebrow" style={{ color: 'var(--art-accent-hi)' }}>
                 {b.k}
               </span>
               <p className="me-display me-audit-h">{b.h}</p>

@@ -77,7 +77,7 @@ export default function ValleyHero() {
           }}
           className="me-valley-beat"
         >
-          <span className="me-eyebrow" style={{ color: '#8a5a2a' }}>
+          <span className="me-eyebrow" style={{ color: 'var(--art-accent-onlight)' }}>
             Mahanadi · Odisha · dawn
           </span>
           <h1 className="me-display" style={{ color: '#2a2418', marginTop: 18 }}>
@@ -116,7 +116,7 @@ export default function ValleyHero() {
           }}
           className="me-valley-beat"
         >
-          <span className="me-eyebrow" style={{ color: '#8a5a2a' }}>
+          <span className="me-eyebrow" style={{ color: 'var(--art-accent-onlight)' }}>
             Sambalpur · Mahanadi
           </span>
           <h2 className="me-display" style={{ color: '#2a2418', margin: '18px 0 22px' }}>

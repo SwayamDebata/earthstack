@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { readAccent } from './accent';
 
 /* ==========================================================================
    "The night the water came" — a full-bleed cinematic scene in the Alt Carbon
@@ -45,6 +46,8 @@ export default function RisingWater() {
     const sec = secRef.current;
     if (!cv || !sec) return;
     const ctx = cv.getContext('2d');
+    // the hue comes from the stylesheet, so site.css stays the only place it lives
+    const AC = readAccent();
     if (!ctx) return;
 
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -155,7 +158,7 @@ export default function RisingWater() {
         const stillLit = h.lit && p < 0.82;
         if (stillLit) {
           const flick = 0.72 + 0.28 * Math.sin(t * 2.2 + h.x * 30);
-          ctx.fillStyle = `rgba(224, 160, 90, ${(0.5 + 0.35 * flick) * (1 - p * 0.5)})`;
+          ctx.fillStyle = AC.rgba(AC.hi, (0.5 + 0.35 * flick) * (1 - p * 0.5));
           ctx.fillRect(hx + hw * 0.32, base - hh * 0.62, hw * 0.3, hh * 0.3);
         }
       }
@@ -216,7 +219,7 @@ export default function RisingWater() {
       const dl = bank - (bank - horizon * 1.06) * 0.45;
       const crossed = water <= dl;
       ctx.setLineDash([7, 7]);
-      ctx.strokeStyle = crossed ? 'rgba(196, 98, 47, .95)' : 'rgba(196, 98, 47, .45)';
+      ctx.strokeStyle = crossed ? AC.rgba(AC.accent, 0.95) : AC.rgba(AC.accent, 0.45);
       ctx.lineWidth = 1.4;
       ctx.beginPath();
       ctx.moveTo(0, dl);
@@ -224,7 +227,7 @@ export default function RisingWater() {
       ctx.stroke();
       ctx.setLineDash([]);
       ctx.font = '500 10px ui-monospace, JetBrains Mono, monospace';
-      ctx.fillStyle = crossed ? 'rgba(224, 160, 90, .95)' : 'rgba(224, 160, 90, .5)';
+      ctx.fillStyle = crossed ? AC.rgba(AC.hi, 0.95) : AC.rgba(AC.hi, 0.5);
       ctx.fillText(
         crossed ? 'DANGER LEVEL 18.33 m · CROSSED' : 'DANGER LEVEL 18.33 m',
         W - 260,
@@ -290,7 +293,7 @@ export default function RisingWater() {
             }}
             className="me-rise-beat"
           >
-            <span className="me-eyebrow" style={{ color: '#e0a05a' }}>
+            <span className="me-eyebrow" style={{ color: 'var(--art-accent-hi)' }}>
               {b.time}
             </span>
             <p className="me-display me-rise-line">{b.line}</p>

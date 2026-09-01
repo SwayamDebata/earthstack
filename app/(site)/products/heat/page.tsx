@@ -153,7 +153,7 @@ export default function HeatPage() {
           </Reveal>
 
           <Reveal delay={150}>
-            <div className="me-panel" style={{ marginTop: 'clamp(2.5rem, 5vw, 3.5rem)', borderLeft: '2px solid var(--laterite)' }}>
+            <div className="me-panel" style={{ marginTop: 'clamp(2.5rem, 5vw, 3.5rem)', borderLeft: '2px solid var(--accent)' }}>
               <div style={{ marginBottom: 16 }}><Chip kind="shadow" /></div>
               <h3 className="me-display me-d3" style={{ marginBottom: 16 }}>
                 Said plainly: there is no heat model. There is a dataset.

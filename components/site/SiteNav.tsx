@@ -59,8 +59,8 @@ function ThemeSwitch() {
               borderRadius: 999,
               cursor: 'pointer',
               background: SWATCH[t].bg,
-              border: `1px solid ${on ? 'var(--laterite)' : SWATCH[t].ring}`,
-              boxShadow: on ? '0 0 0 2px var(--bg), 0 0 0 3px var(--laterite)' : 'none',
+              border: `1px solid ${on ? 'var(--accent)' : SWATCH[t].ring}`,
+              boxShadow: on ? '0 0 0 2px var(--bg), 0 0 0 3px var(--accent)' : 'none',
               padding: 0,
               transition: 'box-shadow .18s ease, border-color .18s ease',
             }}
@@ -109,10 +109,11 @@ export default function SiteNav() {
       >
         <Link
           href="/"
+          className="me-nav-brand"
           style={{ display: 'flex', alignItems: 'center', gap: 9, color: 'inherit', textDecoration: 'none', flex: '0 0 auto' }}
           aria-label="ModelEarth home"
         >
-          <BrandLockup markSize={26} />
+          <BrandLockup markSize={26} animate />
         </Link>
 
         <ul className="me-nav-links" style={{ display: 'flex', listStyle: 'none', margin: 0, padding: 0, gap: 2 }}>
@@ -231,8 +232,8 @@ export default function SiteNav() {
                       textDecoration: 'none',
                       whiteSpace: 'nowrap',
                       color: active ? 'var(--ink)' : 'var(--muted)',
-                      background: active ? 'color-mix(in srgb, var(--laterite) 16%, transparent)' : 'transparent',
-                      boxShadow: active ? 'inset 0 -2px 0 var(--laterite)' : 'none',
+                      background: active ? 'color-mix(in srgb, var(--accent) 16%, transparent)' : 'transparent',
+                      boxShadow: active ? 'inset 0 -2px 0 var(--accent)' : 'none',
                     }}
                   >
                     {p.label}

@@ -206,7 +206,7 @@ function meInitValley(opts) {
   }
 
   var SUN = nrm([0.42, 0.20, -0.88]);
-  var FOG = [0.925, 0.800, 0.640];
+  var FOG = [0.780, 0.822, 0.910];   /* cool haze; luminance held from the warm grade */
   var t1 = beats[0] || null, t2 = beats[1] || null, t3 = beats[2] || null;
 
   var shown = 0, target = 0, raf = null, dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -259,10 +259,10 @@ function meInitValley(opts) {
     gl.uniform3fv(gl.getUniformLocation(pSky,'uUp'), up);
     gl.uniform1f(gl.getUniformLocation(pSky,'uTH'), tanH);
     gl.uniform1f(gl.getUniformLocation(pSky,'uTV'), tanV);
-    gl.uniform3f(gl.getUniformLocation(pSky,'uTop'), 0.79, 0.82, 0.80);
-    gl.uniform3f(gl.getUniformLocation(pSky,'uHor'), 0.955, 0.815, 0.620);
-    gl.uniform3f(gl.getUniformLocation(pSky,'uGnd'), 0.86, 0.74, 0.58);
-    gl.uniform3f(gl.getUniformLocation(pSky,'uSunC'), 0.95, 0.66, 0.28);
+    gl.uniform3f(gl.getUniformLocation(pSky,'uTop'), 0.730, 0.800, 0.905);
+    gl.uniform3f(gl.getUniformLocation(pSky,'uHor'), 0.790, 0.833, 0.935);
+    gl.uniform3f(gl.getUniformLocation(pSky,'uGnd'), 0.720, 0.755, 0.830);
+    gl.uniform3f(gl.getUniformLocation(pSky,'uSunC'), 0.72, 0.70, 0.78);
     gl.uniform3fv(gl.getUniformLocation(pSky,'uSunD'), SUN);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
     gl.depthMask(true);
@@ -276,7 +276,7 @@ function meInitValley(opts) {
     gl.uniformMatrix4fv(gl.getUniformLocation(pScene,'uP'),false,new Float32Array(mP));
     gl.uniformMatrix4fv(gl.getUniformLocation(pScene,'uV'),false,new Float32Array(mV));
     gl.uniform3fv(gl.getUniformLocation(pScene,'uL'), SUN);
-    gl.uniform3f(gl.getUniformLocation(pScene,'uKey'), 1.15, 0.92, 0.62);
+    gl.uniform3f(gl.getUniformLocation(pScene,'uKey'), 0.94, 0.96, 1.02);
     gl.uniform3f(gl.getUniformLocation(pScene,'uFill'), 0.44, 0.47, 0.54);
     gl.uniform3fv(gl.getUniformLocation(pScene,'uFog'), FOG);
     gl.uniform1f(gl.getUniformLocation(pScene,'uFogD'), 0.0078);
@@ -294,7 +294,7 @@ function meInitValley(opts) {
     gl.uniform1f(gl.getUniformLocation(pWater,'uFogD'), 0.0078);
     gl.uniform3f(gl.getUniformLocation(pWater,'uDeep'), 0.086, 0.240, 0.238);
     gl.uniform3f(gl.getUniformLocation(pWater,'uShal'), 0.190, 0.400, 0.380);
-    gl.uniform3f(gl.getUniformLocation(pWater,'uGlint'), 1.00, 0.76, 0.42);
+    gl.uniform3f(gl.getUniformLocation(pWater,'uGlint'), 0.76, 0.80, 0.95);
     gl.uniform3fv(gl.getUniformLocation(pWater,'uEye'), cam.e);
     gl.uniform3fv(gl.getUniformLocation(pWater,'uSunD'), SUN);
     gl.uniform3fv(gl.getUniformLocation(pWater,'uFog'), FOG);

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { readAccent } from './accent';
 
 /* ==========================================================================
    One house on the bank, across twenty-seven years.
@@ -51,6 +52,8 @@ export default function JourneyStory() {
     const sec = secRef.current;
     if (!cv || !sec) return;
     const ctx = cv.getContext('2d');
+    // the hue comes from the stylesheet, so site.css stays the only place it lives
+    const AC = readAccent();
     if (!ctx) return;
 
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -246,7 +249,7 @@ export default function JourneyStory() {
         // and where it stopped: it never reaches the window
         if (sig > 0.55) {
           const a = (sig - 0.55) / 0.45;
-          ctx.strokeStyle = `rgba(196,98,47,${a})`;
+          ctx.strokeStyle = AC.rgba(AC.accent, a);
           ctx.lineWidth = 1.8;
           const yStop = base - hh * 1.45;
           const s2 = 7;
@@ -257,11 +260,11 @@ export default function JourneyStory() {
           ctx.lineTo(stopX - s2, yStop + s2);
           ctx.stroke();
           ctx.font = '500 10px ui-monospace, JetBrains Mono, monospace';
-          ctx.fillStyle = `rgba(196,98,47,${a})`;
+          ctx.fillStyle = AC.rgba(AC.accent, a);
           ctx.fillText('THE LAST MILE', stopX - 42, yStop - 16);
           // the gap it never crosses, drawn to the window it should have reached
           ctx.setLineDash([3, 6]);
-          ctx.strokeStyle = `rgba(196,98,47,${a * 0.55})`;
+          ctx.strokeStyle = AC.rgba(AC.accent, a * 0.55);
           ctx.lineWidth = 1.2;
           ctx.beginPath();
           ctx.moveTo(stopX + s2 + 4, yStop);
@@ -330,7 +333,7 @@ export default function JourneyStory() {
               }}
               className="me-jstory-beat"
             >
-              <span className="me-eyebrow" style={{ color: '#e0a05a' }}>
+              <span className="me-eyebrow" style={{ color: 'var(--art-accent-hi)' }}>
                 {b.k}
               </span>
               <p className="me-display me-jstory-h">{b.h}</p>

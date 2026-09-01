@@ -11,9 +11,27 @@
   --sans: var(--font-site-sans), 'Inter Tight', ui-sans-serif, system-ui, sans-serif;
   --mono: var(--font-mono), 'JetBrains Mono', ui-monospace, Menlo, monospace;
 
-  /* ---- accents: constant across themes, tuned per theme below ---- */
-  --laterite: #c4622f;
-  --amber: #b8791f;
+  /* ---- accents: constant across themes, tuned per theme below ----
+
+     The accent is the one hue this site editorialises with, so it is defined
+     once here and once in the void block, and nowhere else. --water, --green
+     and --steel are NOT accents: they carry meaning (river, live, inactive)
+     and must stay where they are whatever the accent becomes.
+
+     Indigo, because the two colours that already mean something sit at Lab
+     hue 184 (water) and 149 (live), and an accent has to be legible against
+     both. Indigo lands at 288, far from each, and reads as atmosphere and
+     computation rather than as more water.  Alternates: data-me-accent. ---- */
+  --accent: #4d78e4;
+  --accent-hi: #7c7bcf;
+
+  /* the art carries its own dark ground, so its accent does not follow the
+     page theme; these stay at the on-dark values whatever theme is showing */
+  --art-accent: #6a86e5;
+  --art-accent-hi: #aaa5ee;
+  --art-accent-deep: #436cce;
+  /* for accent text on a LIGHT scene, e.g. the valley hero */
+  --art-accent-onlight: #2f5fbf;
   --water: #2f7f77;
   --green: #2f6b41;
   --steel: #566b64;
@@ -32,7 +50,9 @@
   --inverse-bg: #0a0b08;
   --inverse-ink: #ede9de;
 
-  /* status chip foregrounds/backgrounds */
+  /* Status chip foregrounds/backgrounds. Deliberately NOT the accent: this is
+     a green/amber/orange/steel scale where warm means caution, and it used to
+     collide with the brand hue by accident. Leave these warm. */
   --chip-live-fg: #f4f6ef;
   --chip-live-bg: #2f6b41;
   --chip-back-fg: #f2f4f1;
@@ -56,6 +76,36 @@
   font-feature-settings: 'ss01' 1;
 }
 
+/* ---- accent alternates ------------------------------------------------
+   Set data-me-accent on .me-root to compare. Everything downstream reads
+   --accent / --accent-hi / --art-accent, so these four lines are the whole
+   change. Delete the losers once the hue is settled.
+   --------------------------------------------------------------------- */
+.me-root[data-me-accent='blue'] {
+  --accent: #0083cf;
+  --accent-hi: #4285d6;
+  --art-accent: #0291e4;
+  --art-accent-hi: #83aef5;
+  --art-accent-deep: #0076bb;
+  --art-accent-onlight: #00619b;
+}
+.me-root[data-me-accent='blue'][data-me-theme='void'] {
+  --accent: #0291e4;
+  --accent-hi: #83aef5;
+}
+.me-root[data-me-accent='violet'] {
+  --accent: #9a65cd;
+  --accent-hi: #a96dba;
+  --art-accent: #a677d2;
+  --art-accent-hi: #cf9bdc;
+  --art-accent-deep: #8b5aba;
+  --art-accent-onlight: #7a4aa8;
+}
+.me-root[data-me-accent='violet'][data-me-theme='void'] {
+  --accent: #a677d2;
+  --accent-hi: #cf9bdc;
+}
+
 /* ---- white theme ---- */
 .me-root[data-me-theme='white'] {
   --bg: #ffffff;
@@ -77,8 +127,8 @@
 
 /* ---- void theme (the artifact palette) ---- */
 .me-root[data-me-theme='void'] {
-  --laterite: #d4703a;
-  --amber: #e0a05a;
+  --accent: #6a86e5;
+  --accent-hi: #aaa5ee;
   --water: #4fa89c;
   --green: #7fb08a;
   --steel: #8e9a93;
@@ -121,7 +171,7 @@
 }
 
 .me-root ::selection {
-  background: var(--laterite);
+  background: var(--accent);
   color: #fbf3e6;
 }
 
@@ -171,7 +221,7 @@
   font-weight: 500;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--laterite);
+  color: var(--accent);
 }
 
 .me-label {
@@ -333,7 +383,7 @@
   color: var(--bg);
 }
 .me-btn-primary:hover {
-  background: var(--laterite);
+  background: var(--accent);
   color: #fbf3e6;
 }
 
@@ -353,7 +403,7 @@
   color: #0a0b08;
 }
 .me-on-dark .me-btn-primary:hover {
-  background: var(--laterite);
+  background: var(--accent);
   color: #fbf3e6;
 }
 .me-on-dark .me-btn-ghost {
@@ -432,8 +482,8 @@
   transition: border-color 0.18s ease, color 0.18s ease;
 }
 .me-link:hover {
-  color: var(--laterite);
-  border-color: var(--laterite);
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 .me-a11y-skip {
@@ -453,7 +503,7 @@
 }
 
 .me-root :focus-visible {
-  outline: 2px solid var(--laterite);
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
 
@@ -612,7 +662,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #e0a05a;
+  background: var(--art-accent-hi);
   box-shadow: 0 0 0 1px rgba(10, 11, 8, 0.9);
   flex: 0 0 auto;
 }
@@ -627,7 +677,7 @@
   display: block;
   font-size: 9.5px;
   letter-spacing: 0.12em;
-  color: #e0a05a;
+  color: var(--art-accent-hi);
   margin-top: 2px;
 }
 
@@ -960,8 +1010,8 @@
   transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
 }
 .me-listen:hover {
-  border-color: color-mix(in srgb, var(--laterite) 55%, var(--line));
-  background: color-mix(in srgb, var(--laterite) 8%, var(--bg));
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg));
 }
 .me-listen:active {
   transform: scale(0.98);
@@ -980,8 +1030,8 @@
   overflow: hidden;
 }
 .me-listen[data-on='true'] .me-listen-disc {
-  background: color-mix(in srgb, var(--laterite) 16%, var(--bg));
-  border-color: color-mix(in srgb, var(--laterite) 45%, var(--line));
+  background: color-mix(in srgb, var(--accent) 16%, var(--bg));
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
 }
 
 .me-listen-ring {
@@ -992,7 +1042,7 @@
   pointer-events: none;
 }
 .me-listen[data-on='true'] .me-listen-ring {
-  border-color: color-mix(in srgb, var(--laterite) 40%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
   animation: me-listen-pulse 2.4s ease-out infinite;
 }
 
@@ -1011,7 +1061,7 @@
   display: block;
 }
 .me-listen-wave[data-on='true'] i {
-  background: var(--laterite);
+  background: var(--accent);
   animation: me-eq 900ms ease-in-out infinite;
 }
 .me-listen-wave[data-on='true'] i:nth-child(1) { animation-delay: 0ms; }
@@ -1157,7 +1207,7 @@
   display: block;
   width: 100%;
   height: 100%;
-  background: var(--laterite);
+  background: var(--accent);
   transform-origin: top;
   will-change: transform;
 }
@@ -1194,7 +1244,7 @@
   margin-bottom: 1.1rem;
 }
 .me-diagram .me-label { color: #6b6857; }
-.me-diagram-note { color: #c4622f !important; }
+.me-diagram-note { color: var(--accent) !important; }
 .me-diagram-cap {
   display: block;
   margin-top: 1rem;
@@ -1281,7 +1331,7 @@
   color: var(--ink);
 }
 .me-player-sound[aria-pressed='true'] {
-  color: var(--laterite);
+  color: var(--accent);
 }
 .me-player-time {
   font-family: var(--mono);
@@ -1305,7 +1355,7 @@
 .me-player-track span {
   display: block;
   height: 100%;
-  background: var(--laterite);
+  background: var(--accent);
 }
 .me-player-meta {
   padding: 0 0.25rem;
@@ -1402,22 +1452,79 @@
    brand mark: the waterline runs, so the reach reads as moving water
    ========================================================================== */
 
-.me-mark-river {
-  opacity: 0.45;
+/* ==========================================================================
+   brand intro: the mark assembles, then takes its seat in the nav
+   ========================================================================== */
+
+.me-brand-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+  pointer-events: none;
 }
-.me-mark-flow {
-  /* one short lit segment chasing the course, looped */
-  stroke-dasharray: 5 27;
-  animation: me-mark-flow 3.4s linear infinite;
+.me-brand-intro-mark {
+  will-change: transform;
 }
-@keyframes me-mark-flow {
-  from { stroke-dashoffset: 32; }
-  to   { stroke-dashoffset: 0; }
+/* the seat is held open, not collapsed, so the handoff does not reflow the nav */
+:root[data-brand-intro] .me-nav-brand .me-mark {
+  visibility: hidden;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .me-mark-river { opacity: 1; }
-  .me-mark-flow { animation: none; opacity: 0; }
+  .me-brand-intro { display: none; }
+}
+
+/* The mark assembles itself once, in the order it means something in: the
+   aperture opens, the ground rises into it, the layer draws across the top.
+   Then it holds still. Both stroked parts carry pathLength="100", so the dash
+   maths is exact without measuring the geometry at runtime. */
+
+.me-brand-anim .me-brand-ring {
+  stroke-dasharray: 100;
+  transform-origin: 32px 32px;
+  transform: rotate(-90deg);
+  animation: me-brand-ring 760ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.me-brand-anim .me-brand-body {
+  transform-origin: 32px 64px;
+  animation: me-brand-body 700ms cubic-bezier(0.22, 1, 0.36, 1) 260ms both;
+}
+.me-brand-anim .me-brand-layer {
+  stroke-dasharray: 100;
+  animation: me-brand-layer 560ms cubic-bezier(0.22, 1, 0.36, 1) 640ms both;
+}
+
+@keyframes me-brand-ring {
+  from { stroke-dashoffset: 100; }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes me-brand-body {
+  from { transform: translateY(26px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+@keyframes me-brand-layer {
+  from { stroke-dashoffset: 100; opacity: 0; }
+  to   { stroke-dashoffset: 0; opacity: 0.6; }
+}
+
+/* The overlay drives its own copy imperatively during the first-visit intro.
+   Letting the CSS run at the same time would fight it for the same properties. */
+:root[data-brand-intro] .me-brand-anim .me-brand-ring,
+:root[data-brand-intro] .me-brand-anim .me-brand-body,
+:root[data-brand-intro] .me-brand-anim .me-brand-layer {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .me-brand-anim .me-brand-ring,
+  .me-brand-anim .me-brand-body,
+  .me-brand-anim .me-brand-layer {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
 }
 
 /* ==========================================================================
@@ -1711,7 +1818,7 @@
   flex: 1;
   padding: clamp(1.25rem, 2.4vw, 1.75rem);
 }
-.me-post-kicker { color: var(--laterite); }
+.me-post-kicker { color: var(--accent); }
 .me-post-card-h {
   font-family: var(--display);
   font-size: clamp(1.2rem, 1.9vw, 1.55rem);
@@ -1839,12 +1946,12 @@
   top: 0.72em;
   width: 5px;
   height: 1px;
-  background: var(--laterite);
+  background: var(--accent);
 }
 .me-prose blockquote {
   margin: 2.25rem 0;
   padding-left: 1.4rem;
-  border-left: 2px solid var(--laterite);
+  border-left: 2px solid var(--accent);
   font-family: var(--display);
   font-size: clamp(1.25rem, 2.1vw, 1.6rem);
   font-weight: 600;

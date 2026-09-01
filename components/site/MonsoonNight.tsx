@@ -65,7 +65,7 @@ const BEATS: {
 const BAND_COLOR = {
   low: 'var(--water)',
   medium: '#b8791f',
-  high: 'var(--laterite)',
+  high: 'var(--accent)',
 } as const;
 
 export default function MonsoonNight() {
@@ -165,7 +165,7 @@ export default function MonsoonNight() {
           <Reveal>
             <div
               className="me-panel"
-              style={{ marginTop: 'clamp(2.5rem, 5vw, 3.5rem)', borderLeft: '2px solid var(--laterite)' }}
+              style={{ marginTop: 'clamp(2.5rem, 5vw, 3.5rem)', borderLeft: '2px solid var(--accent)' }}
             >
               <div style={{ marginBottom: 16 }}>
                 <Chip kind="miss" />

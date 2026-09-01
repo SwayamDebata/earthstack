@@ -73,7 +73,7 @@ export default function MotionScene({
         <div className="me-motion-bar">
           {label && <span className="me-label">{label}</span>}
           {note && (
-            <span className="me-label" style={{ color: '#E0A05A' }}>
+            <span className="me-label" style={{ color: 'var(--art-accent-hi)' }}>
               {note}
             </span>
           )}

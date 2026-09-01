@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import SiteBrandMark from '@/components/site/BrandMark';
 
 type Props = {
   size?: number;
@@ -6,19 +6,9 @@ type Props = {
   priority?: boolean;
 };
 
-/** ModelEarth icon mark: `public/modelearth-mark.png` (circle over e). */
-export default function BrandMark({ size = 44, className = '', priority = false }: Props) {
-  const height = size;
-  const width = Math.round(size * (624 / 1099));
-  return (
-    <Image
-      src="/modelearth-mark.png"
-      alt="ModelEarth"
-      width={width}
-      height={height}
-      className={className}
-      priority={priority}
-      style={{ width: 'auto', height, objectFit: 'contain' }}
-    />
-  );
+/** ModelEarth mark. One drawing, shared with the marketing site, so the
+    dashboard and the site cannot drift apart. `priority` is kept for callers
+    that still pass it; there is no image to preload any more. */
+export default function BrandMark({ size = 44, className = '' }: Props) {
+  return <SiteBrandMark size={size} className={className} />;
 }

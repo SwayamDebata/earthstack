@@ -20,7 +20,7 @@ const CITIES = [
   { n: 'Rourkela', band: 'LOW', s: '0.14', note: 'Brahmani · Pamposh unavailable', tone: 'low' },
 ];
 
-const TONE = { high: 'var(--laterite)', med: '#b8791f', low: 'var(--water)' } as const;
+const TONE = { high: 'var(--accent)', med: '#b8791f', low: 'var(--water)' } as const;
 
 const TERMS: [string, string][] = [
   ['Rain 6 h', '78 mm'],
@@ -47,7 +47,7 @@ export default function FloodPage() {
     <>
       <HeroScene
         scene="flood"
-        dots={{ mode: 'rain', water: '#4FA89C', accent: '#C4622F', max: 1500 }}
+        dots={{ mode: 'rain', water: '#4FA89C', max: 1500 }}
         scrim="8,10,12"
         note="Sample values throughout. Advisory only. Does not override IMD, CWC or OSDMA."
       >
@@ -126,7 +126,7 @@ export default function FloodPage() {
           </Reveal>
 
           <Reveal delay={130}>
-            <div className="me-panel" style={{ marginTop: '2rem', borderLeft: '2px solid var(--laterite)', background: 'var(--bg)' }}>
+            <div className="me-panel" style={{ marginTop: '2rem', borderLeft: '2px solid var(--accent)', background: 'var(--bg)' }}>
               <p className="me-body" style={{ maxWidth: 'none' }}>
                 And the gate: river level only reaches the risk path when the station is marked{' '}
                 <code className="me-mono" style={{ fontSize: '0.9em', padding: '0.15em 0.4em', background: 'var(--surface-2)', color: 'var(--ink)' }}>
@@ -210,7 +210,7 @@ export default function FloodPage() {
                       ['Suggested action', 'Pre-position at Naraj. Alert wards 4 to 9. Rainfall-only read, so treat river state as unknown.'],
                     ].map(([t, d]) => (
                       <div key={t}>
-                        <dt className="me-mono" style={{ fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--laterite)', marginBottom: 5 }}>{t}</dt>
+                        <dt className="me-mono" style={{ fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 5 }}>{t}</dt>
                         <dd style={{ margin: 0, fontSize: 13.5, lineHeight: 1.58, color: 'var(--text)' }}>{d}</dd>
                       </div>
                     ))}
@@ -257,7 +257,7 @@ export default function FloodPage() {
           </Reveal>
 
           <Reveal delay={110}>
-            <div className="me-panel" style={{ marginTop: 'clamp(2.5rem, 5vw, 3.5rem)', background: 'var(--bg)', borderLeft: '2px solid var(--laterite)' }}>
+            <div className="me-panel" style={{ marginTop: 'clamp(2.5rem, 5vw, 3.5rem)', background: 'var(--bg)', borderLeft: '2px solid var(--accent)' }}>
               <div style={{ marginBottom: 16 }}><Chip kind="miss" /></div>
               <h3 className="me-display me-d3" style={{ marginBottom: 16 }}>
                 The recession failure: 14 of 18 location-days scored LOW while 13.44 lakh people were
