@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import BrandMark from './BrandMark';
 
 /* ==========================================================================
    Theme - paper (warm light) · void (dark)
@@ -169,36 +170,27 @@ export function SectionHead({ index, label }: { index: string; label: string }) 
    Brand mark + title text
    ========================================================================== */
 
-export function Mark({ size = 26 }: { size?: number }) {
-  const height = size;
-  const width = Math.round(size * (624 / 1099));
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src="/modelearth-mark.png"
-      alt=""
-      width={width}
-      height={height}
-      aria-hidden="true"
-      className="me-mark"
-      style={{ flex: '0 0 auto', width: 'auto', height, objectFit: 'contain', display: 'block' }}
-    />
-  );
+export function Mark({ size = 26, animate = false }: { size?: number; animate?: boolean }) {
+  return <BrandMark size={size} animate={animate} className="me-mark" />;
 }
 
 /** Mark + “ModelEarth” title text — standard lockup. */
-export function BrandLockup({ markSize = 22 }: { markSize?: number }) {
+export function BrandLockup({
+  markSize = 22,
+  animate = false,
+}: {
+  markSize?: number;
+  animate?: boolean;
+}) {
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 9 }}>
-      <Mark size={markSize} />
+      <Mark size={markSize} animate={animate} />
       <span
         style={{
           fontFamily: 'var(--sans)',
           fontSize: 17,
           fontWeight: 600,
           letterSpacing: '-0.03em',
-          // Mark is circle-over-e; nudge text down to sit with the letter, not the sphere.
-          transform: 'translateY(3px)',
         }}
       >
         ModelEarth

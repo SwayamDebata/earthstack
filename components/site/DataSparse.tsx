@@ -76,7 +76,7 @@ function Trace({ pts, real }: { pts: number[]; real: boolean }) {
         y1={H - 0.8 * H * 0.86 - 6}
         x2={W}
         y2={H - 0.8 * H * 0.86 - 6}
-        stroke={real ? 'var(--laterite)' : 'var(--line)'}
+        stroke={real ? 'var(--accent)' : 'var(--line)'}
         strokeWidth="1"
         strokeDasharray="3 4"
         opacity={real ? 0.8 : 0.5}
@@ -125,7 +125,7 @@ export default function DataSparse() {
                   className="me-num"
                   style={{
                     fontSize: 'clamp(1.9rem, 3vw, 2.5rem)',
-                    color: 'var(--laterite)',
+                    color: 'var(--accent)',
                     marginBottom: 14,
                   }}
                 >
@@ -229,7 +229,7 @@ export default function DataSparse() {
             className="me-panel"
             style={{
               marginTop: '2.5rem',
-              borderLeft: '2px solid var(--laterite)',
+              borderLeft: '2px solid var(--accent)',
               maxWidth: '82ch',
             }}
           >

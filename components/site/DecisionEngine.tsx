@@ -136,7 +136,7 @@ export default function DecisionEngine() {
                 <Chip kind="live" />
                 <span
                   className="me-num"
-                  style={{ fontSize: 'clamp(1.9rem, 3vw, 2.4rem)', color: 'var(--laterite)' }}
+                  style={{ fontSize: 'clamp(1.9rem, 3vw, 2.4rem)', color: 'var(--accent)' }}
                 >
                   HIGH
                 </span>
@@ -197,7 +197,7 @@ export default function DecisionEngine() {
                         fontSize: 10.5,
                         letterSpacing: '0.14em',
                         textTransform: 'uppercase',
-                        color: 'var(--laterite)',
+                        color: 'var(--accent)',
                         marginBottom: 5,
                       }}
                     >

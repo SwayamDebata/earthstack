@@ -177,7 +177,7 @@ export default function JourneyPage() {
           aria-hidden="true"
           style={{ position: 'absolute', inset: 0, opacity: 0.42, pointerEvents: 'none' }}
         >
-          <DotField mode="ripple" accent="#E0A05A" base="#4A4D3C" max={2400} height="100%" />
+          <DotField mode="ripple" base="#4A4D3C" max={2400} height="100%" />
         </div>
         <div className="me-wrap" style={{ position: 'relative' }}>
           <Reveal>

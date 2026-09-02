@@ -69,14 +69,14 @@ function BasinBars() {
                 style={{
                   fontSize: 14.5,
                   fontWeight: isMahanadi ? 600 : 400,
-                  color: isMahanadi ? 'var(--laterite)' : 'var(--ink)',
+                  color: isMahanadi ? 'var(--accent)' : 'var(--ink)',
                 }}
               >
                 {b.name}
               </span>
               <span
                 className="me-num"
-                style={{ fontSize: 16, color: isMahanadi ? 'var(--laterite)' : 'var(--ink)' }}
+                style={{ fontSize: 16, color: isMahanadi ? 'var(--accent)' : 'var(--ink)' }}
               >
                 {b.n}
               </span>
@@ -86,7 +86,7 @@ function BasinBars() {
                 style={{
                   height: '100%',
                   width: `${Math.max((b.n / max) * 100, 1.2)}%`,
-                  background: isMahanadi ? 'var(--laterite)' : 'var(--steel)',
+                  background: isMahanadi ? 'var(--accent)' : 'var(--steel)',
                 }}
               />
             </div>
@@ -174,7 +174,7 @@ export default function Evidence() {
             style={{
               marginTop: 'clamp(3rem, 6vw, 4.5rem)',
               background: 'var(--bg)',
-              borderLeft: '2px solid var(--laterite)',
+              borderLeft: '2px solid var(--accent)',
             }}
           >
             <div style={{ marginBottom: 16 }}>
@@ -194,7 +194,7 @@ export default function Evidence() {
                 The old “0% false positive rate” was measured on dry days - the one case a rainfall
                 rule separates by construction. On heavy monsoon days at or above the gauge’s own
                 p95 with no recorded flood, the engine fires on{' '}
-                <strong style={{ color: 'var(--laterite)' }}>every single one: 647 of 647</strong>.
+                <strong style={{ color: 'var(--accent)' }}>every single one: 647 of 647</strong>.
                 Sweeping 0.5 to 8 times p95, precision never exceeds 24.2% against a 20% base rate.
               </p>
               <p className="me-body" style={{ fontSize: 15, maxWidth: 'none' }}>

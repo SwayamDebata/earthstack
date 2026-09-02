@@ -18,10 +18,24 @@
   function outCubic(x) { return 1 - Math.pow(1 - x, 3); }
   function fmt(v, d) { return v.toFixed(d === undefined ? 0 : d); }
 
+  // The accent lives in site.css. Read it from there so the page theme and the
+  // data-me-accent alternates drive this engine too, instead of a second copy
+  // of the hue drifting out of sync in here.
+  function cssAccent(name, fallback) {
+    try {
+      var root = document.querySelector('.me-root');
+      if (!root) return fallback;
+      var v = getComputedStyle(root).getPropertyValue(name).trim();
+      return /^#[0-9a-f]{6}$/i.test(v) ? v : fallback;
+    } catch (e) { return fallback; }
+  }
+
   var C = {
     bone: '#EDE9DE', text: '#C9C4B4', ash: '#9A9584', dim: '#6B6857',
     line: '#2A2C21', line2: '#3A3D2F', panel: '#14160E', panel2: '#191B12',
-    amber: '#E0A05A', laterite: '#C4622F', water: '#4FA89C', green: '#7FB08A', steel: '#8E9A93'
+    amber: cssAccent('--art-accent-hi', '#7FBB7F'),
+    laterite: cssAccent('--art-accent', '#5A9A43'),
+    water: '#4FA89C', green: '#7FB08A', steel: '#8E9A93'
   };
   var MONO = 'JetBrains Mono, ui-monospace, monospace';
   var DISP = 'Instrument Sans, system-ui, sans-serif';

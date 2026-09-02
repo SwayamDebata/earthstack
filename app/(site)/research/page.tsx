@@ -192,7 +192,7 @@ export default function ResearchPage() {
 
       <SceneBanner
         scene="research"
-        dots={{ mode: 'scatter', accent: '#E0A05A', base: '#3A3D2F', max: 1500 }}
+        dots={{ mode: 'scatter', base: '#3A3D2F', max: 1500 }}
       />
 
       <AuditScene />
@@ -241,7 +241,7 @@ export default function ResearchPage() {
               {FEED.map(([k, v]) => (
                 <li key={k} style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '1rem 1.5rem', alignItems: 'baseline', padding: '0.9rem 0', borderBottom: '1px solid var(--line)' }}>
                   <span style={{ fontSize: 14.5, color: 'var(--text)' }}>{k}</span>
-                  <span className="me-mono" style={{ fontSize: 13, color: 'var(--laterite)' }}>{v}</span>
+                  <span className="me-mono" style={{ fontSize: 13, color: 'var(--accent)' }}>{v}</span>
                 </li>
               ))}
             </ul>
@@ -319,7 +319,7 @@ export default function ResearchPage() {
       <section className="me-band" style={{ background: 'var(--bg)', paddingTop: 0 }}>
         <div className="me-wrap">
           <Reveal>
-            <div className="me-panel" style={{ borderLeft: '2px solid var(--laterite)' }}>
+            <div className="me-panel" style={{ borderLeft: '2px solid var(--accent)' }}>
               <p className="me-label" style={{ marginBottom: 14 }}>
                 The honest position, August 2026
               </p>

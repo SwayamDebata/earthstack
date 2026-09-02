@@ -3,7 +3,7 @@
    One file, no libraries. Every dotted background on the site is
    an instance of this with a different mode.
 
-   Usage:  <canvas data-dots="rain" data-accent="#C4622F"></canvas>
+   Usage:  <canvas data-dots="rain" data-accent="#5A9A43"></canvas>
    Modes:  field · rain · heat · ripple · flow · scatter
    Perf:   DPR capped at 2, density scales with area, and an
            IntersectionObserver parks the loop when off-screen.
@@ -25,10 +25,22 @@
     return (a * (1 - u) + b * u) * (1 - v) + (c * (1 - u) + d * u) * v;
   }
 
+  // The accent lives in site.css. Read it from there so the page theme and the
+  // data-me-accent alternates drive this engine too, instead of a second copy
+  // of the hue drifting out of sync in here.
+  function cssAccent(name, fallback) {
+    try {
+      var root = document.querySelector('.me-root');
+      if (!root) return fallback;
+      var v = getComputedStyle(root).getPropertyValue(name).trim();
+      return /^#[0-9a-f]{6}$/i.test(v) ? v : fallback;
+    } catch (e) { return fallback; }
+  }
+
   function Dots(cv, mode, opts) {
     opts = opts || {};
     var ctx = cv.getContext('2d');
-    var accent = opts.accent || '#E0A05A';
+    var accent = opts.accent || cssAccent('--art-accent-hi', '#7FBB7F');
     var water = opts.water || '#4FA89C';
     var base = opts.base || '#6B6857';
     var dpr = 1, W = 0, H = 0, t = 0, running = false, raf = 0;
@@ -133,7 +145,7 @@
           p.x += Math.sin(t * 0.8 + p.p) * 10 * dt;
           if (p.y < -8) { p.y = H + rnd(0, 40); p.x = rnd(0, W); }
           var up = clamp(1 - p.y / H, 0, 1);
-          ctx.fillStyle = hex(up > 0.55 ? accent : '#C4622F', 0.06 + 0.34 * (1 - up));
+          ctx.fillStyle = hex(up > 0.55 ? accent : cssAccent('--art-accent', '#5A9A43'), 0.06 + 0.34 * (1 - up));
           ctx.beginPath(); ctx.arc(p.x, p.y, p.s * (0.6 + up * 0.9), 0, TAU); ctx.fill();
         }
       },

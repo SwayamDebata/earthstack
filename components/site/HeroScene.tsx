@@ -115,7 +115,7 @@ export function SceneHead({
   return (
     <>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
-        <span className="me-eyebrow" style={{ color: '#E0A05A' }}>
+        <span className="me-eyebrow" style={{ color: 'var(--art-accent-hi)' }}>
           {eyebrow}
         </span>
         {kind && <Chip kind={kind}>{kindText}</Chip>}

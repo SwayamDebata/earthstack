@@ -190,7 +190,7 @@ export default function About() {
                     style={{
                       fontSize: 10,
                       letterSpacing: '0.16em',
-                      color: 'var(--laterite)',
+                      color: 'var(--accent)',
                       marginBottom: 12,
                     }}
                   >

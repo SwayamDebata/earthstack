@@ -35,7 +35,7 @@ export function CallToAction() {
         <Reveal>
           <p
             className="me-eyebrow"
-            style={{ color: 'var(--laterite)', marginBottom: 22 }}
+            style={{ color: 'var(--accent)', marginBottom: 22 }}
           >
             The only metric that matters: one family, one more day
           </p>

@@ -189,13 +189,26 @@ export default function HeroTerrain() {
             // Land holds a constant mid luminance and shifts hue with height.
             // Tying brightness to elevation rendered the valley floor, most of
             // what the camera flies over, almost black.
+            //
+            // Green, not ochre: the land is the biggest surface in the frame,
+            // so it is where the brand actually lands, and it puts this scene
+            // in the same world as the Journey valley. Each stop holds the
+            // luminance of the warm ramp it replaces, which is what kept the
+            // terrain from washing into the sky. The sky stays warm on purpose:
+            // dawn light is warm, and a green sky reads as bad weather.
+            //
+            // The ramp is deliberately muted and a little darker than the ochre
+            // it replaces. Against ochre the cyan river separated on hue, because
+            // orange and cyan are opposites; against green they are neighbours,
+            // so the separation has to be bought back with luminance and
+            // saturation instead. The river is the one vivid thing in frame.
             const e = Math.min(1, h / 700);
             const shd = shadeAt(lat, lon);
             PP.push(wx(lon), wy(h), wz(lat));
             PC.push(
-                Math.min(1, (0.30 + 0.62 * e) * shd),
-              Math.min(1, (0.25 + 0.34 * e) * shd),
-              Math.min(1, (0.13 + 0.12 * e) * shd),
+              Math.min(1, (0.14 + 0.32 * e) * shd),
+              Math.min(1, (0.23 + 0.33 * e) * shd),
+              Math.min(1, (0.13 + 0.17 * e) * shd),
             );
             PS.push(rnd(0.82, 1.2));
           }
@@ -213,7 +226,7 @@ export default function HeroTerrain() {
               const la = lat + rnd(-0.035, 0.035);
               const lo = lon + rnd(-0.035, 0.035);
               PP.push(wx(lo), wy(hBilinear(la, lo)) + 0.02, wz(la));
-              PC.push(0.30, 0.92, 0.90);
+              PC.push(0.34, 0.98, 0.98);
               PS.push(rnd(0.9, 1.5));
             }
           }
@@ -286,18 +299,18 @@ export default function HeroTerrain() {
             // what keeps the sky luminous without lifting the whole frame.
             vec3 hi   = vec3(0.035, 0.075, 0.150);
             vec3 mid  = vec3(0.105, 0.125, 0.165);
-            vec3 warm = vec3(0.660, 0.480, 0.270);
+            vec3 warm = vec3(0.600, 0.500, 0.250);
             vec3 col = mix(warm, mid, smoothstep(0.0, 0.34, a));
             col = mix(col, hi, smoothstep(0.28, 1.0, a));
             // a soft, wide bloom rather than a hard stripe on the horizon line
-            col += vec3(0.26, 0.17, 0.07) * pow(1.0 - clamp(abs(y - uHor) * 4.2, 0.0, 1.0), 1.7);
+            col += vec3(0.22, 0.19, 0.08) * pow(1.0 - clamp(abs(y - uHor) * 4.2, 0.0, 1.0), 1.7);
 
             // Below the horizon this quad is the ground the point cloud sits on,
             // and it is what shows in the gaps between points. Keep it dark, or
             // the terrain and the sky read as one wash.
             float b = clamp((uHor - y) / max(0.001, uHor), 0.0, 1.0);
-            vec3 farGround  = vec3(0.185, 0.140, 0.092);
-            vec3 nearGround = vec3(0.040, 0.036, 0.030);
+            vec3 farGround  = vec3(0.090, 0.170, 0.080);
+            vec3 nearGround = vec3(0.030, 0.040, 0.028);
             col = mix(col, farGround, smoothstep(0.0, 0.05, b));
             col = mix(col, nearGround, smoothstep(0.04, 0.55, b));
             gl_FragColor = vec4(col,1.0);
@@ -497,7 +510,7 @@ export default function HeroTerrain() {
         gl.uniformMatrix4fv(uMVP, false, new Float32Array(MVP));
         gl.uniform3fv(uCam, new Float32Array(C.eye));
         gl.uniform1f(uPx, DPR * 1.25);
-        gl.uniform3f(uFog, 0.20, 0.145, 0.095);
+        gl.uniform3f(uFog, 0.170, 0.160, 0.100);
         gl.drawArrays(gl.POINTS, 0, COUNT);
 
         for (let i = 0; i < PINS.length; i++) {
@@ -628,7 +641,7 @@ export default function HeroTerrain() {
             }}
             className="me-beat"
           >
-            <span className="me-eyebrow" style={{ color: '#e0a05a' }}>
+            <span className="me-eyebrow" style={{ color: 'var(--art-accent-hi)' }}>
               {b.kicker}
             </span>
             <h1 className="me-display" style={{ color: '#ede9de' }}>

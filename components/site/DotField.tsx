@@ -37,7 +37,9 @@ function loadEngine() {
 
 export default function DotField({
   mode = 'field',
-  accent = '#C4622F',
+  // no default: medots reads --art-accent from the stylesheet when this is
+  // undefined, so the hue stays defined in exactly one place
+  accent,
   water,
   base,
   height = 240,

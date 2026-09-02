@@ -77,7 +77,7 @@ export default function BhoomiPage() {
             <div className="me-hairgrid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', marginTop: 'clamp(2.5rem, 5vw, 3.5rem)' }}>
               {STATS.map((s) => (
                 <div key={s.v}>
-                  <p className="me-num" style={{ fontSize: 'clamp(1.9rem, 3vw, 2.5rem)', color: 'var(--laterite)' }}>{s.v}</p>
+                  <p className="me-num" style={{ fontSize: 'clamp(1.9rem, 3vw, 2.5rem)', color: 'var(--accent)' }}>{s.v}</p>
                   <p style={{ margin: '10px 0 0', fontSize: 13.5, lineHeight: 1.6, color: 'var(--muted)' }}>{s.k}</p>
                 </div>
               ))}
@@ -164,7 +164,7 @@ export default function BhoomiPage() {
             <div className="me-hairgrid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
               {GATES.map((g) => (
                 <div key={g.id}>
-                  <p className="me-mono" style={{ fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--laterite)', marginBottom: 12 }}>
+                  <p className="me-mono" style={{ fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 12 }}>
                     {g.id}
                   </p>
                   <p style={{ margin: '0 0 10px', fontSize: 15, fontWeight: 500, lineHeight: 1.35, color: 'var(--ink)' }}>{g.t}</p>
@@ -175,7 +175,7 @@ export default function BhoomiPage() {
           </Reveal>
 
           <Reveal delay={120}>
-            <div className="me-panel" style={{ marginTop: 'clamp(2.5rem, 5vw, 3.5rem)', borderLeft: '2px solid var(--laterite)' }}>
+            <div className="me-panel" style={{ marginTop: 'clamp(2.5rem, 5vw, 3.5rem)', borderLeft: '2px solid var(--accent)' }}>
               <div style={{ marginBottom: 16 }}><Chip kind="dev" /></div>
               <h3 className="me-display me-d3" style={{ marginBottom: 16 }}>
                 Said plainly: there is no Bhoomi network.

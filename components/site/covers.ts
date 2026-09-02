@@ -18,7 +18,7 @@ export const COVERS: Record<string, string> = {
       <path d="M-10 120 C 180 150, 360 190, 560 250 S 760 330, 820 360"/>
       <path d="M-10 210 C 190 240, 380 270, 570 320 S 770 380, 820 400"/>
     </g>
-    <path d="M-10 350 C 200 360, 420 372, 620 392 S 790 420, 820 430" stroke="#C4622F" stroke-width="2.6"/>
+    <path d="M-10 350 C 200 360, 420 372, 620 392 S 790 420, 820 430" stroke="var(--art-accent)" stroke-width="2.6"/>
     <g fill="#4FA89C">
       <circle cx="120" cy="140" r="4"/><circle cx="196" cy="156" r="4"/><circle cx="258" cy="171" r="4"/>
       <circle cx="322" cy="184" r="4"/><circle cx="398" cy="203" r="4"/><circle cx="452" cy="220" r="4"/>
@@ -28,14 +28,14 @@ export const COVERS: Record<string, string> = {
       <circle cx="150" cy="228" r="3.6"/><circle cx="242" cy="248" r="3.6"/><circle cx="336" cy="264" r="3.6"/>
       <circle cx="430" cy="286" r="3.6"/><circle cx="524" cy="312" r="3.6"/>
     </g>
-    <g fill="#E0A05A" opacity=".9">
+    <g fill="var(--art-accent-hi)" opacity=".9">
       <circle cx="470" cy="300" r="3"/><circle cx="492" cy="288" r="3"/><circle cx="452" cy="316" r="3"/>
       <circle cx="508" cy="322" r="3"/><circle cx="436" cy="292" r="3"/>
     </g>
-    <circle cx="470" cy="304" r="86" stroke="#E0A05A" stroke-width="1.4" stroke-dasharray="6 7" opacity=".55"/>
+    <circle cx="470" cy="304" r="86" stroke="var(--art-accent-hi)" stroke-width="1.4" stroke-dasharray="6 7" opacity=".55"/>
     <circle cx="470" cy="304" r="5.5" fill="#EDE9DE"/>
-    <circle cx="300" cy="366" r="7" fill="#C4622F"/>
-    <circle cx="300" cy="366" r="15" stroke="#C4622F" stroke-width="1.2" opacity=".5"/>
+    <circle cx="300" cy="366" r="7" fill="var(--art-accent)"/>
+    <circle cx="300" cy="366" r="15" stroke="var(--art-accent)" stroke-width="1.2" opacity=".5"/>
   </svg>`,
 
   /* four traces: three of them lie */
@@ -46,11 +46,11 @@ export const COVERS: Record<string, string> = {
     <path d="M60 230 C 160 230, 220 214, 300 208 S 420 206, 740 206" stroke="#6B6857" stroke-width="2.4"/>
     <path d="M60 330 h120 l24 -54 l22 108 l26 -70 l30 44 h140 l26 62 l24 -120 h268" stroke="#6B6857" stroke-width="2.4"/>
     <path d="M60 440 C 180 438, 280 420, 380 384 S 560 300, 740 268" stroke="#4FA89C" stroke-width="3"/>
-    <path d="M60 300 h680" stroke="#C4622F" stroke-width="1.4" stroke-dasharray="7 8" opacity=".8"/>
+    <path d="M60 300 h680" stroke="var(--art-accent)" stroke-width="1.4" stroke-dasharray="7 8" opacity=".8"/>
     <g transform="translate(650,268)">
       <rect x="-3" y="0" width="6" height="120" fill="#0A0B08"/>
-      <circle cx="0" cy="-8" r="7" fill="#C4622F"/>
-      <circle cx="0" cy="-8" r="17" fill="#C4622F" opacity=".2"/>
+      <circle cx="0" cy="-8" r="7" fill="var(--art-accent)"/>
+      <circle cx="0" cy="-8" r="17" fill="var(--art-accent)" opacity=".2"/>
     </g>
     <g font-family="JetBrains Mono, monospace" font-size="13" fill="#6B6857" letter-spacing="1.4">
       <text x="60" y="118">FLATLINE</text><text x="60" y="218">STALL</text>
@@ -76,7 +76,7 @@ export const COVERS: Record<string, string> = {
     <g font-family="Instrument Sans, sans-serif" font-size="19" font-weight="600" fill="#EDE9DE">
       <text x="666" y="151">1 / 6</text><text x="666" y="265">6 / 6</text><text x="666" y="379">4 / 6</text>
     </g>
-    <text x="170" y="440" font-family="JetBrains Mono, monospace" font-size="13" fill="#C4622F" letter-spacing="1.4">SO WE DO NOT SAY 72 HOURS</text>
+    <text x="170" y="440" font-family="JetBrains Mono, monospace" font-size="13" fill="var(--art-accent)" letter-spacing="1.4">SO WE DO NOT SAY 72 HOURS</text>
   </svg>`,
 
   /* the eastern himalaya draining onto a plain */
@@ -103,7 +103,7 @@ export const COVERS: Record<string, string> = {
     <g fill="#0C110A">
       <path d="M486 400 l22 -18 l22 18 v20 h-44 z"/><path d="M548 412 l18 -15 l18 15 v17 h-36 z"/>
     </g>
-    <rect x="496" y="406" width="9" height="12" fill="#E0A05A" opacity=".9"/>
+    <rect x="496" y="406" width="9" height="12" fill="var(--art-accent-hi)" opacity=".9"/>
   </svg>`,
 
   /* a coast that moved a million people in time */
@@ -124,7 +124,7 @@ export const COVERS: Record<string, string> = {
     <g stroke="#7FB08A" stroke-width="2.4" stroke-linecap="round">
       <path d="M232 372 h96"/><path d="M312 362 l18 10 l-18 10"/>
     </g>
-    <g fill="#E0A05A">
+    <g fill="var(--art-accent-hi)">
       <circle cx="356" cy="372" r="5"/><circle cx="378" cy="372" r="5"/><circle cx="400" cy="372" r="5"/>
       <circle cx="367" cy="356" r="5"/><circle cx="389" cy="356" r="5"/><circle cx="378" cy="388" r="5"/>
     </g>
