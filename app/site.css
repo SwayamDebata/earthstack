@@ -1399,25 +1399,133 @@
 .me-on-dark .me-beat { isolation: isolate; }
 
 /* ==========================================================================
+   a figure set into the text rather than breaking it
+
+   Floated right so body copy wraps around it. It stacks back to full width
+   below 760px, where a 40% float would leave both the picture and the text
+   too narrow to be worth anything.
+   ========================================================================== */
+
+.me-float-wrap::after {
+  content: '';
+  display: block;
+  clear: both;
+}
+.me-figure-right {
+  float: right;
+  width: min(330px, 40%);
+  margin: 0.3rem 0 1.25rem 1.75rem;
+}
+@media (max-width: 760px) {
+  .me-figure-right {
+    float: none;
+    width: 100%;
+    margin: 0 0 1.5rem;
+  }
+}
+
+/* ==========================================================================
+   anchor targets
+
+   The header is fixed and 65px tall, so a jump to an in-page anchor used to
+   land with the first line of the section hidden behind it. This applies to
+   every id on the site, not just the pilot link: #evidence and #main had the
+   same problem.
+   ========================================================================== */
+
+.me-root [id] {
+  scroll-margin-top: clamp(5rem, 9vh, 6.5rem);
+}
+
+/* ==========================================================================
    brand mark: the waterline runs, so the reach reads as moving water
    ========================================================================== */
 
-.me-mark-river {
-  opacity: 0.45;
+.me-brand-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+  pointer-events: none;
 }
-.me-mark-flow {
-  /* one short lit segment chasing the course, looped */
-  stroke-dasharray: 5 27;
-  animation: me-mark-flow 3.4s linear infinite;
+.me-brand-intro-mark { will-change: transform; }
+/* the seat is held open, not collapsed, so the handoff does not reflow the nav */
+:root[data-brand-intro] .me-nav-brand .me-mark { visibility: hidden; }
+@media (prefers-reduced-motion: reduce) {
+  .me-brand-intro { display: none; }
 }
-@keyframes me-mark-flow {
-  from { stroke-dashoffset: 32; }
+
+/* The mark assembles once, in the order the product works in:
+
+     0.00s  the aperture opens          an instrument is pointed at the Earth
+     0.24s  the ground rises            the terrain resolves
+     0.62s  the river runs, source down the water finds its course
+     0.98s  the layer sweeps across     the intelligence layer reads it
+     1.55s  one settle, then still
+
+   Both stroked paths carry pathLength="100", so the dash maths is exact
+   without measuring geometry at runtime. */
+
+.me-brand-anim .me-brand-ring {
+  stroke-dasharray: 100;
+  transform-origin: 32px 32px;
+  transform: rotate(-90deg);
+  animation: me-brand-ring 720ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.me-brand-anim .me-brand-ground {
+  transform-origin: 32px 60px;
+  animation: me-brand-ground 700ms cubic-bezier(0.22, 1, 0.36, 1) 240ms both;
+}
+.me-brand-anim .me-brand-river {
+  stroke-dasharray: 100;
+  animation: me-brand-river 680ms cubic-bezier(0.37, 0, 0.28, 1) 620ms both;
+}
+.me-brand-anim .me-brand-layer {
+  stroke-dasharray: 100;
+  animation: me-brand-layer 900ms cubic-bezier(0.22, 1, 0.36, 1) 980ms both;
+}
+
+@keyframes me-brand-ring {
+  from { stroke-dashoffset: 100; }
   to   { stroke-dashoffset: 0; }
+}
+@keyframes me-brand-ground {
+  from { transform: translateY(22px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+@keyframes me-brand-river {
+  from { stroke-dashoffset: 100; opacity: 0; }
+  35%  { opacity: 1; }
+  to   { stroke-dashoffset: 0; opacity: 1; }
+}
+@keyframes me-brand-layer {
+  /* draws, then reads once: a single dip that says the layer is live, and
+     then stops, because a mark that keeps blinking is a distraction */
+  0%   { stroke-dashoffset: 100; opacity: 0; }
+  62%  { stroke-dashoffset: 0; opacity: 1; }
+  80%  { opacity: 0.45; }
+  100% { stroke-dashoffset: 0; opacity: 1; }
+}
+
+/* The overlay drives its own copy imperatively during the first-visit intro.
+   Letting the CSS run at the same time would fight it for the same properties. */
+:root[data-brand-intro] .me-brand-anim .me-brand-ring,
+:root[data-brand-intro] .me-brand-anim .me-brand-ground,
+:root[data-brand-intro] .me-brand-anim .me-brand-river,
+:root[data-brand-intro] .me-brand-anim .me-brand-layer {
+  animation: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .me-mark-river { opacity: 1; }
-  .me-mark-flow { animation: none; opacity: 0; }
+  .me-brand-anim .me-brand-ring,
+  .me-brand-anim .me-brand-ground,
+  .me-brand-anim .me-brand-river,
+  .me-brand-anim .me-brand-layer {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
 }
 
 /* ==========================================================================
@@ -1803,11 +1911,15 @@
 /* ---- prose: the part that has to be pleasant for ten minutes ---- */
 .me-prose {
   padding-bottom: clamp(3rem, 6vw, 5rem);
+  /* List bullets and the pull-quote rule hang into this gutter instead of
+     indenting their text, so paragraphs, list items and quotes all start on
+     the same left edge. Before this they started on three different ones. */
+  --prose-hang: clamp(0.85rem, 2vw, 1.35rem);
 }
 .me-prose p {
   margin: 0 0 1.5rem;
-  font-size: clamp(1.0625rem, 1.25vw, 1.1875rem);
-  line-height: 1.78;
+  font-size: clamp(1.0625rem, 0.95vw + 0.55rem, 1.3125rem);
+  line-height: 1.75;
   color: var(--text);
   text-wrap: pretty;
 }
@@ -1822,28 +1934,29 @@
 }
 .me-prose ul {
   margin: 0 0 1.75rem;
-  padding-left: 1.1rem;
+  padding-left: 0;
   list-style: none;
 }
 .me-prose li {
   position: relative;
   margin-bottom: 0.7rem;
-  font-size: clamp(1rem, 1.2vw, 1.1rem);
+  font-size: clamp(1rem, 0.9vw + 0.5rem, 1.25rem);
   line-height: 1.7;
   color: var(--text);
 }
 .me-prose li::before {
   content: '';
   position: absolute;
-  left: -1.1rem;
+  left: calc(var(--prose-hang) * -1);
   top: 0.72em;
   width: 5px;
   height: 1px;
   background: var(--laterite);
 }
 .me-prose blockquote {
-  margin: 2.25rem 0;
-  padding-left: 1.4rem;
+  /* the 2px is the rule itself, so the quote's text lands on the same edge */
+  margin: 2.25rem 0 2.25rem calc((var(--prose-hang) + 2px) * -1);
+  padding-left: var(--prose-hang);
   border-left: 2px solid var(--laterite);
   font-family: var(--display);
   font-size: clamp(1.25rem, 2.1vw, 1.6rem);
@@ -1902,7 +2015,7 @@
   padding-block: clamp(4.5rem, 8vw, 7rem) clamp(3rem, 6vw, 5rem);
 }
 .me-sheet {
-  max-width: 48rem;
+  max-width: 60rem;
   margin-inline: auto;
   background: color-mix(in srgb, var(--bg) 93%, transparent);
   border: 1px solid var(--line);
@@ -1913,7 +2026,11 @@
   padding-bottom: clamp(1.5rem, 3vw, 2.25rem);
 }
 .me-sheet .me-measure {
-  max-width: 36rem;
+  /* Wider column AND larger type together. Widening alone pushes the line
+     past 85 characters, which is harder to read, not easier; scaling the type
+     with it keeps the measure near 72 while the column itself gets physically
+     generous, which is what actually stops it reading like a phone. */
+  max-width: 49rem;
   padding-inline: clamp(1.25rem, 4vw, 3rem);
 }
 .me-sheet .me-post-foot {

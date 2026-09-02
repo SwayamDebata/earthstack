@@ -13,7 +13,7 @@ const WAYS: { title: string; body: string }[] = [
   },
   {
     title: 'Investors',
-    body: 'Pre-seed, 75 lakh rupees. The deck is fifteen slides and every claim on it has an evidence table entry.',
+    body: 'We are raising a pre-seed. The engine already runs in production. What it lacks is reach, so the raise buys an ML engineer and a partnerships lead.',
   },
 ];
 

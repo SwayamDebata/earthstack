@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { BrandLockup, THEMES, useTheme, type Theme } from './primitives';
+import { PILOT_MAILTO } from './contact';
 
 const TOP = [
   { href: '/', label: 'Home' },
@@ -109,10 +110,11 @@ export default function SiteNav() {
       >
         <Link
           href="/"
+          className="me-nav-brand"
           style={{ display: 'flex', alignItems: 'center', gap: 9, color: 'inherit', textDecoration: 'none', flex: '0 0 auto' }}
           aria-label="ModelEarth home"
         >
-          <BrandLockup markSize={26} />
+          <BrandLockup markSize={26} animate />
         </Link>
 
         <ul className="me-nav-links" style={{ display: 'flex', listStyle: 'none', margin: 0, padding: 0, gap: 2 }}>
@@ -155,8 +157,8 @@ export default function SiteNav() {
             <span className="me-mcc-dot" aria-hidden="true" />
             Mission Control
           </Link>
-          <Link
-            href="/about#contact-direct"
+          <a
+            href={PILOT_MAILTO}
             className="me-btn me-btn-primary me-nav-cta"
             style={
               overHero
@@ -165,7 +167,7 @@ export default function SiteNav() {
             }
           >
             Request a pilot
-          </Link>
+          </a>
           <button
             type="button"
             className="me-nav-burger"
@@ -320,8 +322,9 @@ export default function SiteNav() {
           <div style={{ marginTop: '1.1rem' }}>
             <ThemeSwitch />
           </div>
-          <Link
-            href="/about#contact-direct"
+          <a
+            href={PILOT_MAILTO}
+            onClick={() => setOpen(false)}
             className="me-btn me-btn-primary"
             style={{
               display: 'inline-flex',
@@ -334,7 +337,7 @@ export default function SiteNav() {
             }}
           >
             Request a pilot
-          </Link>
+          </a>
         </div>
       )}
     </header>

@@ -4,6 +4,7 @@ import PageHero from '@/components/site/PageHero';
 import { SceneBanner, DiagramPanel } from '@/components/site/HeroScene';
 import About from '@/components/site/About';
 import { Reveal, SectionHead } from '@/components/site/primitives';
+import { PILOT_MAILTO } from '@/components/site/contact';
 
 const AUDIENCES = [
   {
@@ -103,11 +104,35 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ---- direct contact ---- */}
+      {/* ---- the pilot CTA lands here ---- */}
       <section id="contact-direct" className="me-band" style={{ background: 'var(--bg)' }}>
         <div className="me-wrap">
           <Reveal>
-            <SectionHead index="03" label="Direct" />
+            <SectionHead index="03" label="Request a pilot" />
+          </Reveal>
+          <Reveal>
+            <h2 className="me-display me-d2" style={{ maxWidth: '19ch', marginBottom: '1.25rem' }}>
+              A pilot is one district, one monsoon.
+            </h2>
+          </Reveal>
+          <Reveal delay={70}>
+            <p className="me-lede" style={{ marginBottom: '2rem' }}>
+              We score your basin against its own thirty-year baseline and run it alongside
+              whatever you use today, so the comparison is yours to keep either way. Tell us the
+              district and we will say plainly whether the record there supports a warning yet.
+            </p>
+          </Reveal>
+          <Reveal delay={100}>
+            <a
+              href={PILOT_MAILTO}
+              className="me-btn me-btn-primary"
+              style={{ marginBottom: '2.5rem', fontSize: 14.5, padding: '0.75em 1.3em' }}
+            >
+              Request a pilot
+            </a>
+          </Reveal>
+          <Reveal delay={130}>
+            <p className="me-label" style={{ marginBottom: '1rem' }}>Or reach us directly</p>
           </Reveal>
           <Reveal delay={70}>
             <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexWrap: 'wrap', gap: '0.75rem 2.5rem' }}>

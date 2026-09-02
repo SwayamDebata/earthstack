@@ -91,47 +91,42 @@ export default function BhoomiPage() {
         <div className="me-wrap">
           <Reveal><SectionHead index="01" label="Where the data goes, and where it does not" /></Reveal>
           <Reveal>
-            <h2 className="me-display me-d2" style={{ maxWidth: '20ch', marginBottom: '1.25rem' }}>
-              Our own hardware gets held to the standard we applied to CWC.
-            </h2>
-          </Reveal>
-          <Reveal delay={70}>
-            <p className="me-lede" style={{ marginBottom: '1.25rem' }}>
-              We spent months learning that an unvalidated gauge is worse than no gauge, because it
-              fails silently and looks like data. Wiring our own prototype straight into the risk
-              path would be exactly the failure we designed the shadow discipline to prevent, and the
-              fastest way to lose a district&rsquo;s trust permanently.
-            </p>
-          </Reveal>
-
-          <Reveal delay={85}>
-            <figure
-              style={{
-                margin: '0 0 clamp(1.75rem, 3.5vw, 2.5rem)',
-                maxWidth: 560,
-                width: '100%',
-              }}
-            >
-              <div
-                style={{
-                  position: 'relative',
-                  width: '100%',
-                  aspectRatio: '16 / 10',
-                  overflow: 'hidden',
-                  border: '1px solid var(--line)',
-                  background: '#1a1210',
-                }}
-              >
-                <Image
-                  src="/bhoomi-g1-dev.jpg"
-                  alt="Bhoomi G1 development prototype"
-                  fill
-                  sizes="(max-width: 640px) 100vw, 560px"
-                  style={{ objectFit: 'cover', objectPosition: 'center 42%' }}
-                  priority={false}
-                />
-              </div>
-            </figure>
+            {/* The figure, the heading and the lede share one wrapper so the
+                float starts at the top of the heading. In separate Reveal
+                blocks it could only begin beside the paragraph, which left it
+                stranded low against a tall headline. */}
+            <div className="me-float-wrap">
+              <figure className="me-figure-right">
+                <div
+                  style={{
+                    position: 'relative',
+                    width: '100%',
+                    aspectRatio: '16 / 10',
+                    overflow: 'hidden',
+                    border: '1px solid var(--line)',
+                    background: '#1a1210',
+                  }}
+                >
+                  <Image
+                    src="/bhoomi-g1-dev.jpg"
+                    alt="Bhoomi G1 development prototype"
+                    fill
+                    sizes="(max-width: 760px) 100vw, 330px"
+                    style={{ objectFit: 'cover', objectPosition: 'center 42%' }}
+                    priority={false}
+                  />
+                </div>
+              </figure>
+              <h2 className="me-display me-d2" style={{ maxWidth: '20ch', marginBottom: '1.25rem' }}>
+                Our own hardware gets held to the standard we applied to CWC.
+              </h2>
+              <p className="me-lede" style={{ marginBottom: '1.25rem' }}>
+                We spent months learning that an unvalidated gauge is worse than no gauge, because it
+                fails silently and looks like data. Wiring our own prototype straight into the risk
+                path would be exactly the failure we designed the shadow discipline to prevent, and the
+                fastest way to lose a district&rsquo;s trust permanently.
+              </p>
+            </div>
           </Reveal>
 
           <Reveal delay={90}>
