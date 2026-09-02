@@ -4,7 +4,7 @@ import PageHero from '@/components/site/PageHero';
 import { SceneBanner, DiagramPanel } from '@/components/site/HeroScene';
 import About from '@/components/site/About';
 import { Reveal, SectionHead } from '@/components/site/primitives';
-import { PILOT_MAILTO } from '@/components/site/contact';
+import { FOUNDER_EMAIL, PILOT_EMAIL, PILOT_MAILTO, SOCIAL } from '@/components/site/contact';
 
 const AUDIENCES = [
   {
@@ -18,7 +18,8 @@ const AUDIENCES = [
 ];
 
 const DIRECT: [string, string][] = [
-  ['swayam@modelearth.in', 'mailto:swayam@modelearth.in'],
+  [FOUNDER_EMAIL, `mailto:${FOUNDER_EMAIL}`],
+  [PILOT_EMAIL, `mailto:${PILOT_EMAIL}`],
   ['+91 79781 59148', 'tel:+917978159148'],
   ['modelearth.in', 'https://modelearth.in'],
   ['api.modelearth.in', 'https://api.modelearth.in'],
@@ -139,6 +140,24 @@ export default function AboutPage() {
               {DIRECT.map(([label, href]) => (
                 <li key={label}>
                   <a href={href} className="me-link me-mono" style={{ fontSize: 14 }}>
+                    {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+          <Reveal delay={100}>
+            <p className="me-label" style={{ margin: '2rem 0 0.9rem' }}>Follow</p>
+            <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexWrap: 'wrap', gap: '0.75rem 2.5rem' }}>
+              {SOCIAL.map(([label, href]) => (
+                <li key={label}>
+                  <a
+                    href={href}
+                    className="me-link me-mono"
+                    style={{ fontSize: 14 }}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     {label}
                   </a>
                 </li>

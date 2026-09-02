@@ -3,7 +3,7 @@
 import { Reveal, SectionHead } from './primitives';
 
 const STANDING: [string, string][] = [
-  ['Founders', '1'],
+  ['Founders', '2'],
   ['Outside capital raised', 'None yet'],
   ['Paying customers', '0'],
   ['Signed MoUs', '0'],
@@ -113,11 +113,30 @@ export default function About() {
                 <p className="me-label" style={{ letterSpacing: '0.14em' }}>
                   Founder
                 </p>
+                <p style={{ margin: '10px 0 0', fontSize: 14.5, lineHeight: 1.65, color: 'var(--muted)' }}>
+                  Software engineer, born and raised in Odisha. Built the ingestion, the rule
+                  engine, the ML pipeline, the API, the dashboard, the alerting and the deploy.
+                </p>
               </div>
-              <p style={{ margin: 0, fontSize: 14.5, lineHeight: 1.65, color: 'var(--muted)' }}>
-                Software engineer, born and raised in Odisha. Built the ingestion, the rule engine,
-                the ML pipeline, the API, the dashboard, the alerting and the deploy. One founder, no
-                outside capital, raising a 75 lakh rupee pre-seed. Hiring next: one ML and data
+              <div>
+                <p style={{ margin: '0 0 4px', fontSize: 16, fontWeight: 600, color: 'var(--ink)' }}>
+                  Anil Kumar Maharana
+                </p>
+                <p className="me-label" style={{ letterSpacing: '0.14em' }}>
+                  Co-founder
+                </p>
+              </div>
+              {/* the company facts belong to both of them, so they sit below the names */}
+              <p
+                style={{
+                  gridColumn: '1 / -1',
+                  margin: 0,
+                  fontSize: 14.5,
+                  lineHeight: 1.65,
+                  color: 'var(--muted)',
+                }}
+              >
+                No outside capital, raising a 75 lakh rupee pre-seed. Hiring next: one ML and data
                 engineer, and one partnerships lead.
               </p>
             </figcaption>
@@ -158,8 +177,8 @@ export default function About() {
                 learn both from us than from diligence.
               </p>
               <p className="me-body">
-                The bus factor is one, and we are not pretending otherwise. It is also why the
-                discipline is written into the code as recorded decisions rather than kept in
+                Key-person risk is real here and we are not pretending otherwise. It is also why
+                the discipline is written into the code as recorded decisions rather than kept in
                 someone’s head: shadow cannot alert because a test fails if it ever could.
               </p>
             </div>

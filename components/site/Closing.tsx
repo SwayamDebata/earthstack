@@ -1,6 +1,7 @@
 'use client';
 
 import { BrandLockup, Reveal } from './primitives';
+import { FOUNDER_EMAIL, PILOT_EMAIL, SOCIAL } from './contact';
 
 const WAYS: { title: string; body: string }[] = [
   {
@@ -138,7 +139,10 @@ export function SiteFooter() {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+            // 200 rather than 240: with four columns and a 48px gap, 240 needs
+            // 1104px of a 1096px grid and wraps Follow onto its own row under
+            // the brand blurb, which reads as an orphan
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
             gap: 'clamp(2rem, 4vw, 3.5rem)',
             alignItems: 'start',
             marginBottom: 'clamp(2.5rem, 5vw, 3.5rem)',
@@ -168,7 +172,8 @@ export function SiteFooter() {
             </p>
             <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 8 }}>
               {[
-                ['swayam@modelearth.in', 'mailto:swayam@modelearth.in'],
+                [FOUNDER_EMAIL, `mailto:${FOUNDER_EMAIL}`],
+                [PILOT_EMAIL, `mailto:${PILOT_EMAIL}`],
                 ['modelearth.in', 'https://modelearth.in'],
                 ['api.modelearth.in', 'https://api.modelearth.in'],
               ].map(([label, href]) => (
@@ -196,6 +201,27 @@ export function SiteFooter() {
               ].map(([label, href]) => (
                 <li key={label}>
                   <a href={href} className="me-link" style={{ fontSize: 13.5 }}>
+                    {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <p className="me-label" style={{ marginBottom: 14 }}>
+              Follow
+            </p>
+            <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 8 }}>
+              {SOCIAL.map(([label, href]) => (
+                <li key={label}>
+                  <a
+                    href={href}
+                    className="me-link"
+                    style={{ fontSize: 13.5 }}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     {label}
                   </a>
                 </li>

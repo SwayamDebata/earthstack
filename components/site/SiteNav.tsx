@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react';
 import { BrandLockup, THEMES, useTheme, type Theme } from './primitives';
 import { PILOT_MAILTO } from './contact';
 
+const NAV_H = 64;
+
 const TOP = [
   { href: '/', label: 'Home' },
   { href: '/products/flood', label: 'Products', match: '/products' },
@@ -86,17 +88,31 @@ export default function SiteNav() {
   // on the page background, so the bar is solid from the first pixel.
   const isHome = pathname === '/';
 
+  // The home hero is 420vh of night, and the bar stays dark glass for as long
+  // as that section is genuinely behind it. This used to key off `lifted`,
+  // which flips after 24px, so the bar turned into a pale slab while the dark
+  // hero still filled the screen. Measuring the section is what the original
+  // comment said it did.
+  const [overHero, setOverHero] = useState(isHome);
+
   useEffect(() => {
-    const onScroll = () => setLifted(window.scrollY > 24);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+    const read = () => {
+      setLifted(window.scrollY > 24);
+      const hero = isHome ? document.getElementById('top') : null;
+      setOverHero(!!hero && hero.getBoundingClientRect().bottom > NAV_H);
+    };
+    // deferred a frame so this never sets state synchronously out of the effect
+    const raf = requestAnimationFrame(read);
+    window.addEventListener('scroll', read, { passive: true });
+    window.addEventListener('resize', read, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('scroll', read);
+      window.removeEventListener('resize', read);
+    };
+  }, [isHome]);
 
   useEffect(() => setOpen(false), [pathname]);
-
-  // The home hero is a night reach; bar type stays bone until you scroll past it.
-  const overHero = isHome && !lifted;
   const HERO_INK = '#ede9de';
 
   return (
@@ -106,7 +122,7 @@ export default function SiteNav() {
     >
       <nav
         className="me-wrap"
-        style={{ height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}
+        style={{ height: NAV_H, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}
       >
         <Link
           href="/"

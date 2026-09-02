@@ -11,6 +11,17 @@
    ========================================================================== */
 
 export const PILOT_EMAIL = 'swayam@modelearth.in';
+export const FOUNDER_EMAIL = 'founder@modelearth.in';
+
+/* Company profiles. Defined once so the footer and the About page cannot
+   drift apart. The Instagram URL is the canonical one: the utm_source and
+   igsi parameters a share sheet appends identify that share, not the
+   account, and carrying them onto a website leaks a referral trail for no
+   benefit. */
+export const SOCIAL: [string, string][] = [
+  ['Instagram', 'https://www.instagram.com/modelearth.ai'],
+  ['LinkedIn', 'https://www.linkedin.com/company/modelearth-in/'],
+];
 
 const SUBJECT = 'Pilot request';
 
