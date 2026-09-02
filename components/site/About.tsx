@@ -120,7 +120,7 @@ export default function About() {
               </div>
               <div>
                 <p style={{ margin: '0 0 4px', fontSize: 16, fontWeight: 600, color: 'var(--ink)' }}>
-                  Anil Kumar Maharana
+                  Anil Kumar Moharana
                 </p>
                 <p className="me-label" style={{ letterSpacing: '0.14em' }}>
                   Co-founder

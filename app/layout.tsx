@@ -39,7 +39,7 @@ const interTight = Inter_Tight({
 export const metadata: Metadata = {
   title: 'ModelEarth · Climate intelligence & mission control',
   description:
-    'ModelEarth: flood early warning and operational command for districts. Verified historical replay, live hydrology and risk in one surface.',
+    'ModelEarth: a planetary-scale climate resilience intelligence layer, turning observation into decisions a district can act on, with the evidence attached.',
   metadataBase: new URL('https://www.modelearth.in'),
   icons: {
     icon: [

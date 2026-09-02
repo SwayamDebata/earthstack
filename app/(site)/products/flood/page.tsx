@@ -2,6 +2,7 @@
 
 import MotionScene from '@/components/site/MotionScene';
 import Link from 'next/link';
+import { REPLAY_TOUR, WAR_ROOM } from '@/components/site/surfaces';
 import HeroScene, { SceneHead, DiagramPanel } from '@/components/site/HeroScene';
 import { Caption, Chip, Reveal, SectionHead } from '@/components/site/primitives';
 
@@ -220,11 +221,19 @@ export default function FloodPage() {
             </div>
 
             <p className="me-body" style={{ marginTop: '1.25rem' }}>
-              The running surface is{' '}
-              <Link href="/dashboard" className="me-link">
-                Mission Control
+              The running surface is the{' '}
+              <Link href={WAR_ROOM} className="me-link">
+                War Room
               </Link>
-              , which carries the same evidence view against live data.
+              , which carries this same evidence view against live data. You can also{' '}
+              <Link href={REPLAY_TOUR} className="me-link">
+                rewind a real flood
+              </Link>{' '}
+              or read the{' '}
+              <Link href="/dashboard/benchmark" className="me-link">
+                Benchmark
+              </Link>{' '}
+              scoring without asking us for anything.
             </p>
           </Reveal>
         </div>

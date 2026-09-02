@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import DotField from '@/components/site/DotField';
 import HeroScene, { SceneHead, DiagramPanel } from '@/components/site/HeroScene';
 import { Caption, Chip, Reveal, SectionHead } from '@/components/site/primitives';
@@ -170,7 +172,16 @@ export default function HeatPage() {
               <p className="me-body" style={{ maxWidth: 'none' }}>
                 Heat stays where it is until there is a HeatBench a buyer can audit: false-alarm rate,
                 lead time, and a comparison against a published record. Going live is a code change
-                and a recorded decision, not a flag flip.
+                and a recorded decision, not a flag flip. The shadow surface is published anyway:
+                the{' '}
+                <Link href="/dashboard/heat" className="me-link">
+                  heat field
+                </Link>{' '}
+                and the{' '}
+                <Link href="/dashboard/shadow" className="me-link">
+                  north Odisha basins
+                </Link>{' '}
+                are scored in the open, and neither one alerts.
               </p>
             </div>
           </Reveal>

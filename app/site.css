@@ -1500,74 +1500,46 @@
   .me-brand-intro { display: none; }
 }
 
-/* The mark assembles once, in the order the product works in:
+/* ==========================================================================
+   brand mark
 
-     0.00s  the aperture opens          an instrument is pointed at the Earth
-     0.24s  the ground rises            the terrain resolves
-     0.62s  the river runs, source down the water finds its course
-     0.98s  the layer sweeps across     the intelligence layer reads it
-     1.55s  one settle, then still
+   A flat single-colour PNG painted as a mask, so the mark takes the accent
+   token and works on the cream page, the white theme and the dark hero
+   without a second asset.
 
-   Both stroked paths carry pathLength="100", so the dash maths is exact
-   without measuring geometry at runtime. */
+   The intro fills it from the bottom, which is the one motion this particular
+   drawing earns: the crossbar of the "e" is a waterline, so the mark rising
+   reads as water coming up through it. It fills once and then holds; a mark
+   that keeps moving is a distraction.
+   ========================================================================== */
 
-.me-brand-anim .me-brand-ring {
-  stroke-dasharray: 100;
-  transform-origin: 32px 32px;
-  transform: rotate(-90deg);
-  animation: me-brand-ring 720ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-.me-brand-anim .me-brand-ground {
-  transform-origin: 32px 60px;
-  animation: me-brand-ground 700ms cubic-bezier(0.22, 1, 0.36, 1) 240ms both;
-}
-.me-brand-anim .me-brand-river {
-  stroke-dasharray: 100;
-  animation: me-brand-river 680ms cubic-bezier(0.37, 0, 0.28, 1) 620ms both;
-}
-.me-brand-anim .me-brand-layer {
-  stroke-dasharray: 100;
-  animation: me-brand-layer 900ms cubic-bezier(0.22, 1, 0.36, 1) 980ms both;
+.me-brand {
+  background-color: var(--laterite);
+  -webkit-mask: url('/modelearth-mark.png') no-repeat center / contain;
+  mask: url('/modelearth-mark.png') no-repeat center / contain;
 }
 
-@keyframes me-brand-ring {
-  from { stroke-dashoffset: 100; }
-  to   { stroke-dashoffset: 0; }
-}
-@keyframes me-brand-ground {
-  from { transform: translateY(22px); opacity: 0; }
-  to   { transform: translateY(0); opacity: 1; }
-}
-@keyframes me-brand-river {
-  from { stroke-dashoffset: 100; opacity: 0; }
-  35%  { opacity: 1; }
-  to   { stroke-dashoffset: 0; opacity: 1; }
-}
-@keyframes me-brand-layer {
-  /* draws, then reads once: a single dip that says the layer is live, and
-     then stops, because a mark that keeps blinking is a distraction */
-  0%   { stroke-dashoffset: 100; opacity: 0; }
-  62%  { stroke-dashoffset: 0; opacity: 1; }
-  80%  { opacity: 0.45; }
-  100% { stroke-dashoffset: 0; opacity: 1; }
+.me-brand-anim {
+  animation: me-brand-rise 1100ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* The overlay drives its own copy imperatively during the first-visit intro.
-   Letting the CSS run at the same time would fight it for the same properties. */
-:root[data-brand-intro] .me-brand-anim .me-brand-ring,
-:root[data-brand-intro] .me-brand-anim .me-brand-ground,
-:root[data-brand-intro] .me-brand-anim .me-brand-river,
-:root[data-brand-intro] .me-brand-anim .me-brand-layer {
+@keyframes me-brand-rise {
+  /* inset() clips from the top edge down, so winding it back to 0 uncovers
+     the mark from the bottom up */
+  0%   { clip-path: inset(100% 0 0 0); opacity: 0.25; }
+  55%  { opacity: 1; }
+  100% { clip-path: inset(0% 0 0 0); opacity: 1; }
+}
+
+/* the overlay drives its own copy imperatively during the first-visit intro */
+:root[data-brand-intro] .me-brand-anim {
   animation: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .me-brand-anim .me-brand-ring,
-  .me-brand-anim .me-brand-ground,
-  .me-brand-anim .me-brand-river,
-  .me-brand-anim .me-brand-layer {
+  .me-brand-anim {
     animation: none;
-    stroke-dashoffset: 0;
+    clip-path: none;
   }
 }
 

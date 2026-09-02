@@ -2,6 +2,7 @@
 
 import { BrandLockup, Reveal } from './primitives';
 import { FOUNDER_EMAIL, PILOT_EMAIL, SOCIAL } from './contact';
+import { REPLAY_TOUR, SURFACES } from './surfaces';
 
 const WAYS: { title: string; body: string }[] = [
   {
@@ -70,14 +71,14 @@ export function CallToAction() {
               Request a district pilot
             </a>
             <a
-              href="mailto:swayam@modelearth.in?subject=Replay%20request"
+              href={REPLAY_TOUR}
               className="me-btn"
               style={{
                 border: '1px solid color-mix(in srgb, var(--inverse-ink) 34%, transparent)',
                 color: 'var(--inverse-ink)',
               }}
             >
-              Request a replay
+              Rewind a real flood
             </a>
           </div>
         </Reveal>
@@ -139,10 +140,10 @@ export function SiteFooter() {
         <div
           style={{
             display: 'grid',
-            // 200 rather than 240: with four columns and a 48px gap, 240 needs
-            // 1104px of a 1096px grid and wraps Follow onto its own row under
-            // the brand blurb, which reads as an orphan
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            // five columns now. At a 48px gap they need 5*170 + 4*48 = 1042 of
+            // the 1096px grid, so 170 is the largest minimum that keeps them on
+            // one row instead of orphaning the last column under the blurb.
+            gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
             gap: 'clamp(2rem, 4vw, 3.5rem)',
             alignItems: 'start',
             marginBottom: 'clamp(2.5rem, 5vw, 3.5rem)',
@@ -161,8 +162,9 @@ export function SiteFooter() {
               <BrandLockup markSize={22} />
             </div>
             <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.65, color: 'var(--muted)' }}>
-              Flood early warning and operational command for districts, built where the data is
-              thin.
+              A planetary-scale climate resilience intelligence layer, built where the data is
+              thin. One engine, several surfaces: flood is what runs in production today, with
+              heat, crops and field sensing behind it.
             </p>
           </div>
 
@@ -192,13 +194,27 @@ export function SiteFooter() {
             </p>
             <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 8 }}>
               {[
-                ['Mission Control', '/dashboard'],
                 ['Flood Ops', '/products/flood'],
                 ['Heat Ops', '/products/heat'],
+                ['KrishiOS', '/products/krishi'],
+                ['Bhoomi G1', '/products/bhoomi'],
                 ['Evidence', '/research#evidence'],
-                ['Blog', '/blog'],
-                ['Journey', '/journey'],
               ].map(([label, href]) => (
+                <li key={label}>
+                  <a href={href} className="me-link" style={{ fontSize: 13.5 }}>
+                    {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <p className="me-label" style={{ marginBottom: 14 }}>
+              Live surfaces
+            </p>
+            <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 8 }}>
+              {SURFACES.map(({ label, href }) => (
                 <li key={label}>
                   <a href={href} className="me-link" style={{ fontSize: 13.5 }}>
                     {label}

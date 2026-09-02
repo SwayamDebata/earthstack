@@ -6,14 +6,9 @@ import BrandMark from './BrandMark';
 /* ==========================================================================
    The intro.
 
-   The mark builds itself in the order the product works in, then flies to the
-   seat it occupies in the nav for the rest of the visit, so the thing you
-   watched being assembled is the thing in the corner.
-
-     the aperture opens          an instrument is pointed at the Earth
-     the ground rises            the terrain resolves
-     the river runs, source down the water finds its course
-     the layer sweeps across     the intelligence layer reads the surface
+   The mark fills from the bottom, the way water comes up through the
+   waterline in the middle of the "e", holds for a beat, then flies to the
+   seat it occupies in the nav for the rest of the visit.
 
    Rules it keeps:
      once a session   an intro on every navigation is an obstacle, not a brand
@@ -72,71 +67,27 @@ export default function BrandIntro() {
     const mark = markRef.current;
     if (!wrap || !mark) return;
 
-    const svg = mark.querySelector('svg');
-    const ring = svg?.querySelector<SVGCircleElement>('.me-brand-ring');
-    const ground = svg?.querySelector<SVGGElement>('.me-brand-ground');
-    const river = svg?.querySelector<SVGPathElement>('.me-brand-river');
-    const layer = svg?.querySelector<SVGPathElement>('.me-brand-layer');
-    if (!ring || !ground || !river || !layer) {
+    const glyph = mark.querySelector<HTMLElement>('.me-brand');
+    if (!glyph) {
       const bail = window.setTimeout(finish, 0);
       return () => window.clearTimeout(bail);
     }
 
     const anims: Animation[] = [];
-    const ease = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
-    // ---- 1. the aperture opens ----
-    ring.style.strokeDasharray = '100';
-    ring.style.transformOrigin = '32px 32px';
-    ring.style.transform = 'rotate(-90deg)';
+    // ---- the mark fills, bottom to top ----
     anims.push(
-      ring.animate([{ strokeDashoffset: 100 }, { strokeDashoffset: 0 }], {
-        duration: 720,
-        easing: ease,
-        fill: 'both',
-      }),
-    );
-
-    // ---- 2. the ground rises ----
-    ground.style.transformOrigin = '32px 60px';
-    anims.push(
-      ground.animate(
+      glyph.animate(
         [
-          { transform: 'translateY(22px)', opacity: 0 },
-          { transform: 'translateY(0px)', opacity: 1 },
+          { clipPath: 'inset(100% 0 0 0)', opacity: 0.25 },
+          { clipPath: 'inset(45% 0 0 0)', opacity: 1, offset: 0.55 },
+          { clipPath: 'inset(0% 0 0 0)', opacity: 1 },
         ],
-        { duration: 700, delay: 240, easing: ease, fill: 'both' },
+        { duration: 1100, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'both' },
       ),
     );
 
-    // ---- 3. the river runs, source to sea ----
-    river.style.strokeDasharray = '100';
-    anims.push(
-      river.animate(
-        [
-          { strokeDashoffset: 100, opacity: 0 },
-          { strokeDashoffset: 65, opacity: 1, offset: 0.35 },
-          { strokeDashoffset: 0, opacity: 1 },
-        ],
-        { duration: 680, delay: 620, easing: 'cubic-bezier(0.37, 0, 0.28, 1)', fill: 'both' },
-      ),
-    );
-
-    // ---- 4. the layer sweeps across, reads once, and holds ----
-    layer.style.strokeDasharray = '100';
-    anims.push(
-      layer.animate(
-        [
-          { strokeDashoffset: 100, opacity: 0 },
-          { strokeDashoffset: 0, opacity: 1, offset: 0.62 },
-          { strokeDashoffset: 0, opacity: 0.45, offset: 0.8 },
-          { strokeDashoffset: 0, opacity: 1 },
-        ],
-        { duration: 900, delay: 980, easing: ease, fill: 'both' },
-      ),
-    );
-
-    // ---- 5. hold, then hand off to the nav ----
+    // ---- hold, then hand off to the nav ----
     let handoff: Animation | null = null;
     const timer = window.setTimeout(() => {
       const seat = document.querySelector('.me-nav-brand .me-mark');
@@ -165,7 +116,7 @@ export default function BrandIntro() {
       const end = handoff ?? wrap.getAnimations()[0];
       if (end) end.finished.then(finish).catch(finish);
       else finish();
-    }, 2050);
+    }, 1500);
 
     // a stuck animation must never leave the overlay covering the page
     const guard = window.setTimeout(finish, 4500);

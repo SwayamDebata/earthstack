@@ -31,9 +31,9 @@ type Terrain = {
    here is already published and labelled elsewhere on the site. */
 const BEATS = [
   {
-    kicker: 'ModelEarth · planetary-scale resilience intelligence',
+    kicker: 'ModelEarth · planetary-scale climate resilience intelligence',
     title: 'Earth is already instrumented. The warning still does not arrive.',
-    body: 'Satellites overhead, gauges in the water, thirty years of record on disk. Observation stopped being the hard part decades ago. What is missing is the layer that turns all of it into a decision somebody can act on tonight.',
+    body: 'Satellites overhead, gauges in the water, sensors in the soil, thirty years of record on disk. Observation stopped being the hard part decades ago. What is missing is the layer that turns all of it into a decision somebody can act on tonight.',
     a: 0.0,
     b: 0.2,
   },
@@ -47,14 +47,14 @@ const BEATS = [
   {
     kicker: '03 · planetary resilience intelligence',
     title: 'Planetary means the ungauged parts too.',
-    body: 'Most of the world’s rivers have no reliable gauge and no local model, and that is exactly where a warning is worth the most. This is built to make a defensible call from a thin record, and to sharpen as the record fills in.',
+    body: 'Most of the inhabited world has no local model for what reaches it: water, heat, or a season that fails. That is where a warning is worth the most, so this makes a defensible call from a thin record and sharpens as the record fills in.',
     a: 0.5,
     b: 0.72,
   },
   {
     kicker: '04 · resilience',
     title: 'Measured in hours of warning, not points of accuracy.',
-    body: 'The unit that matters is lead time: the hours a district gets to move people and grain before the water arrives. That is the number this whole system exists to produce.',
+    body: 'The unit that matters is lead time: the hours a district gets to move people, grain and livestock before it lands. Water tonight, heat in May, a sowing window closing. One engine, one number, whatever the hazard.',
     a: 0.78,
     b: 1.0,
   },
