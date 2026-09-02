@@ -20,6 +20,7 @@ import SoundToggle from '@/components/audio/SoundToggle';
 import UiModeToggle from '@/components/dashboard/UiModeToggle';
 import { grantPilotAccess } from '@/lib/access/pilot';
 import { useMission } from '@/components/dashboard/MissionContext';
+import BrandMark from '@/components/landing/BrandMark';
 
 const num = (v: unknown) => (typeof v === 'number' ? v : typeof v === 'string' ? Number(v) : Number.NaN);
 
@@ -138,23 +139,17 @@ export default function MissionShell({ children }: { children: ReactNode }) {
         <div className="grid grid-cols-1 items-center gap-3 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:gap-4">
           {/* Brand + clock */}
           <div className="flex items-center justify-between gap-3 md:justify-start">
-            <div className="flex items-center gap-2">
-              <div
-                className={`mission-brand-badge flex h-8 w-8 shrink-0 items-center justify-center rounded-sm font-mono text-[10px] font-bold tracking-widest ${
-                  std
-                    ? 'border border-slate-300 bg-blue-50 text-blue-700'
-                    : 'border border-cyan-400/40 bg-cyan-500/10 text-cyan-300'
-                }`}
-              >
-                ME
-              </div>
+            <div className="flex items-center gap-2.5">
+              <BrandMark size={28} className="object-contain" />
               <div className="leading-none">
-                <p className={`text-sm font-semibold tracking-wide ${std ? 'text-slate-900' : 'text-white'}`}>ModelEarth</p>
+                <p className={`text-sm font-semibold tracking-wide ${std ? 'text-slate-900' : 'text-white'}`}>
+                  ModelEarth
+                </p>
                 <p
                   className={
                     std
-                      ? 'text-[11px] font-medium text-slate-500'
-                      : 'font-mono text-[10px] uppercase tracking-[0.22em] text-cyan-400/70'
+                      ? 'mt-0.5 text-[11px] font-medium text-slate-500'
+                      : 'mt-0.5 font-mono text-[10px] uppercase tracking-[0.22em] text-cyan-400/70'
                   }
                 >
                   {std ? 'District flood operations' : 'Mission Control · v1.0'}

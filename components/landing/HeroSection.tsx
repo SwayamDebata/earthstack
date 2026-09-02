@@ -35,10 +35,8 @@ export default function HeroSection() {
       <OperationalProofModal open={proofOpen} onClose={() => setProofOpen(false)} />
 
       <nav className="absolute left-0 right-0 top-0 z-50 flex items-center justify-between px-6 py-6 md:px-10">
-        <Link href="/" className="group flex cursor-pointer items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl border border-cyan-400/35 bg-slate-950 shadow-[0_0_28px_rgba(34,211,238,0.2)] transition [transform-style:preserve-3d] group-hover:border-cyan-300/50 group-hover:shadow-[0_0_36px_rgba(34,211,238,0.35)]">
-            <BrandMark size={44} className="h-9 w-9 object-contain transition-transform duration-500 group-hover:scale-110" priority />
-          </div>
+        <Link href="/" className="group flex cursor-pointer items-center gap-3" aria-label="ModelEarth home">
+          <BrandMark size={40} className="object-contain transition-transform duration-500 group-hover:scale-110" priority />
           <div className="flex flex-col">
             <span className="text-xl font-bold tracking-tight text-white md:text-2xl">ModelEarth</span>
             <span className="hidden text-[11px] font-medium tracking-wide text-cyan-400/70 sm:block">

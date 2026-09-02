@@ -10,7 +10,6 @@ import {
   Brain,
   Film,
   Settings,
-  Radio,
   Satellite,
   Shield,
   History,
@@ -20,6 +19,7 @@ import {
   MapPinned,
 } from 'lucide-react';
 import { useMission } from '@/components/dashboard/MissionContext';
+import BrandMark from '@/components/landing/BrandMark';
 
 const analyticsItems = [
   { href: '/dashboard', label: 'Theatre', icon: MapIcon, match: 'exact' as const },
@@ -87,11 +87,11 @@ export default function MissionNav() {
         title="ModelEarth"
         className={
           std
-            ? 'mb-2 flex h-9 w-9 items-center justify-center rounded-md border border-slate-200 bg-white text-blue-600 transition hover:bg-slate-100'
-            : 'mb-2 flex h-9 w-9 items-center justify-center rounded-md border border-cyan-400/30 bg-cyan-500/10 text-cyan-300 transition hover:border-cyan-300/60'
+            ? 'mb-2 flex h-9 w-9 items-center justify-center rounded-md border border-slate-200 bg-white transition hover:bg-slate-100'
+            : 'mb-2 flex h-9 w-9 items-center justify-center rounded-md border border-cyan-400/30 bg-cyan-500/10 transition hover:border-cyan-300/60'
         }
       >
-        <Radio size={16} strokeWidth={1.6} />
+        <BrandMark size={22} />
       </Link>
       <div className={`my-1 h-px w-8 ${std ? 'bg-slate-200' : 'bg-cyan-400/15'}`} />
       {items.map((item) => {
