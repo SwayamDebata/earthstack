@@ -1514,7 +1514,11 @@
    ========================================================================== */
 
 .me-brand {
-  background-color: var(--laterite);
+  /* The fallback is load-bearing, not decoration. The dashboard renders this
+     mark outside .me-root, where --laterite does not exist, so without it the
+     background computes to transparent and a mask with no colour to paint is
+     an invisible logo. */
+  background-color: var(--laterite, #c4622f);
   -webkit-mask: url('/modelearth-mark.png') no-repeat center / contain;
   mask: url('/modelearth-mark.png') no-repeat center / contain;
 }
