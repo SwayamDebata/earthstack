@@ -1501,26 +1501,14 @@
 }
 
 /* ==========================================================================
-   brand mark
-
-   A flat single-colour PNG painted as a mask, so the mark takes the accent
-   token and works on the cream page, the white theme and the dark hero
-   without a second asset.
-
-   The intro fills it from the bottom, which is the one motion this particular
-   drawing earns: the crossbar of the "e" is a waterline, so the mark rising
-   reads as water coming up through it. It fills once and then holds; a mark
-   that keeps moving is a distraction.
+   brand mark — /modelearth-demo-logo.svg (full colour image, not a mask).
+   Optional rise animation on first paint; holds still after.
    ========================================================================== */
 
 .me-brand {
-  /* The fallback is load-bearing, not decoration. The dashboard renders this
-     mark outside .me-root, where --laterite does not exist, so without it the
-     background computes to transparent and a mask with no colour to paint is
-     an invisible logo. */
-  background-color: var(--laterite, #c4622f);
-  -webkit-mask: url('/modelearth-mark.png') no-repeat center / contain;
-  mask: url('/modelearth-mark.png') no-repeat center / contain;
+  /* Full-colour SVG mark (modelearth-demo-logo.svg). No CSS mask — the
+     artwork carries its own palette. */
+  background: transparent;
 }
 
 .me-brand-anim {

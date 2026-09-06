@@ -43,6 +43,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://www.modelearth.in'),
   icons: {
     icon: [
+      { url: '/modelearth-demo-logo.svg', type: 'image/svg+xml' },
       { url: '/modelearth-favicon.png', type: 'image/png', sizes: '32x32' },
       { url: '/modelearth-icon.png', type: 'image/png', sizes: '64x64' },
     ],
