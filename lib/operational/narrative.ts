@@ -3,12 +3,7 @@
  * No hardcoded risk scores - only transforms validated upstream fields.
  */
 
-import {
-  riverStatusOf,
-  scoringModeOf,
-  riverStationLabel,
-  riverObservedAt,
-} from '@/lib/api/risk-status';
+import { riverStatusOf, scoringModeOf, riverStationLabel, riverObservedAt, riverRatioOf } from '@/lib/api/risk-status';
 
 export type RiskPayload = Record<string, unknown>;
 
@@ -128,17 +123,32 @@ export function buildDrivers(risk: RiskPayload): OperationalDriver[] {
   const station = riverStationLabel(risk);
   const observed = riverObservedAt(risk);
 
-  if (status === 'live' && riverLevel !== null && floodThreshold !== null && floodThreshold > 0) {
-    const ratio = riverLevel / floodThreshold;
+  // Rule v2.5 ships river_ratio directly. Prefer it over recomputing from
+  // level/threshold: if the payload carries the ratio but is missing either raw
+  // field, recomputing silently falls through to "No live river gauge", which
+  // would contradict the "Driven by: River" line rendered right above this.
+  const authoritativeRatio = riverRatioOf(risk);
+  const derivedRatio =
+    riverLevel !== null && floodThreshold !== null && floodThreshold > 0
+      ? riverLevel / floodThreshold
+      : null;
+  const ratioForDriver = authoritativeRatio ?? derivedRatio;
+
+  if (status === 'live' && ratioForDriver !== null) {
+    const ratio = ratioForDriver;
+    const levelText =
+      riverLevel !== null && floodThreshold !== null
+        ? `${riverLevel.toFixed(1)} m vs threshold ${floodThreshold.toFixed(1)} m `
+        : '';
     if (ratio >= 0.9) {
       drivers.push({
         label: 'River level approaching danger threshold',
-        detail: `${riverLevel.toFixed(1)} m vs threshold ${floodThreshold.toFixed(1)} m (${Math.round(ratio * 100)}%)${station ? ` · ${station}` : ''}`,
+        detail: `${levelText}(${Math.round(ratio * 100)}% of danger)${station ? ` · ${station}` : ''}`,
       });
     } else if (ratio >= 0.75) {
       drivers.push({
         label: 'River level rising relative to threshold',
-        detail: `${riverLevel.toFixed(1)} m · ${Math.round(ratio * 100)}% of flood threshold${station ? ` · ${station}` : ''}`,
+        detail: `${levelText}(${Math.round(ratio * 100)}% of danger)${station ? ` · ${station}` : ''}`,
       });
     }
   } else if (status === 'stale') {

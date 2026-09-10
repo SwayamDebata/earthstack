@@ -24,13 +24,13 @@ const OPEN: { title: string; body: string; kind: ChipKind }[] = [
     kind: 'open',
   },
   {
-    title: 'Precision is unmeasurable until rivers land',
-    body: 'We cannot separate "the engine over-fires" from "the flood record is incomplete" without river level as a feature or a label. Real telemetry is now in production, so this becomes answerable this season.',
+    title: 'Precision is measured now, and statewide it is weak',
+    body: 'This sat here as unanswerable until we archived the state\u2019s own gauge record and could ask it properly. It is answered, and the answer is not flattering: 6.6% precision across all thirteen gauges, roughly fourteen false alarms for every true flood, against 27.7% on the Baitarani. Rainfall alone is not a statewide alerting product. That is a finding about where this engine works, not a disclaimer.',
     kind: 'open',
   },
   {
-    title: 'The ML model has never driven an alert',
-    body: 'XGBoost v2 runs on every cycle and is logged. Offline it reads 91% leave-one-region-out and 96% event holdout. It stays in shadow until monsoon validation - offline metrics are not permission to go live.',
+    title: 'The ML model has never driven an alert, and its old numbers are retired',
+    body: 'XGBoost v2 runs on every cycle and is logged, and it has never altered a user-facing score. The offline figures we used to quote, 91% leave-one-region-out and 96% event holdout, are withdrawn: the training set defined water level as 85% of the event peak, so roughly 77% of the feature importance was encoding the label. It has not been re-measured since. Every flood number on this site is the rule engine, not the model.',
     kind: 'shadow',
   },
   {
@@ -98,12 +98,107 @@ function BasinBars() {
   );
 }
 
+/* ==========================================================================
+   The current evidence base (D031/D032/D033).
+
+   This sits above the relabel audit because it is the stronger and more recent
+   measurement, and because it rests on a different source: the state's own
+   published gauge record rather than an academic event catalogue. The audit
+   below is still here, and still worth reading, but it is now history rather
+   than the headline.
+
+   The basin figure and the statewide figure are one block, for the same reason
+   the API pairs them: 13 of 13 is only an honest number next to the roughly
+   fourteen false alarms per flood it costs statewide.
+   ========================================================================== */
+
+function RiverTruth() {
+  return (
+    <Reveal delay={60}>
+      <div style={{ marginBottom: 'clamp(2.5rem, 5vw, 3.5rem)' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: 'clamp(1.5rem, 3vw, 2.5rem)',
+            alignItems: 'stretch',
+          }}
+        >
+          <div className="me-panel" style={{ background: 'var(--bg)', borderLeft: '2px solid var(--laterite)' }}>
+            <div style={{ marginBottom: 18 }}>
+              <Chip kind="backtest" />
+            </div>
+            <h3 className="me-display me-d3" style={{ marginBottom: 14 }}>
+              13 of 13 floods flagged two days before the river crossed its danger level.
+            </h3>
+            <p className="me-body" style={{ fontSize: 15, maxWidth: 'none', marginBottom: '1rem' }}>
+              Baitarani, 2024 to 2026, on forecasts as they were issued rather than on hindsight
+              rainfall. Precision 27.7%, false alarm rate 21.8%, against a 7.7% base rate: a 3.6 times
+              lift. <strong>n&nbsp;=&nbsp;13.</strong>
+            </p>
+            <p className="me-body" style={{ fontSize: 15, maxWidth: 'none' }}>
+              Thirteen floods is a small sample and we state it as a count, not a percentage. A 13
+              of 13 result carries a 95% lower bound near 77% recall, so it is not a claim of perfect
+              accuracy and we will not write it as one.
+            </p>
+            <p className="me-body" style={{ fontSize: 15, maxWidth: 'none' }}>
+              It is also worth being exact about what was measured. Anandapur and Akhuapada are
+              Baitarani gauges on the shadow surface; neither is one of the five cities that actually
+              alert, which sit on the Mahanadi and the Brahmani. This is the engine scored against a
+              gauge record, not the alerting product describing itself.
+            </p>
+          </div>
+
+          <div className="me-panel" style={{ background: 'var(--bg)' }}>
+            <div style={{ marginBottom: 18 }}>
+              <Chip kind="backtest" />
+            </div>
+            <h3 className="me-display me-d3" style={{ marginBottom: 14 }}>
+              Across all thirteen gauges it is weak, and that is the finding.
+            </h3>
+            <p className="me-body" style={{ fontSize: 15, maxWidth: 'none', marginBottom: '1rem' }}>
+              51% of floods caught at one day&rsquo;s lead, at 6.6% precision. Roughly fourteen false
+              alarms for every true flood. Rainfall alone is not a statewide alerting product.
+            </p>
+            <p className="me-body" style={{ fontSize: 15, maxWidth: 'none' }}>
+              The Baitarani is a slow-response basin, so two days of forecast rain actually reaches
+              the gauge. Rajghat on the Subarnarekha scores 36%, and Purusottampur and Gunupur score
+              zero of two. A single statewide average would hide both the basin that works and the
+              ones that do not, which is why no figure here appears without its basin.
+            </p>
+          </div>
+        </div>
+
+        <div className="me-panel" style={{ background: 'var(--bg)', marginTop: 'clamp(1.25rem, 2.5vw, 1.75rem)' }}>
+          <div style={{ marginBottom: 14 }}>
+            <Chip kind="backtest" />
+          </div>
+          <p className="me-body" style={{ fontSize: 15, maxWidth: 'none' }}>
+            <strong>Where the labels come from.</strong> 497 daily flood bulletins published by
+            Odisha&rsquo;s Department of Water Resources, 2023 to 2026, archived and parsed into
+            11,408 gauge readings carrying a danger level. The label is the state&rsquo;s own
+            operational record: did the river cross its published danger mark. Not our judgement, and
+            not an academic dataset, which is what makes these numbers checkable by the people who
+            published the source.
+          </p>
+        </div>
+      </div>
+    </Reveal>
+  );
+}
+
 export default function Evidence() {
   return (
     <section id="evidence" className="me-band" style={{ background: 'var(--bg-2)' }}>
       <div className="me-wrap">
         <Reveal>
-          <SectionHead index="05" label="The audit that cost us our best number" />
+          <SectionHead index="05" label="What the engine actually scores" />
+        </Reveal>
+
+        <RiverTruth />
+
+        <Reveal>
+          <SectionHead index="06" label="The audit that cost us our best number" />
         </Reveal>
 
         {/* ---- the audit ---- */}
@@ -212,7 +307,7 @@ export default function Evidence() {
         <Reveal delay={160}>
           <div style={{ marginTop: 'clamp(3rem, 6vw, 4.5rem)' }}>
             <h3 className="me-h" style={{ fontSize: 'clamp(1.15rem, 1.8vw, 1.45rem)', marginBottom: 20 }}>
-              What we have not solved, as of August 2026
+              What we have not solved, as of September 2026
             </h3>
             <ul style={{ listStyle: 'none', margin: 0, padding: 0, borderTop: '1px solid var(--line)' }}>
               {OPEN.map((o) => (

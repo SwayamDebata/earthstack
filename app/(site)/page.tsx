@@ -71,7 +71,7 @@ export default function HomePage() {
               A rule engine an engineer wrote and a district can argue with. Rainfall against each
               location&rsquo;s own thirty-year threshold, yesterday&rsquo;s rain that stops decaying
               during an active flood, and a river term that only counts when the gauge is genuinely
-              live.
+              live, and which can raise the call on its own when the river is near its mark.
             </p>
           </Reveal>
         </div>
@@ -83,7 +83,7 @@ export default function HomePage() {
       <section className="me-band" style={{ background: 'var(--bg)' }}>
         <div className="me-wrap">
           <Reveal>
-            <SectionHead index="03" label="The position, August 2026" />
+            <SectionHead index="03" label="The position, September 2026" />
           </Reveal>
           <Reveal>
             <h2 className="me-display me-d2" style={{ maxWidth: '20ch', marginBottom: '1.5rem' }}>

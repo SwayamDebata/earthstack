@@ -28,7 +28,14 @@ const MEASURED = [
 ];
 
 /* Four traces that all arrive as valid rows with valid timestamps.
-   Only the last one is a river rising. */
+   Only the last one is a river rising.
+
+   The STALL note carried a hardcoded "84 days" that was accurate the week it
+   was written and wrong every day after. The CWC Brahmani/Baitarani feed
+   stalled on 2026-06-03 and has not returned, so the count is derived from
+   that date instead. */
+const STALL_SINCE = new Date('2026-06-03T00:00:00Z');
+const stallDays = Math.floor((Date.now() - STALL_SINCE.getTime()) / 86_400_000);
 const TRACES: { label: string; note: string; pts: number[]; real: boolean }[] = [
   {
     label: 'FLATLINE',
@@ -38,7 +45,7 @@ const TRACES: { label: string; note: string; pts: number[]; real: boolean }[] = 
   },
   {
     label: 'STALL',
-    note: 'feed frozen 84 days, last good value repeats',
+    note: `feed frozen ${stallDays} days, last good value repeats`,
     pts: [0.28, 0.34, 0.42, 0.47, 0.52, 0.52, 0.52, 0.52, 0.52, 0.52, 0.52, 0.52],
     real: false,
   },
