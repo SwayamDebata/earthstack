@@ -148,8 +148,7 @@ export default function Ledger() {
 
         <Reveal delay={80}>
           <div
-            className="me-hairgrid"
-            style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))' }}
+            className="me-hairgrid me-ledger-grid"
           >
             {ROWS.map((r) => (
               <div key={r.caption} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
