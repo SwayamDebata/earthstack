@@ -11,10 +11,14 @@ import { useMission } from '@/components/dashboard/MissionContext';
 import ShadowBadge from '@/components/dashboard/heat/ShadowBadge';
 import WhyBar from '@/components/dashboard/warroom/WhyBar';
 import {
+  fmtRiverRatio,
   isAlertingLocation,
   maxAchievableScore,
+  riverRatioOf,
+  riverStationLabel,
   riverStatusOf,
   scoringModeOf,
+  signalSourceOf,
 } from '@/lib/api/risk-status';
 import {
   confidencePct,
@@ -82,10 +86,15 @@ export default function EvidenceMode({
     scoreVal !== null && scoreCap > 0
       ? Math.max(0, Math.min(100, (scoreVal / scoreCap) * 100))
       : null;
-  const rainOnly = scoringModeOf({
+  const riskShape = {
     ...payload,
     raw_data: (data?.evidence as Record<string, unknown> | undefined) ?? {},
-  }) === 'rain_only';
+  };
+  const rainOnly = scoringModeOf(riskShape) === 'rain_only';
+  // Rule v2.5 (D034). Dormant while every river feed is stale/unavailable, so
+  // this reads "rainfall" everywhere today and the gauge bar stays hidden.
+  const drivenBy = signalSourceOf(riskShape);
+  const riverRatio = riverRatioOf(riskShape);
   const is404 = q.error instanceof ApiError && q.error.status === 404;
 
   const panel = std
@@ -162,6 +171,45 @@ export default function EvidenceMode({
           </div>
         ) : data ? (
           <div className="space-y-6 p-5">
+            {/* Driven by (Rule v2.5) - answers "why is this HIGH?" with the
+                signal that actually fired, rather than leaving the reader to
+                infer it from the rainfall panel. */}
+            <div className={std ? 'rounded-lg border border-slate-200 bg-slate-50 p-3' : 'rounded-md border border-white/10 bg-white/5 p-3'}>
+              <p className={label}>Driven by</p>
+              <p className={`mt-1 text-sm ${std ? 'text-slate-900' : 'text-slate-100'}`}>
+                {drivenBy === 'river'
+                  ? `River — ${riverStationLabel(riskShape) ?? 'gauge'} ${fmtRiverRatio(riverRatio)}`
+                  : drivenBy === 'both'
+                    ? `Both — rainfall, and ${riverStationLabel(riskShape) ?? 'the river'} ${fmtRiverRatio(riverRatio)}`
+                    : 'Rainfall — no live river reading is contributing to this score'}
+              </p>
+
+              {/* Gauge fill. Only with a live reading: an empty bar would read
+                  as "river is low" when it actually means "we cannot see it". */}
+              {riverRatio !== null ? (
+                <div className="mt-2">
+                  <div className={`relative h-2 w-full overflow-hidden rounded-full ${std ? 'bg-slate-200' : 'bg-white/10'}`}>
+                    <div
+                      className="h-full rounded-full"
+                      style={{
+                        width: `${Math.max(0, Math.min(100, riverRatio * 100))}%`,
+                        background: riverRatio >= 1 ? '#b91c1c' : riverRatio >= 0.9 ? '#d97706' : std ? '#2563eb' : '#22d3ee',
+                      }}
+                    />
+                    {/* danger mark sits at 100% of the bar */}
+                    <span
+                      aria-hidden
+                      className={`absolute inset-y-0 w-px ${std ? 'bg-slate-500' : 'bg-slate-300/70'}`}
+                      style={{ left: '100%' }}
+                    />
+                  </div>
+                  <p className={`mt-1 text-[11px] ${riverRatio >= 1 ? (std ? 'text-red-700' : 'text-red-300') : std ? 'text-slate-600' : 'text-slate-400'}`}>
+                    {riverRatio >= 1 ? 'At or over danger level' : `${fmtRiverRatio(riverRatio)}`}
+                  </p>
+                </div>
+              ) : null}
+            </div>
+
             {/* Score + confidence strip */}
             <div className="grid grid-cols-2 gap-3">
               <div className={std ? 'rounded-lg border border-slate-200 bg-slate-50 p-3' : 'rounded-md border border-white/10 bg-white/5 p-3'}>

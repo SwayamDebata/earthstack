@@ -256,15 +256,54 @@
 }
 
 /* hairline-gap grid: cells separated by 1px of --line, like the artifact */
+/* Hairlines are drawn BY THE CELLS, not by the grid.
+
+   This used to paint the grid background in the line colour and let each child
+   paint --bg back over its own cell, so the 1px gaps read as rules. That works
+   only while every cell is filled: an unfilled cell has nothing painting over
+   it and renders as a solid slab of line colour. With auto-fit track counts
+   that happens on any wide screen where the tile count does not divide by the
+   column count, which was showing as a grey block on the home and research
+   ledgers at ~1900px.
+
+   Now each cell casts its own right and bottom rule and the container clips
+   the trailing ones, so an empty cell simply draws nothing. */
 .me-hairgrid {
   display: grid;
-  gap: 1px;
-  background: var(--line);
+  gap: 0;
+  background: var(--bg);
   border: 1px solid var(--line);
+  overflow: hidden;
 }
 .me-hairgrid > * {
   background: var(--bg);
   padding: clamp(1.15rem, 2vw, 1.6rem);
+  box-shadow:
+    1px 0 0 var(--line),
+    0 1px 0 var(--line);
+}
+
+/* A hairgrid draws its rules by painting the grid background in the line
+   colour and letting each child paint --bg back over its own cell. That means
+   an UNFILLED cell has nothing painting over it and renders as a solid block
+   of line colour. So any hairgrid must have a tile count that divides evenly
+   into its column count at every breakpoint.
+
+   The ledger has six tiles, so the track count is pinned to 3 / 2 / 1 rather
+   than left to auto-fit, all of which divide six. auto-fit was landing on five
+   columns on a wide screen and leaving four empty cells as one grey slab. */
+.me-ledger-grid {
+  grid-template-columns: 1fr;
+}
+@media (min-width: 620px) {
+  .me-ledger-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1000px) {
+  .me-ledger-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 /* ==========================================================================

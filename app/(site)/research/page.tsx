@@ -14,10 +14,17 @@ import { Caption, Chip, Reveal, SectionHead } from '@/components/site/primitives
 /* The "84 days" and "5 stuck" rows, and a "0 of 12" row, used to live here too.
    They are the detail behind the headline numbers in the data-sparse section
    above, so only the rows that add something new are kept. */
+/* The CWC Brahmani/Baitarani feed stalled on 2026-06-03 and has not returned.
+   This was written as a hardcoded "84 days", which was true the week it was
+   written and quietly wrong every day after. Deriving it means the page cannot
+   drift again. */
+const FEED_STALL_SINCE = new Date('2026-06-03T00:00:00Z');
+const stalledDays = Math.floor((Date.now() - FEED_STALL_SINCE.getTime()) / 86_400_000);
+
 const FEED: [string, string][] = [
   ['Out-of-range at Kishan Nagar, including a spike to 1133 m and minus 834 m at Jenapur', '34.6%'],
   ['Sensors flatlined: Akhuapada, Champua, Pamposh, Nimapara, Seorinarayan', '5 stuck'],
-  ['Brahmani and Baitarani feed, stalled since 3 June', '84 days'],
+  ['Brahmani and Baitarani feed, stalled since 3 June', `${stalledDays} days`],
   ['Real but stale: Sambalpur, Hirakud, Basantpur, Khairmal', '38–79 h'],
 ];
 
@@ -252,7 +259,9 @@ export default function ResearchPage() {
               So the ingest ships with a QC layer it turned out to need badly: physical-range filter,
               stuck-sensor detection over a 500-reading window, and a datum check that strips a
               published danger level when it does not share the station&rsquo;s datum. A level counts
-              toward a score only when the gauge is genuinely live.
+              toward a score only when the gauge is genuinely live, and since Rule v2.5 a live level
+              near its danger mark can raise the call on its own, without waiting for rainfall to
+              agree.
             </p>
           </Reveal>
 
@@ -260,12 +269,13 @@ export default function ResearchPage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'clamp(1.5rem, 3vw, 2.5rem)', marginTop: 'clamp(2rem, 4vw, 3rem)' }}>
               <div className="me-panel">
                 <div style={{ marginBottom: 14 }}><Chip kind="backtest" /></div>
-                <h3 className="me-h" style={{ fontSize: 17, marginBottom: 12 }}>And it would have worked</h3>
+                <h3 className="me-h" style={{ fontSize: 17, marginBottom: 12 }}>It worked, so we shipped it</h3>
                 <p style={{ margin: 0, fontSize: 14, lineHeight: 1.62, color: 'var(--text)' }}>
                   10 of 12 location-days in the 19–21 August recession window that rainfall scored LOW
                   would have been rescued by the river hold. On 19 August, Akhuapada was literally
                   above its danger level, 18.45 m against 18.33, while the rainfall engine said 0.20
-                  LOW.
+                  LOW. That measurement is what put river stage into the score in Rule v2.5, where a
+                  live gauge near its mark can now raise the call without rainfall&rsquo;s agreement.
                 </p>
               </div>
               <div className="me-panel">
@@ -321,7 +331,7 @@ export default function ResearchPage() {
           <Reveal>
             <div className="me-panel" style={{ borderLeft: '2px solid var(--laterite)' }}>
               <p className="me-label" style={{ marginBottom: 14 }}>
-                The honest position, August 2026
+                The honest position, September 2026
               </p>
               <h3 className="me-display me-d3" style={{ marginBottom: 14 }}>
                 Every claim above is labelled. If we cannot label it, we do not make it.

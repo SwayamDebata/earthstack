@@ -82,3 +82,45 @@ export function fmtSignedMetres(n: number | null | undefined): string {
   const v = Math.round(n * 100) / 100;
   return `${v > 0 ? '+' : ''}${v} m`;
 }
+
+/* ==========================================================================
+   Rule v2.5 (D034) — river stage became a scoring input, not just a decay gate.
+
+   Both fields are dormant today: every river feed is stale or unavailable (the
+   CWC Brahmani/Baitarani feed stalled on 2026-06-03) and every river path stays
+   gated on `river_status === "live"`, so `signal_source` reads "rainfall"
+   everywhere and `river_ratio` is null. The UI is built now because it lights up
+   the moment a live feed returns, not because it shows anything today.
+   ========================================================================== */
+
+export type SignalSource = 'rainfall' | 'river' | 'both';
+
+/** Which signal actually drove the score. Answers "why is this HIGH?". */
+export function signalSourceOf(risk: Record<string, unknown>): SignalSource {
+  const raw = riskRaw(risk);
+  const s = String(risk.signal_source ?? raw.signal_source ?? '').toLowerCase();
+  if (s === 'rainfall' || s === 'river' || s === 'both') return s;
+  // no field: infer from mode rather than guessing "both"
+  return scoringModeOf(risk) === 'rain_and_river' ? 'both' : 'rainfall';
+}
+
+/**
+ * River level as a fraction of its published danger level. >= 1.0 is at or over
+ * danger. Returns null when there is no live river reading, so callers render
+ * nothing rather than an empty gauge that looks like "zero risk".
+ */
+export function riverRatioOf(risk: Record<string, unknown>): number | null {
+  const raw = riskRaw(risk);
+  const v = risk.river_ratio ?? raw.river_ratio;
+  if (typeof v !== 'number' || !Number.isFinite(v) || v <= 0) return null;
+  return v;
+}
+
+/** "97% of its danger mark" / "at danger" / "12% over danger". */
+export function fmtRiverRatio(ratio: number | null): string {
+  if (ratio === null) return '-';
+  const p = Math.round(ratio * 100);
+  if (p === 100) return 'at its danger mark';
+  if (p > 100) return `${p - 100}% over its danger mark`;
+  return `${p}% of its danger mark`;
+}

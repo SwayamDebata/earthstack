@@ -1,31 +1,39 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { ChevronDown, ChevronUp, RefreshCw, ShieldCheck } from 'lucide-react';
+import { ChevronDown, ChevronUp, ShieldCheck, TriangleAlert } from 'lucide-react';
 import Link from 'next/link';
 import { api } from '@/lib/api/endpoints';
 import HudFrame from '@/components/dashboard/HudFrame';
-import StatusLed from '@/components/dashboard/StatusLed';
 import { ErrorBlock, EmptyBlock } from '@/components/dashboard/Atoms';
 import { relTime } from '@/components/dashboard/util';
 import { useDashboardUiMode } from '@/lib/ui/use-dashboard-ui-mode';
-import { listRow, listRowMeta, listRowPrimary, panelCard, showHudChrome } from '@/lib/ui/standard-surface';
+import { listRow, panelCard, showHudChrome } from '@/lib/ui/standard-surface';
 
 /**
- * Historical Backtest / Validation card.
- * Reads `/ml/backtest/summary` (offline-generated; long staleTime).
+ * Historical validation card — river-truth evidence (D031/D032/D033).
  *
- * Renders:
- *   - Hero recall at 24h lead time
- *   - Headline narrative + scored/total
- *   - 48h secondary row
- *   - Per-city breakdown (24h)
- *   - Coverage footer (events across pilot cities)
- *   - Collapsible caveats
+ * Reads `/ml/backtest/summary`, whose shape changed on 2026-09-10:
+ * `lead_time_24h`, `lead_time_48h` and `by_city` no longer exist, and the old
+ * 99.3% payload survives upstream only under `legacy_v4_retired`, which is
+ * provenance and is never rendered.
+ *
+ * The one rule this card enforces structurally: the basin headline and the
+ * statewide context render together or not at all. A 13/13 result on one basin
+ * is only an honest number when the ~14-false-alarms-per-flood statewide figure
+ * is next to it, so `available` requires both. Showing the good half alone is
+ * the exact failure D023/D031 exist to prevent.
  */
+
+const pct = (v: number | null | undefined, digits = 1) =>
+  typeof v === 'number' && Number.isFinite(v) ? `${(v * 100).toFixed(digits)}%` : 'n/a';
+
+const range = (a: number[] | undefined) =>
+  a && a.length >= 2 ? `${pct(a[0])} / ${pct(a[1])}` : a && a.length === 1 ? pct(a[0]) : 'n/a';
+
 export default function BacktestCard() {
-  const [showCaveats, setShowCaveats] = useState(false);
+  const [showMethod, setShowMethod] = useState(false);
   const mode = useDashboardUiMode();
   const std = mode === 'standard';
 
@@ -38,43 +46,28 @@ export default function BacktestCard() {
   });
 
   const data = q.data;
-  const available = data?.available !== false && Boolean(data?.lead_time_24h);
+  const head = data?.headline;
+  const state = data?.statewide_context;
 
-  const cities = useMemo(() => {
-    const by = data?.lead_time_24h?.by_city ?? {};
-    return Object.entries(by)
-      .map(([name, v]) => ({
-        name,
-        scored: v?.scored ?? 0,
-        triggered: v?.triggered ?? 0,
-        recall: v?.recall ?? null,
-      }))
-      .sort((a, b) => b.scored - a.scored);
-  }, [data]);
+  // paired by design: never one without the other
+  const available = data?.available !== false && Boolean(head) && Boolean(state);
 
-  const coverage = data?.flood_events_coverage;
-  const totalEvents = coverage?.pilot_city_mapped;
-  const pilotCount = data?.pilot_cities?.length ?? cities.length;
-
-  const recall24 = data?.lead_time_24h?.recall_pct;
-  const recall48 = data?.lead_time_48h?.recall_pct;
-  const scored = data?.lead_time_24h?.scored_events;
-  const total = data?.total_pilot_events;
-  const triggered24 = data?.lead_time_24h?.triggered_medium_plus;
-  const triggered48 = data?.lead_time_48h?.triggered_medium_plus;
-
-  const caveats = data?.caveats ?? [];
+  const basin = data?.basin_dependence;
+  const method = data?.method;
+  const retired = data?.retired ?? {};
   const generatedAt = data?.generated_at;
 
   return (
     <HudFrame
-      label="HISTORICAL BACKTEST"
-      subtitle="/ml/backtest/summary · rule engine v2"
+      label="RIVER-TRUTH VALIDATION"
+      subtitle="/ml/backtest/summary · rule engine, rain-only"
       status={q.isError ? 'critical' : available ? 'nominal' : 'idle'}
-      statusText={q.isLoading ? 'SYNC' : q.isError ? 'FAULT' : available ? 'VALIDATED' : 'N/A'}
+      statusText={q.isLoading ? 'SYNC' : q.isError ? 'FAULT' : available ? 'BACKTEST' : 'N/A'}
       meta={[
         ...(generatedAt ? [{ label: 'GENERATED', value: relTime(generatedAt) }] : []),
-        ...(totalEvents !== undefined ? [{ label: 'COVERAGE', value: `${totalEvents} ev` }] : []),
+        ...(method?.labelled_rows !== undefined
+          ? [{ label: 'ROWS', value: `${method.labelled_rows}` }]
+          : []),
       ]}
     >
       {q.isError ? (
@@ -85,44 +78,16 @@ export default function BacktestCard() {
           <div className="h-32 animate-pulse rounded-lg border border-slate-200 bg-slate-100" />
         </div>
       ) : !available ? (
-        <EmptyBlock message="backtest report not available yet" />
+        <EmptyBlock message="river-truth evidence not available (headline and statewide context must both be present)" />
       ) : (
         <div className="space-y-4">
-          <div
-            className={
-              std
-                ? 'rounded-lg border border-amber-200 bg-amber-50 p-4'
-                : 'rounded-md border border-amber-400/30 bg-amber-500/10 p-4'
-            }
-          >
-            <p className={std ? 'text-sm font-semibold text-amber-950' : 'text-sm font-semibold text-amber-100'}>
-              Legacy backtest endpoint. Do not use as product accuracy.
-            </p>
-            <p className={`mt-1 text-sm leading-relaxed ${std ? 'text-amber-900/90' : 'text-amber-100/85'}`}>
-              `/ml/backtest/summary` still serves pre-relabel v4 numbers (city labels snapped across basins).
-              Product claim is the honest pair only: <strong>94.4%</strong> north Odisha onsets (102/108)
-              and LOW on <strong>14 of 18</strong> location-days during active flooding. See North Odisha shadow.
-            </p>
-            <Link
-              href="/dashboard/shadow"
-              className={
-                std
-                  ? 'mt-3 inline-flex text-sm font-semibold text-amber-950 underline'
-                  : 'mt-3 inline-flex text-sm font-semibold text-amber-100 underline'
-              }
-            >
-              Open North Odisha shadow →
-            </Link>
-          </div>
-
-          {/* Raw API dump kept for pilot debugging only - not marketing */}
           <div className="grid grid-cols-1 gap-3 md:grid-cols-[1.4fr_1fr]">
-            {/* Hero - 24h recall */}
+            {/* ---- basin headline ---- */}
             <div
               className={
                 std
-                  ? 'rounded-lg border border-slate-200 bg-slate-50 p-4 opacity-80'
-                  : 'relative overflow-hidden rounded-md border border-white/10 bg-slate-950/60 p-4 opacity-80'
+                  ? 'rounded-lg border border-slate-200 bg-slate-50 p-4'
+                  : 'relative overflow-hidden rounded-md border border-white/10 bg-slate-950/60 p-4'
               }
             >
               {showHudChrome(mode) ? (
@@ -133,38 +98,64 @@ export default function BacktestCard() {
               ) : null}
               <div className="flex items-center gap-2">
                 <ShieldCheck size={14} className={std ? 'text-slate-500' : 'text-slate-400'} />
-                <p className={std ? 'text-xs font-semibold uppercase tracking-wide text-slate-600' : 'font-mono text-[10px] uppercase tracking-[0.28em] text-slate-500'}>
-                  Legacy API · 24h recall (not product)
+                <p
+                  className={
+                    std
+                      ? 'text-xs font-semibold uppercase tracking-wide text-slate-600'
+                      : 'font-mono text-[10px] uppercase tracking-[0.28em] text-slate-500'
+                  }
+                >
+                  {head?.scope ?? 'Basin'} · {head?.lead ?? 'T-2d'}
                 </p>
               </div>
-              <div className="mt-2 flex items-end gap-3">
-                <p className={std ? 'text-5xl font-bold tabular-nums text-slate-500' : 'font-mono text-5xl font-semibold tabular-nums text-slate-500'}>
-                  {recall24 !== undefined ? `${recall24.toFixed(1)}%` : 'n/a'}
-                </p>
-                <p className={std ? 'mb-1.5 text-sm text-slate-500' : 'mb-1.5 font-mono text-[11px] uppercase tracking-widest text-slate-500'}>
-                  {triggered24 ?? 'n/a'} / {scored ?? 'n/a'} scored · {total ?? 'n/a'} total events
-                </p>
-              </div>
-              {data?.headline ? (
-                <p className={`mt-3 max-w-3xl text-sm leading-relaxed ${std ? 'text-slate-600' : 'text-slate-400'}`}>{data.headline}</p>
-              ) : null}
 
-              <div className={`mt-4 flex flex-wrap items-center gap-3 border-t pt-3 ${std ? 'border-slate-200' : 'border-white/5'}`}>
-                <span className={std ? 'text-xs font-medium text-slate-600' : 'font-mono text-[10px] uppercase tracking-[0.28em] text-slate-500'}>
-                  48h Lead Time
-                </span>
-                <span className={std ? 'text-base font-semibold tabular-nums text-slate-700' : 'font-mono text-base font-semibold tabular-nums text-slate-400'}>
-                  {recall48 !== undefined ? `${recall48.toFixed(1)}%` : 'n/a'}
-                </span>
-                <span className={std ? 'text-xs text-slate-500' : 'font-mono text-[10px] uppercase tracking-widest text-slate-500'}>
-                  {triggered48 ?? 'n/a'} / {scored ?? 'n/a'}
-                </span>
-                <span className={`ml-auto ${std ? 'text-xs text-slate-500' : 'font-mono text-[10px] uppercase tracking-widest text-slate-500'}`}>
-                  threshold ≥ {data?.lead_time_24h?.alert_threshold ?? '0.40'}
-                </span>
+              <div className="mt-2 flex items-end gap-3">
+                {/* floods caught, not a bare percentage: 13/13 read as a rate
+                    invites "100% accurate", which the sample size cannot carry */}
+                <p
+                  className={
+                    std
+                      ? 'text-5xl font-bold tabular-nums text-slate-900'
+                      : 'font-mono text-5xl font-semibold tabular-nums text-slate-100'
+                  }
+                >
+                  {head?.floods_caught ?? 'n/a'}
+                </p>
+                <p
+                  className={
+                    std
+                      ? 'mb-1.5 text-sm text-slate-600'
+                      : 'mb-1.5 font-mono text-[11px] uppercase tracking-widest text-slate-400'
+                  }
+                >
+                  floods flagged at {head?.lead ?? 'T-2d'}
+                </p>
               </div>
+
+              <div className={`mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm ${std ? 'text-slate-600' : 'text-slate-400'}`}>
+                <span>precision {pct(head?.precision)}</span>
+                <span>FAR {pct(head?.false_alarm_rate)}</span>
+                <span>base rate {pct(head?.base_rate)}</span>
+                {typeof head?.lift_over_base_rate === 'number' ? (
+                  <span>{head.lift_over_base_rate.toFixed(1)}× lift</span>
+                ) : null}
+              </div>
+
+              {/* required wherever floods_caught appears */}
+              {head?.sample_size_warning ? (
+                <p
+                  className={
+                    std
+                      ? 'mt-3 rounded border border-amber-200 bg-amber-50 p-2.5 text-sm leading-relaxed text-amber-900'
+                      : 'mt-3 rounded border border-amber-400/30 bg-amber-500/10 p-2.5 text-sm leading-relaxed text-amber-100/90'
+                  }
+                >
+                  {head.sample_size_warning}
+                </p>
+              ) : null}
             </div>
 
+            {/* ---- statewide context, structurally inseparable ---- */}
             <div className={panelCard(mode)}>
               {showHudChrome(mode) ? (
                 <>
@@ -172,108 +163,136 @@ export default function BacktestCard() {
                   <span className="hud-bracket hud-bracket-br" />
                 </>
               ) : null}
-              <div className="mb-2 flex items-center justify-between">
+              <div className="mb-2 flex items-center gap-2">
+                <TriangleAlert size={13} className={std ? 'text-slate-500' : 'text-slate-400'} />
                 <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-slate-500">
-                  Per City · 24h
+                  Statewide · {state?.lead ?? 'T-1d / T-2d'}
                 </p>
-                <span className="font-mono text-[9px] uppercase tracking-widest text-slate-500">
-                  scored · triggered
-                </span>
               </div>
-              <div className="space-y-1.5">
-                {cities.map((c) => {
-                  const inactive = c.scored === 0;
-                  const recallPct = c.recall !== null ? c.recall * 100 : null;
-                  const tone =
-                    recallPct === null
-                      ? 'idle'
-                      : recallPct >= 99
-                        ? 'nominal'
-                        : recallPct >= 95
-                          ? 'info'
-                          : 'warning';
-                  return (
-                    <div
-                      key={c.name}
-                      className={`grid grid-cols-[18px_1fr_auto_auto] items-center gap-2 ${listRow(mode)} ${inactive ? 'opacity-50' : ''}`}
-                    >
-                      <StatusLed tone={tone} size={6} pulse={!std} />
-                      <span className={listRowPrimary(mode)}>{c.name}</span>
-                      <span className={`tabular-nums ${listRowMeta(mode)}`}>
-                        {c.scored} · {c.triggered}
-                      </span>
-                      <span
-                        className={`tabular-nums text-xs font-semibold ${
-                          recallPct === null
-                            ? 'text-slate-500'
-                            : recallPct >= 99
-                              ? std ? 'text-emerald-800' : 'text-emerald-200'
-                              : recallPct >= 95
-                                ? std ? 'text-blue-800' : 'text-cyan-200'
-                                : std ? 'text-amber-900' : 'text-amber-200'
-                        }`}
-                      >
-                        {recallPct === null ? 'n/a' : `${recallPct.toFixed(1)}%`}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
+              <dl className="space-y-1.5">
+                {[
+                  ['recall', range(state?.recall)],
+                  ['precision', range(state?.precision)],
+                  ['false alarm rate', range(state?.false_alarm_rate)],
+                  ['base rate', pct(state?.base_rate)],
+                ].map(([k, v]) => (
+                  <div key={k} className={`flex items-baseline justify-between gap-3 ${listRow(mode)}`}>
+                    <dt className={std ? 'text-sm text-slate-600' : 'font-mono text-[11px] uppercase tracking-widest text-slate-500'}>
+                      {k}
+                    </dt>
+                    <dd className={std ? 'text-sm font-semibold tabular-nums text-slate-900' : 'font-mono text-sm tabular-nums text-slate-200'}>
+                      {v}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+              {state?.caveat ? (
+                <p className={`mt-3 text-sm leading-relaxed ${std ? 'text-slate-600' : 'text-slate-400'}`}>
+                  {state.caveat}
+                </p>
+              ) : null}
             </div>
           </div>
 
-          {/* Coverage footer */}
-          <div className="flex flex-wrap items-center justify-between gap-2 rounded-sm border border-white/5 bg-slate-950/40 px-3 py-2 font-mono text-[10px] uppercase tracking-widest text-slate-400">
-            <span>
-              <span className="text-slate-500">Coverage · </span>
-              <span className="text-cyan-200">
-                {totalEvents ?? 'n/a'} events
-              </span>{' '}
-              across <span className="text-cyan-200">{pilotCount}</span> pilot cities
-            </span>
-            {coverage?.by_source ? (
-              <span className="text-slate-500">
-                {Object.entries(coverage.by_source)
-                  .map(([k, v]) => `${k}: ${v}`)
-                  .join(' · ')}
-              </span>
-            ) : null}
-            <button
-              type="button"
-              onClick={() => void q.refetch()}
-              className="flex items-center gap-1 rounded-sm border border-white/10 bg-black/40 px-1.5 py-0.5 text-slate-300 hover:border-cyan-400/30 hover:text-cyan-200"
-            >
-              <RefreshCw size={9} /> Refresh
-            </button>
-          </div>
-
-          {/* Caveats - collapsible for honesty */}
-          {caveats.length > 0 ? (
-            <div className="rounded-sm border border-amber-500/20 bg-amber-500/[0.04] px-3 py-2">
-              <button
-                type="button"
-                onClick={() => setShowCaveats((s) => !s)}
-                className="flex w-full items-center justify-between gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-amber-200/90"
-              >
-                <span>
-                  Caveats <span className="text-amber-300/60">({caveats.length})</span>
-                </span>
-                {showCaveats ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
-              </button>
-              {!showCaveats ? (
-                <p className="mt-1 line-clamp-1 text-[11px] text-amber-100/70">{caveats[0]}</p>
-              ) : (
-                <ul className="mt-2 space-y-1 text-[11px] leading-relaxed text-amber-100/80">
-                  {caveats.map((c, i) => (
-                    <li key={i} className="flex gap-2">
-                      <span className="mt-1 inline-block h-1 w-1 shrink-0 rounded-full bg-amber-300/70" />
-                      <span>{c}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
+          {/* ---- basin dependence: no figure without its basin ---- */}
+          {basin ? (
+            <div className={panelCard(mode)}>
+              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-slate-500">
+                Basin dependence
+              </p>
+              <div className="mt-2 grid grid-cols-1 gap-x-6 gap-y-1.5 sm:grid-cols-2">
+                {[
+                  ...Object.entries(basin.best ?? {}).map(([k, v]) => [k, v, true] as const),
+                  ...Object.entries(basin.worst ?? {}).map(([k, v]) => [k, v, false] as const),
+                ].map(([name, recall, good]) => (
+                  <div key={name} className={`flex items-baseline justify-between gap-3 ${listRow(mode)}`}>
+                    <span className={std ? 'text-sm text-slate-700' : 'text-sm text-slate-300'}>{name}</span>
+                    <span
+                      className={
+                        good
+                          ? 'font-mono text-sm tabular-nums text-emerald-500'
+                          : 'font-mono text-sm tabular-nums text-amber-500'
+                      }
+                    >
+                      {pct(recall, 0)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              {basin.note ? (
+                <p className={`mt-2 text-sm leading-relaxed ${std ? 'text-slate-600' : 'text-slate-400'}`}>
+                  {basin.note}
+                </p>
+              ) : null}
             </div>
           ) : null}
+
+          {/* ---- method + retired figures ---- */}
+          <div>
+            <button
+              type="button"
+              onClick={() => setShowMethod((v) => !v)}
+              className={
+                std
+                  ? 'inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-slate-900'
+                  : 'inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.28em] text-slate-500 hover:text-slate-300'
+              }
+            >
+              {showMethod ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+              Method and retired figures
+            </button>
+
+            {showMethod ? (
+              <div className={`mt-2 space-y-3 ${panelCard(mode)}`}>
+                {method ? (
+                  <dl className="space-y-1">
+                    {Object.entries({
+                      engine: method.engine,
+                      'scored at': method.scored_at,
+                      'label source': method.label_source,
+                      'gauge readings': method.gauge_readings,
+                      'labelled rows': method.labelled_rows,
+                      'forecast rows': method.forecast_rows,
+                      'ML measured': method.ml_model_measured === true ? 'yes' : 'no',
+                    })
+                      .filter(([, v]) => v !== undefined && v !== null)
+                      .map(([k, v]) => (
+                        <div key={k} className="flex flex-wrap items-baseline gap-2">
+                          <dt className="font-mono text-[10px] uppercase tracking-widest text-slate-500">{k}</dt>
+                          <dd className={std ? 'text-sm text-slate-700' : 'text-sm text-slate-300'}>{String(v)}</dd>
+                        </div>
+                      ))}
+                  </dl>
+                ) : null}
+
+                {Object.keys(retired).length > 0 ? (
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-slate-500">
+                      Retired — do not cite
+                    </p>
+                    <ul className="mt-1.5 space-y-1.5">
+                      {Object.entries(retired).map(([k, v]) => (
+                        <li key={k} className={`text-sm leading-relaxed ${std ? 'text-slate-600' : 'text-slate-400'}`}>
+                          <span className="font-mono text-[11px] text-slate-500">{k}</span> — {v}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+
+                <Link
+                  href="/dashboard/shadow"
+                  className={
+                    std
+                      ? 'inline-flex text-sm font-semibold text-slate-900 underline'
+                      : 'inline-flex text-sm font-semibold text-slate-200 underline'
+                  }
+                >
+                  Open North Odisha shadow →
+                </Link>
+              </div>
+            ) : null}
+          </div>
         </div>
       )}
     </HudFrame>

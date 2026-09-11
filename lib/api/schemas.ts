@@ -253,27 +253,44 @@ export const MlInferenceLogsSchema = z.preprocess(
   z.array(JsonObject),
 );
 
-const BacktestByCity = z.record(
-  z.string(),
-  z
-    .object({
-      scored: z.number().optional(),
-      triggered: z.number().optional(),
-      recall: z.number().nullable().optional(),
-    })
-    .passthrough(),
-);
+/* ==========================================================================
+   GET /ml/backtest/summary  (D031/D032/D033 river-truth evidence)
 
-const BacktestLeadTime = z
+   BREAKING, already live in prod: `lead_time_24h`, `lead_time_48h` and
+   `by_city` are gone. The v4 99.3% payload is retained upstream only under
+   `legacy_v4_retired` for provenance and must never be rendered.
+
+   `headline` and `statewide_context` are structurally paired on purpose: a
+   13/13 basin result is only honest beside the ~14-false-alarms-per-flood
+   statewide figure, so the UI renders both or neither.
+   ========================================================================== */
+
+const BacktestHeadlineSchema = z
   .object({
-    lead_hours: z.number().optional(),
-    scored_events: z.number().optional(),
-    skipped_events: z.number().optional(),
-    triggered_medium_plus: z.number().optional(),
-    recall: z.number().optional(),
-    recall_pct: z.number().optional(),
-    alert_threshold: z.number().optional(),
-    by_city: BacktestByCity.optional(),
+    scope: z.string().optional(),
+    lead: z.string().optional(),
+    recall: z.number().nullable().optional(),
+    precision: z.number().nullable().optional(),
+    false_alarm_rate: z.number().nullable().optional(),
+    floods_caught: z.string().optional(),
+    base_rate: z.number().nullable().optional(),
+    lift_over_base_rate: z.number().nullable().optional(),
+    /** required text wherever floods_caught is shown */
+    sample_size_warning: z.string().optional(),
+    statement: z.string().optional(),
+  })
+  .passthrough();
+
+const BacktestStatewideSchema = z
+  .object({
+    scope: z.string().optional(),
+    lead: z.string().optional(),
+    /** [T-1d, T-2d] */
+    recall: z.array(z.number()).optional(),
+    precision: z.array(z.number()).optional(),
+    false_alarm_rate: z.array(z.number()).optional(),
+    base_rate: z.number().nullable().optional(),
+    caveat: z.string().optional(),
   })
   .passthrough();
 
@@ -281,13 +298,35 @@ export const MlBacktestSummarySchema = z
   .object({
     available: z.boolean().optional(),
     generated_at: z.string().optional(),
-    headline: z.string().optional(),
-    pilot_cities: z.array(z.string()).optional(),
-    total_pilot_events: z.number().optional(),
-    methodology: z.record(z.string(), z.unknown()).optional(),
-    lead_time_24h: BacktestLeadTime.optional(),
-    lead_time_48h: BacktestLeadTime.optional(),
-    caveats: z.array(z.string()).optional(),
+    headline: BacktestHeadlineSchema.optional(),
+    statewide_context: BacktestStatewideSchema.optional(),
+    basin_dependence: z
+      .object({
+        note: z.string().optional(),
+        best: z.record(z.string(), z.number()).optional(),
+        worst: z.record(z.string(), z.number()).optional(),
+      })
+      .passthrough()
+      .optional(),
+    method: z
+      .object({
+        engine: z.string().optional(),
+        scored_at: z.string().optional(),
+        label_source: z.string().optional(),
+        gauge_readings: z.number().optional(),
+        labelled_rows: z.number().optional(),
+        forecast_rows: z.number().optional(),
+        positives: z.record(z.string(), z.number()).optional(),
+        leakage_safe: z.boolean().optional(),
+        ml_model_measured: z.boolean().optional(),
+      })
+      .passthrough()
+      .optional(),
+    retired: z.record(z.string(), z.string()).optional(),
+    docs: z.string().optional(),
+    decisions: z.array(z.string()).optional(),
+    /** provenance only - never render */
+    legacy_v4_retired: z.record(z.string(), z.unknown()).optional(),
     flood_events_coverage: z
       .object({
         available: z.boolean().optional(),
