@@ -366,7 +366,13 @@ const BriefingDistrictSchema = z
     risk_score: z.number().nullable().optional(),
     confidence: z.number().nullable().optional(),
     trend: z.string().nullable().optional(),
-    top_reason: z.string().nullable().optional(),
+    top_reason: z.preprocess((v) => {
+      if (v && typeof v === 'object' && 'text' in (v as Record<string, unknown>)) {
+        const t = (v as { text?: unknown }).text;
+        return t == null ? null : String(t);
+      }
+      return v;
+    }, z.string().nullable().optional()),
     top_action: z.string().nullable().optional(),
     primary_driver: z.string().nullable().optional(),
     similar_event: SimilarEventSchema.nullable().optional(),

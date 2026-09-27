@@ -485,3 +485,80 @@ html[data-ui-mode='standard'] .mission-header .mission-brand-badge {
 [data-ui-mode='standard'] .mission-preview-banner .text-emerald-100\/90 {
   color: #1e40af !important;
 }
+
+/* ==========================================================================
+   ModelEarth Ops: print and forward.
+
+   A briefing in an Indian district office does not stay on the screen it was
+   made on. It gets printed for the morning meeting, projected in the control
+   room, and photographed and forwarded on WhatsApp. So the printed sheet is a
+   real deliverable, not an afterthought: it drops the app chrome, forces ink
+   on white, and keeps the severity glyph and word so the page still reads
+   after a black-and-white photocopier has removed every colour.
+   ========================================================================== */
+@media print {
+  .ops-no-print { display: none !important; }
+  .ops-print-only { display: block !important; }
+
+  html, body { background: #fff !important; }
+  .ops-sheet, .ops-sheet * {
+    background: transparent !important;
+    color: #000 !important;
+    box-shadow: none !important;
+  }
+  .ops-sheet { max-width: none !important; padding: 0 !important; }
+
+  /* Severity chips lose their fill on a mono printer, so give them an edge. */
+  .ops-sheet [data-severity] {
+    border: 1pt solid #000 !important;
+    border-radius: 2pt !important;
+    padding: 0 3pt !important;
+  }
+  /* Red and orange stay distinguishable by weight when colour is gone. */
+  .ops-sheet [data-severity='CRITICAL'],
+  .ops-sheet [data-severity='HIGH'] { font-weight: 700 !important; }
+
+  .ops-row { break-inside: avoid; page-break-inside: avoid; }
+  .ops-sheet h1 { font-size: 18pt !important; }
+  .ops-sheet h2 { font-size: 12pt !important; }
+  .ops-sheet { font-size: 10pt !important; }
+
+  @page { margin: 14mm; }
+}
+
+.ops-print-only { display: none; }
+
+/* ==========================================================================
+   ModelEarth Ops typography.
+
+   Scoped to `.ops-root` so the landing page and Mission Control keep Space
+   Grotesk untouched. Ops opts into Inter for text and IBM Plex Mono for
+   figures, and turns on tabular numerals globally inside the surface: a column
+   of elapsed times where "6d 16h" and "6d 4h" do not line up is harder to scan
+   than it looks, and every number on this surface sits in a column.
+   ========================================================================== */
+.ops-root {
+  font-family: var(--font-ops-sans), 'Inter', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-feature-settings: 'tnum' 1, 'cv05' 1, 'ss01' 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.ops-root .font-mono,
+.ops-root code,
+.ops-root kbd {
+  font-family: var(--font-ops-mono), 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo,
+    Consolas, monospace;
+  /* Slashed zero and a disambiguated 1/l/I. A misread river level is not a
+     typography problem until it is. */
+  font-feature-settings: 'zero' 1, 'tnum' 1;
+  letter-spacing: -0.01em;
+}
+
+/* Headings on this surface are information, not branding: no display tracking. */
+.ops-root h1,
+.ops-root h2,
+.ops-root h3 {
+  letter-spacing: -0.015em;
+}
