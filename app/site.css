@@ -1540,12 +1540,12 @@
 }
 
 /* ==========================================================================
-   brand mark — /modelearth-demo-logo.svg (full colour image, not a mask).
+   brand mark — /modelearth-logo.png (full colour image, not a mask).
    Optional rise animation on first paint; holds still after.
    ========================================================================== */
 
 .me-brand {
-  /* Full-colour SVG mark (modelearth-demo-logo.svg). No CSS mask — the
+  /* Full-colour mark (modelearth-logo.png). No CSS mask — the
      artwork carries its own palette. */
   background: transparent;
 }
