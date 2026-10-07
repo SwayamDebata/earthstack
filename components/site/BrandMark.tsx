@@ -1,7 +1,10 @@
 /* ==========================================================================
-   ModelEarth mark — public/modelearth-demo-logo.svg
-   Square artwork; rendered as an image (full colour, not a CSS mask).
+   ModelEarth mark — public/modelearth-logo.png
+   Landscape artwork; `size` sets the height and the width follows the ratio.
+   Rendered as an image (full colour, not a CSS mask).
    ========================================================================== */
+
+const ASPECT = 230 / 160;
 
 export default function BrandMark({
   size = 26,
@@ -13,19 +16,20 @@ export default function BrandMark({
   animate?: boolean;
   className?: string;
 }) {
+  const width = Math.round(size * ASPECT);
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src="/modelearth-demo-logo.svg"
+      src="/modelearth-logo.png"
       alt=""
-      width={size}
+      width={width}
       height={size}
       aria-hidden="true"
       className={['me-brand', className, animate ? 'me-brand-anim' : ''].filter(Boolean).join(' ')}
       style={{
         flex: '0 0 auto',
         display: 'block',
-        width: size,
+        width,
         height: size,
         objectFit: 'contain',
       }}

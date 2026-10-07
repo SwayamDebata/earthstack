@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Space_Grotesk, JetBrains_Mono, Instrument_Sans, Inter_Tight } from 'next/font/google';
+import { Space_Grotesk, JetBrains_Mono, Instrument_Sans, Inter_Tight, Inter, IBM_Plex_Mono } from 'next/font/google';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './globals.css';
 import './site.css';
@@ -36,6 +36,35 @@ const interTight = Inter_Tight({
   weight: ['400', '500', '600'],
 });
 
+/* ModelEarth Ops typography.
+
+   Space Grotesk carries the brand on the landing page and in Mission Control,
+   where personality is the point. Ops is the opposite job: small type, dense
+   rows, numbers read quickly by someone who is tired, and screens that get
+   photographed and printed. Space Grotesk's geometric quirks, its single-storey
+   shapes and its wide default figures all work against that at 13px.
+
+   Inter is the plain, unglamorous answer. It was drawn for interfaces at small
+   sizes, it has a tall x-height, and its tabular figures line up in a column of
+   elapsed times. IBM Plex Mono replaces JetBrains Mono for the numbers: it has
+   a slashed zero and unmistakable 1/l/I, which matters when the figure on the
+   screen is a river level someone is about to act on.
+
+   Both are scoped to the Ops shell. Nothing else in the app changes. */
+const opsSans = Inter({
+  variable: '--font-ops-sans',
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['400', '500', '600', '700'],
+});
+
+const opsMono = IBM_Plex_Mono({
+  variable: '--font-ops-mono',
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['400', '500', '600'],
+});
+
 export const metadata: Metadata = {
   title: 'ModelEarth · Climate intelligence & mission control',
   description:
@@ -43,7 +72,6 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://www.modelearth.in'),
   icons: {
     icon: [
-      { url: '/modelearth-demo-logo.svg', type: 'image/svg+xml' },
       { url: '/modelearth-favicon.png', type: 'image/png', sizes: '32x32' },
       { url: '/modelearth-icon.png', type: 'image/png', sizes: '64x64' },
     ],
@@ -63,7 +91,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         </noscript>
       </head>
       <body
-        className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${instrumentSans.variable} ${interTight.variable} antialiased`}
+        className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${instrumentSans.variable} ${interTight.variable} ${opsSans.variable} ${opsMono.variable} antialiased`}
       >
         <Providers>{children}</Providers>
       </body>
