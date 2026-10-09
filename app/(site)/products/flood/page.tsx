@@ -131,10 +131,11 @@ export default function FloodPage() {
               <p className="me-body" style={{ maxWidth: 'none' }}>
                 And the gate: river level only reaches the risk path when the station is marked{' '}
                 <code className="me-mono" style={{ fontSize: '0.9em', padding: '0.15em 0.4em', background: 'var(--surface-2)', color: 'var(--ink)' }}>
-                  status == live
+                  live
                 </code>
-                . Otherwise the briefing says the read is rainfall-only, out loud, and the score is
-                capped accordingly.
+                , or when the state&rsquo;s daily bulletin is fresh (pilot reaches). Otherwise the
+                briefing says the read is rainfall-only, out loud, and the score is capped
+                accordingly.
               </p>
             </div>
           </Reveal>
@@ -304,8 +305,9 @@ export default function FloodPage() {
               </p>
               <p className="me-body">
                 Jajpur and Bhadrak are scored and logged with a shadow badge. They are not public
-                alerts and they are not traction. The gate that opens them is the trust gate, and it
-                is not passed.
+                alerts and they are not traction. Advisory pilot tier for named district offices
+                (D036). Still not a public alert. The gate that opens the five LIVE cities further is
+                the trust gate, and it is not passed.
               </p>
             </Reveal>
           </div>

@@ -69,7 +69,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
    Status chip - the labelling discipline, in a component
    ========================================================================== */
 
-export type ChipKind = 'live' | 'backtest' | 'shadow' | 'miss' | 'open' | 'dev';
+export type ChipKind = 'live' | 'backtest' | 'shadow' | 'miss' | 'open' | 'dev' | 'pilot';
 
 const CHIP_TEXT: Record<ChipKind, string> = {
   live: 'Live',
@@ -78,6 +78,7 @@ const CHIP_TEXT: Record<ChipKind, string> = {
   miss: 'Miss',
   open: 'Open',
   dev: 'In development',
+  pilot: 'Pilot · not a public alert',
 };
 
 export function Chip({

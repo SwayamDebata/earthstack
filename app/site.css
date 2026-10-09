@@ -336,6 +336,10 @@
   color: var(--chip-shad-fg);
   background: var(--chip-shad-bg);
 }
+.me-chip[data-k='pilot'] {
+  color: var(--chip-shad-fg);
+  background: var(--chip-shad-bg);
+}
 .me-chip[data-k='miss'] {
   color: var(--chip-miss-fg);
   background: var(--chip-miss-bg);

@@ -376,6 +376,17 @@ const BriefingDistrictSchema = z
     top_action: z.string().nullable().optional(),
     primary_driver: z.string().nullable().optional(),
     similar_event: SimilarEventSchema.nullable().optional(),
+    river_state: z
+      .object({
+        state: z.string().optional(),
+        label: z.string().optional(),
+        ratio: z.number().nullable().optional(),
+        trend: z.string().nullable().optional(),
+      })
+      .passthrough()
+      .optional(),
+    river_site: z.string().nullable().optional(),
+    river_source: z.string().nullable().optional(),
   })
   .passthrough();
 
@@ -400,6 +411,9 @@ export const BriefingSchema = z
     top_actions: z.array(z.string()).optional().default([]),
     errors: z.array(z.unknown()).optional().default([]),
     disclaimer: z.string().optional(),
+    pilot_note: z.string().nullable().optional(),
+    pilot_jurisdiction: z.array(z.string()).optional(),
+    weak_points_on_watch: z.array(z.record(z.string(), z.unknown())).optional(),
   })
   .passthrough();
 

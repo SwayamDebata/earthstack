@@ -8,12 +8,24 @@ export function SeverityChip({
   value,
   showAction = false,
   size = 'md',
+  riverWatch = false,
 }: {
   value: unknown;
   showAction?: boolean;
   size?: 'sm' | 'md';
+  riverWatch?: boolean;
 }) {
   const s = sev(value);
+  if (riverWatch) {
+    return (
+      <span className={`ops-chip ops-chip-MEDIUM ${size === 'sm' ? 'ops-chip-sm' : ''}`}>
+        <span aria-hidden>●</span>
+        RIVER WATCH
+        {showAction ? ' · Watch the gauge' : ''}
+        <span className="sr-only"> Watch the gauge.</span>
+      </span>
+    );
+  }
   return (
     <span className={`ops-chip ops-chip-${s.key} ${size === 'sm' ? 'ops-chip-sm' : ''}`}>
       <span aria-hidden>{s.glyph}</span>

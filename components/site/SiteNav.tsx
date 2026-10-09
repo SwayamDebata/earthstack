@@ -259,7 +259,7 @@ export default function SiteNav() {
               })}
             </div>
             <span className="me-label me-subbar-note" style={{ flex: '0 0 auto' }}>
-              4 surfaces · 2 live · 1 shadow · 1 in development
+              4 surfaces · 2 live · 1 shadow + pilot · 1 in development
             </span>
           </div>
         </div>

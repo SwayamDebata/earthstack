@@ -1,6 +1,7 @@
 'use client';
 
 import { Caption, Chip, Reveal, SectionHead, type ChipKind } from './primitives';
+import { SeasonTape } from './Ledger';
 
 /* Where the 143 "validated positives" actually came from, after the relabel. */
 const BASINS: { name: string; n: number; note: string }[] = [
@@ -20,7 +21,7 @@ const SURVIVED: [string, string][] = [
 const OPEN: { title: string; body: string; kind: ChipKind }[] = [
   {
     title: 'The trust gate is not passed',
-    body: 'Fourteen consecutive dry days with zero false HIGH. Minimum streak is currently zero, blocked on Sambalpur and Rourkela. And the gate as written tests only dry days - the one case the engine never fails. It needs rewriting.',
+    body: 'Trust gate v2 is defined. v25_dowr passes on the 2026 tape; rain-only fails G1. Still OPEN for the five LIVE cities. Fourteen consecutive dry days with zero false HIGH remains the live-city bar, and Sambalpur and Rourkela still block it.',
     kind: 'open',
   },
   {
@@ -195,6 +196,8 @@ export default function Evidence() {
           <SectionHead index="05" label="What the engine actually scores" />
         </Reveal>
 
+        <SeasonTape />
+
         <RiverTruth />
 
         <Reveal>
@@ -257,7 +260,8 @@ export default function Evidence() {
             ))}
           </div>
           <Caption>
-            What survived the relabel. Rain-only, scored against each gauge’s own ERA5 p95, negatives
+            What survived the relabel. Hindsight rainfall, not forecast-as-issued; superseded by the
+            forecast numbers above. Rain-only, scored against each gauge’s own ERA5 p95, negatives
             sampled at the same gauge. No leaked river term.
           </Caption>
         </Reveal>
@@ -307,7 +311,7 @@ export default function Evidence() {
         <Reveal delay={160}>
           <div style={{ marginTop: 'clamp(3rem, 6vw, 4.5rem)' }}>
             <h3 className="me-h" style={{ fontSize: 'clamp(1.15rem, 1.8vw, 1.45rem)', marginBottom: 20 }}>
-              What we have not solved, as of September 2026
+              What we have not solved, as of October 2026
             </h3>
             <ul style={{ listStyle: 'none', margin: 0, padding: 0, borderTop: '1px solid var(--line)' }}>
               {OPEN.map((o) => (

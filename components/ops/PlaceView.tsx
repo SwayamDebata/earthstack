@@ -4,19 +4,21 @@ import { useMemo } from 'react';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { opsApi } from '@/lib/ops/api';
-import { ago, isShadowRegion } from '@/lib/ops/language';
+import { ago } from '@/lib/ops/language';
+import { isRiverWatch } from '@/lib/ops/alerts';
 import { SeverityChip, StatusLabel, Loading, Unreachable } from '@/components/ops/Bits';
 import Evidence from '@/components/ops/Evidence';
+import ExternalFeeds from '@/components/ops/ExternalFeeds';
+import WeakPoints from '@/components/ops/WeakPoints';
 import { useOpsUser } from '@/components/ops/OpsShell';
-import { canSeeShadowLocations } from '@/lib/ops/places';
+import { signalSourceOf } from '@/lib/api/risk-status';
 
 export default function PlaceView({ name }: { name: string }) {
   const user = useOpsUser();
-  const allowed = user.jurisdiction.map((n) => n.toLowerCase());
-  const shadow = isShadowRegion(name);
+  const key = name.toLowerCase();
   const inDistrict =
-    allowed.includes(name.toLowerCase()) ||
-    (shadow && canSeeShadowLocations(user.role, user.jurisdiction));
+    user.role === 'admin' || user.jurisdiction.some((n) => n.trim().toLowerCase() === key);
+  const isPilot = user.pilot_jurisdiction.some((n) => n.trim().toLowerCase() === key);
 
   const riskQ = useQuery({
     queryKey: ['ops-risk', name],
@@ -30,7 +32,7 @@ export default function PlaceView({ name }: { name: string }) {
   });
 
   const payload = (riskQ.data ?? {}) as Record<string, unknown>;
-  const raw = useMemo(() => {
+  const raw = useMemo<Record<string, unknown>>(() => {
     const fromRisk = (payload.raw_data ?? {}) as Record<string, unknown>;
     const fromExplain = ((explainQ.data as Record<string, unknown> | undefined)?.evidence ??
       {}) as Record<string, unknown>;
@@ -44,6 +46,7 @@ export default function PlaceView({ name }: { name: string }) {
       : typeof (explainQ.data as { risk_score?: number } | undefined)?.risk_score === 'number'
         ? (explainQ.data as { risk_score: number }).risk_score
         : null;
+  const signal = signalSourceOf({ ...payload, ...raw });
 
   if (!inDistrict) {
     return (
@@ -69,8 +72,21 @@ export default function PlaceView({ name }: { name: string }) {
       <div className="ops-panel" style={{ padding: 16 }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
           <h1 className="ops-h1">{name}</h1>
-          <SeverityChip value={severity} showAction />
-          {shadow ? <StatusLabel kind="SHADOW" /> : null}
+          <SeverityChip
+            value={severity}
+            showAction
+            riverWatch={isRiverWatch({
+              tier: isPilot ? 'pilot' : 'live',
+              severity,
+              signal_source: signal,
+              river_ratio: typeof raw.river_ratio === 'number' ? raw.river_ratio : null,
+            })}
+          />
+          {isPilot ? (
+            <StatusLabel kind="PILOT" />
+          ) : user.role === 'admin' && !user.jurisdiction.some((n) => n.trim().toLowerCase() === key) ? (
+            <StatusLabel kind="SHADOW" />
+          ) : null}
         </div>
         <p className="ops-lede">
           {riskQ.isSuccess ? `Conditions as of ${ago(riskQ.dataUpdatedAt)}.` : 'Checking conditions.'}
@@ -87,6 +103,20 @@ export default function PlaceView({ name }: { name: string }) {
         <h2 className="ops-h2">Why this reading</h2>
         <div style={{ marginTop: 10 }}>
           <Evidence raw={raw} />
+        </div>
+      </div>
+
+      <div className="ops-panel" style={{ padding: 16 }}>
+        <h2 className="ops-h2">What others are saying</h2>
+        <div style={{ marginTop: 10 }}>
+          <ExternalFeeds location={name} />
+        </div>
+      </div>
+
+      <div className="ops-panel" style={{ padding: 16 }}>
+        <h2 className="ops-h2">Weak points</h2>
+        <div style={{ marginTop: 10 }}>
+          <WeakPoints location={name} />
         </div>
       </div>
     </div>

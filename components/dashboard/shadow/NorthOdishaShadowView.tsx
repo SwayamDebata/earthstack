@@ -118,6 +118,9 @@ export default function NorthOdishaShadowView() {
             {basins.length ? `${basins.join(' · ')}. ` : ''}
             Scored and published, not alerted. Advisory only; does not override IMD, CWC or OSDMA warnings.
           </p>
+          <p className={`mt-2 max-w-2xl text-sm ${std ? 'text-slate-600' : 'text-slate-400'}`}>
+            Pilot tier (D036): these reaches are available to named district offices on Flood Ops. Not a public alert.
+          </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Link
@@ -171,7 +174,8 @@ export default function NorthOdishaShadowView() {
             </span>
           </div>
           <p className={`mt-1 text-xs ${std ? 'text-slate-500' : 'text-slate-500'}`}>
-            Rainfall-only scores. Colour shows severity; this surface does not alert.
+            Colour shows severity. The river term is in the score when the DoWR bulletin is fresh.
+            This surface does not alert.
           </p>
 
           {mapQ.isError ? (

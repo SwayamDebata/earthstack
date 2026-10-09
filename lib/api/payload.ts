@@ -24,6 +24,7 @@ export function extractListPayload(payload: unknown): unknown[] {
     'content',
     'elements',
     'entries',
+    'weak_points',
   ];
 
   const o = payload as Record<string, unknown>;

@@ -17,9 +17,9 @@ export type RequestOptions = {
   signal?: AbortSignal;
   cache?: RequestCache;
   next?: NextFetchRequestConfig;
-  method?: 'GET' | 'POST' | 'PUT' | 'PATCH';
+  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   body?: unknown;
-  /** Flood Ops only. Mission Control must never set this — a token on /alerts
+  /** Flood Ops only. Mission Control must never set this - a token on /alerts
       switches that route from pipeline OPEN/RESOLVED to per-org ops_status. */
   auth?: boolean;
   accept?: string;
@@ -64,7 +64,17 @@ function parseErrorMessage(status: number, errText: string): { msg: string; deta
                     ? 'This alert is already closed.'
                     : j.detail === 'insufficient_role'
                       ? 'This account cannot do that.'
-                      : j.detail;
+                      : j.detail === 'location_not_in_jurisdiction'
+                        ? 'That location is not in this office’s district.'
+                        : j.detail === 'river_and_site_required'
+                          ? 'River and site are required.'
+                          : j.detail === 'invalid_kind'
+                            ? 'That kind of weak point is not recognised.'
+                            : j.detail === 'invalid_watch_ratio'
+                              ? 'Watch ratio must be a number between 0 and 2.'
+                              : j.detail === 'weak_point_not_found_or_shared'
+                                ? 'Shared weak points cannot be removed from this office.'
+                                : j.detail;
       } else if (Array.isArray(j.detail)) {
         msg =
           j.detail

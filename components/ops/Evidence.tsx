@@ -1,5 +1,11 @@
 import { drivenBy, sourceName } from '@/lib/ops/language';
-import { fmtRiverRatio } from '@/lib/api/risk-status';
+import {
+  fmtRiverRatio,
+  riverFeedCaption,
+  riverIsLive,
+  riverStatusOf,
+  riverTrendWord,
+} from '@/lib/api/risk-status';
 
 function num(v: unknown): number | null {
   return typeof v === 'number' && Number.isFinite(v) ? v : null;
@@ -9,8 +15,8 @@ function str(v: unknown): string | null {
 }
 
 export default function Evidence({ raw }: { raw: Record<string, unknown> }) {
-  const riverStatus = String(raw.river_status ?? '').toLowerCase();
-  const riverLive = riverStatus === 'live';
+  const riverStatus = riverStatusOf(raw);
+  const live = riverIsLive(riverStatus);
   const riverRatio = num(raw.river_ratio);
   const ceiling = num(raw.max_achievable_score);
   const missing = Array.isArray(raw.missing_inputs) ? (raw.missing_inputs as unknown[]) : [];
@@ -19,14 +25,18 @@ export default function Evidence({ raw }: { raw: Record<string, unknown> }) {
   const fcst48 = num(raw.rainfall_forecast_48h);
   const p95 = num(raw.historical_p95_rain);
   const avg = num(raw.historical_avg_rain);
-  const rainSource = sourceName(str(raw.rainfall_source_used));
+  const rainSourceId = str(raw.rainfall_source_used);
+  const rainSource =
+    rainSourceId && rainSourceId.toLowerCase() !== 'none' ? sourceName(rainSourceId) : null;
   const baselineSource = sourceName(str(raw.historical_baseline_source));
   const loc = str(raw.location) ?? 'this location';
   const station =
     str(raw.river_station_cwc) ?? str(raw.river_station) ?? str(raw.river_station_name);
+  const observed = str(raw.river_observed_at);
+  const trend = riverTrendWord(raw.river_trend);
+  const feed = riverFeedCaption(riverStatus, observed);
 
-  const fill =
-    riverRatio !== null ? Math.max(0, Math.min(120, riverRatio * 100)) : 0;
+  const fill = riverRatio !== null ? Math.max(0, Math.min(120, riverRatio * 100)) : 0;
   const barColor =
     riverRatio !== null && riverRatio >= 1
       ? 'var(--imd-red)'
@@ -40,11 +50,13 @@ export default function Evidence({ raw }: { raw: Record<string, unknown> }) {
       ? `The ${station} gauge reading is out of date, so it was not used in this score.`
       : 'The gauge reading is out of date, so it was not used in this score.';
   } else if (station) {
-    riverCopy = `The ${station} river station is mapped, but it is not reporting live, so it was not used. This score is rainfall only.`;
+    riverCopy = `The ${station} river station is mapped, but it is not reporting a usable reading, so it was not used. This score is rainfall only.`;
   } else {
     riverCopy =
-      'No live river reading is on the score path for this location. This score is rainfall only.';
+      'No usable river reading is on the score path for this location. This score is rainfall only.';
   }
+
+  const showRedCap = ceiling === null || ceiling < 1;
 
   return (
     <div className="ops-stack" style={{ gap: 16 }}>
@@ -86,7 +98,7 @@ export default function Evidence({ raw }: { raw: Record<string, unknown> }) {
 
       <div>
         <h3 className="ops-h2">River</h3>
-        {riverLive && riverRatio !== null ? (
+        {live && riverRatio !== null ? (
           <>
             <div className="ops-bar" aria-hidden>
               <i style={{ width: `${Math.min(100, fill)}%`, background: barColor }} />
@@ -95,11 +107,16 @@ export default function Evidence({ raw }: { raw: Record<string, unknown> }) {
               {station ? `${station}: ` : ''}
               {fmtRiverRatio(riverRatio)}.
             </p>
+            {trend || feed ? (
+              <p className="ops-lede" style={{ margin: '4px 0 0' }}>
+                {[trend, feed].filter(Boolean).join(' · ')}
+              </p>
+            ) : null}
           </>
         ) : (
           <p className="ops-lede" style={{ marginTop: 0 }}>
-            {riverCopy} The engine will use the river the moment a live reading returns. Without
-            it, Red is unreachable: rainfall alone tops out at 0.665.
+            {riverCopy} The engine will use the river the moment a usable reading returns.
+            {showRedCap ? ' Without it, Red is unreachable: rainfall alone tops out at 0.665.' : ''}
           </p>
         )}
       </div>
@@ -122,4 +139,3 @@ export default function Evidence({ raw }: { raw: Record<string, unknown> }) {
     </div>
   );
 }
-

@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { opsApi } from '@/lib/ops/api';
-import { toActionEntries, toOpsAlert } from '@/lib/ops/alerts';
+import { isRiverWatch, toActionEntries, toOpsAlert } from '@/lib/ops/alerts';
 import { ago, dateTime, elapsed } from '@/lib/ops/language';
 import {
   actionLabel,
@@ -16,7 +16,7 @@ import {
   type Outcome,
 } from '@/lib/ops/workflow';
 import { useOpsUser } from '@/components/ops/OpsShell';
-import { SeverityChip, Loading, Unreachable } from '@/components/ops/Bits';
+import { SeverityChip, StatusLabel, Loading, Unreachable } from '@/components/ops/Bits';
 import Evidence from '@/components/ops/Evidence';
 import { ApiError } from '@/lib/api/client';
 
@@ -48,6 +48,11 @@ export default function AlertDetail({ alertId }: { alertId: string }) {
     queryKey: ['ops-risk', alert?.region],
     queryFn: () => opsApi.risk(alert!.region),
     enabled: Boolean(alert?.region),
+  });
+  const briefingQ = useQuery({
+    queryKey: ['ops-briefing'],
+    queryFn: () => opsApi.briefing(),
+    refetchInterval: 300_000,
   });
 
   const log = useMemo(
@@ -111,6 +116,17 @@ export default function AlertDetail({ alertId }: { alertId: string }) {
       : alert.acknowledged_by
         ? 'a colleague'
         : null;
+  const signalSource =
+    alert.signal_source ??
+    (typeof (riskQ.data as { signal_source?: unknown } | undefined)?.signal_source === 'string'
+      ? String((riskQ.data as { signal_source: string }).signal_source)
+      : typeof raw.signal_source === 'string'
+        ? raw.signal_source
+        : null);
+  const riverState = (
+    (briefingQ.data?.districts ?? []) as { location?: string; river_state?: { state?: string } }[]
+  ).find((d) => d.location && d.location.toLowerCase() === alert.region.toLowerCase())?.river_state
+    ?.state;
 
   return (
     <div className="ops-stack">
@@ -125,7 +141,17 @@ export default function AlertDetail({ alertId }: { alertId: string }) {
               <h1 className="ops-h1" style={{ fontSize: 24 }}>
                 {alert.region}
               </h1>
-              <SeverityChip value={alert.severity} showAction />
+              {alert.tier === 'pilot' ? <StatusLabel kind="PILOT" /> : null}
+              <SeverityChip
+                value={alert.severity}
+                showAction
+                riverWatch={isRiverWatch({
+                  ...alert,
+                  signal_source: signalSource,
+                  river_state: riverState ?? null,
+                  river_ratio: typeof raw.river_ratio === 'number' ? raw.river_ratio : null,
+                })}
+              />
             </div>
             <p className="ops-lede">
               Alerted {dateTime(alert.issued_at)} · {elapsed(alert.issued_at)} ago
@@ -156,6 +182,31 @@ export default function AlertDetail({ alertId }: { alertId: string }) {
               ? 'Could not load current conditions.'
               : `Conditions as of ${ago(riskQ.dataUpdatedAt)}.`}
         </p>
+        {(() => {
+          const districts = (briefingQ.data?.districts ?? []) as {
+            location?: string;
+            river_state?: { state?: string; label?: string };
+            river_site?: string;
+          }[];
+          const row = districts.find(
+            (d) => d.location && d.location.toLowerCase() === alert.region.toLowerCase(),
+          );
+          const label = row?.river_state?.label;
+          if (!label) return null;
+          const flooding = row?.river_state?.state === 'still_flooding';
+          return (
+            <p
+              style={{
+                margin: '0 0 12px',
+                fontWeight: 550,
+                color: flooding ? 'var(--imd-red)' : undefined,
+              }}
+            >
+              {label}
+              {row?.river_site ? ` - ${row.river_site}` : ''}
+            </p>
+          );
+        })()}
         {riskQ.isSuccess ? (
           <Evidence raw={raw} />
         ) : riskQ.isLoading ? (

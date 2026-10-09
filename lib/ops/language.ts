@@ -141,7 +141,7 @@ export function drivenBy(signalSource: string | null | undefined): string {
   return 'Driven by rainfall';
 }
 
-/** Cities the product issues alerts for. */
+/** Cities the product issues alerts for. Display names only - not an allow-list. */
 export const ALERTING_REGIONS = [
   'Bhubaneswar',
   'Cuttack',
@@ -150,7 +150,7 @@ export const ALERTING_REGIONS = [
   'Rourkela',
 ] as const;
 
-/** North Odisha — scored live, shown in Ops, labelled SHADOW until the trust gate. */
+/** North Odisha display names / coordinate fallback. Not an authorisation list. */
 export const SHADOW_REGIONS = ['Anandapur', 'Bhadrak', 'Jajpur', 'Baripada'] as const;
 
 export const ALL_REGIONS = [...ALERTING_REGIONS, ...SHADOW_REGIONS] as const;
