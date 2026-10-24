@@ -17,6 +17,21 @@ import { useOpsTheme, useOpsUser } from '@/components/ops/OpsShell';
 const SOURCE = 'ops-places';
 const DOTS = 'ops-dots';
 const LABELS = 'ops-labels';
+const WP_SRC = 'ops-weak';
+const WP_LYR = 'ops-weak-dots';
+const WET_SRC = 'ops-wet';
+const WET_LYR = 'ops-wet-dots';
+const GFM_SRC = 'ops-gfm';
+const GFM_LYR = 'ops-gfm-fill';
+
+type GisLayers = {
+  layers?: {
+    weak_points?: GeoJSON.FeatureCollection;
+    historical_wet?: GeoJSON.FeatureCollection;
+    copernicus_gfm?: { tile_template_3857?: string; note?: string };
+  };
+  note?: string;
+};
 
 function asCollection(places: OpsPlace[]): GeoJSON.FeatureCollection {
   return {
@@ -48,6 +63,8 @@ export default function OpsMap() {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const fittedRef = useRef(false);
   const [mapFailed, setMapFailed] = useState(false);
+  const [showWeak, setShowWeak] = useState(true);
+  const [showGfm, setShowGfm] = useState(false);
 
   const liveQ = useQuery({
     queryKey: ['ops-risk-map'],
@@ -66,6 +83,11 @@ export default function OpsMap() {
     queryKey: ['ops-briefing'],
     queryFn: () => opsApi.briefing(),
     refetchInterval: 300_000,
+  });
+  const layersQ = useQuery({
+    queryKey: ['ops-map-layers'],
+    queryFn: () => opsApi.mapLayers() as Promise<GisLayers>,
+    refetchInterval: 600_000,
   });
 
   const places = useMemo(
@@ -232,6 +254,61 @@ export default function OpsMap() {
     else map.once('load', run);
   }, [places, paint, mapFailed]);
 
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || mapFailed || !map.isStyleLoaded()) return;
+    const layers = layersQ.data?.layers;
+    const upsert = (id: string, data: GeoJSON.FeatureCollection | undefined, layerId: string, spec: mapboxgl.CircleLayerSpecification['paint']) => {
+      if (!data) return;
+      const src = map.getSource(id) as mapboxgl.GeoJSONSource | undefined;
+      if (src) src.setData(data);
+      else {
+        map.addSource(id, { type: 'geojson', data });
+        map.addLayer({
+          id: layerId,
+          type: 'circle',
+          source: id,
+          paint: spec,
+        });
+      }
+      if (map.getLayer(layerId)) {
+        map.setLayoutProperty(layerId, 'visibility', showWeak ? 'visible' : 'none');
+      }
+    };
+    upsert(WP_SRC, layers?.weak_points, WP_LYR, {
+      'circle-radius': 5,
+      'circle-color': '#8a4b12',
+      'circle-stroke-width': 1.5,
+      'circle-stroke-color': '#faf8f1',
+    });
+    upsert(WET_SRC, layers?.historical_wet, WET_LYR, {
+      'circle-radius': 7,
+      'circle-color': '#2a5a8c',
+      'circle-opacity': 0.35,
+      'circle-stroke-width': 1,
+      'circle-stroke-color': '#2a5a8c',
+    });
+
+    const tile = layers?.copernicus_gfm?.tile_template_3857;
+    if (tile) {
+      if (!map.getSource(GFM_SRC)) {
+        map.addSource(GFM_SRC, { type: 'raster', tiles: [tile], tileSize: 256 });
+        map.addLayer(
+          {
+            id: GFM_LYR,
+            type: 'raster',
+            source: GFM_SRC,
+            paint: { 'raster-opacity': 0.45 },
+          },
+          DOTS,
+        );
+      }
+      if (map.getLayer(GFM_LYR)) {
+        map.setLayoutProperty(GFM_LYR, 'visibility', showGfm ? 'visible' : 'none');
+      }
+    }
+  }, [layersQ.data, showWeak, showGfm, mapFailed]);
+
   const needing = places.filter((p) => needsAttention(p.severity)).length;
   const onPilot = places.filter((p) => p.tier === 'pilot').length;
   const failed = liveQ.isError;
@@ -256,6 +333,16 @@ export default function OpsMap() {
             : `Scored ${ago(liveQ.dataUpdatedAt)}. The list is the same as the map.${
                 onPilot ? ` ${onPilot} on pilot tier.` : ''
               }`}
+        </p>
+        <p className="ops-lede" style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 8 }}>
+          <label>
+            <input type="checkbox" checked={showWeak} onChange={(e) => setShowWeak(e.target.checked)} />{' '}
+            Weak points + 2026 wet days
+          </label>
+          <label>
+            <input type="checkbox" checked={showGfm} onChange={(e) => setShowGfm(e.target.checked)} />{' '}
+            Copernicus GFM (observed water, after a pass — not a forecast)
+          </label>
         </p>
       </div>
 
