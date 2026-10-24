@@ -141,4 +141,11 @@ export const opsApi = {
       Obj,
       { ...ops, signal },
     ),
+
+  mapLayers: (location?: string, signal?: AbortSignal) =>
+    apiRequest(
+      location ? `/map-layers?location=${encodeURIComponent(location)}` : '/map-layers',
+      Obj,
+      { ...ops, signal },
+    ),
 };
