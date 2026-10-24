@@ -7,6 +7,7 @@ import {
   RiskMapSchema,
   RiskSchema,
   ShadowRiskMapSchema,
+  ShadowRiversSchema,
 } from '@/lib/api/schemas';
 import { extractListPayload } from '@/lib/api/payload';
 import type { ActionType, Outcome } from '@/lib/ops/workflow';
@@ -88,6 +89,10 @@ export const opsApi = {
   /** Public scoring feed. Shown in Ops as SHADOW; never used to issue alerts. */
   shadowMap: (signal?: AbortSignal) =>
     apiRequest('/risk/shadow/map', ShadowRiskMapSchema, { cache: 'no-store', signal }),
+
+  /** Public DoWR bulletin gauges — used to colour Ops map pins, not to score. */
+  shadowRivers: (signal?: AbortSignal) =>
+    apiRequest('/risk/shadow/rivers', ShadowRiversSchema, { cache: 'no-store', signal }),
 
   risk: (location: string, signal?: AbortSignal) =>
     apiRequest(`/risk?location=${encodeURIComponent(location)}`, RiskSchema, { ...ops, signal }),

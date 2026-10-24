@@ -662,6 +662,127 @@ html:has(.ops-root.ops-dark) body {
   background: var(--ops-fill);
 }
 
+.ops-map-float {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: min(420px, calc(100% - 20px));
+  pointer-events: none;
+}
+.ops-map-card {
+  pointer-events: auto;
+  background: color-mix(in srgb, var(--ops-surface) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--ops-line);
+  padding: 10px 12px;
+  min-width: 200px;
+}
+@media (max-width: 720px) {
+  .ops-map-float {
+    max-width: calc(100% - 16px);
+  }
+  .ops-map-legend {
+    display: none;
+  }
+}
+.ops-layer {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--ops-ink);
+  margin: 0 0 5px;
+  cursor: pointer;
+}
+.ops-layer input {
+  margin-top: 2px;
+}
+.ops-map-hint {
+  margin: 6px 0 0;
+  font-size: 11.5px;
+  color: var(--ops-muted);
+  max-width: 240px;
+}
+.ops-map-legend ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.ops-map-legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--ops-ink);
+  margin: 0 0 4px;
+}
+.ops-map-legend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--ops-ink) 20%, transparent);
+  flex: none;
+}
+
+.ops-root .mapboxgl-popup-content {
+  background: var(--ops-surface);
+  color: var(--ops-ink);
+  border: 1px solid var(--ops-line);
+  border-radius: 0;
+  box-shadow: none;
+  padding: 10px 12px 12px;
+  font-family: inherit;
+}
+.ops-root .mapboxgl-popup-close-button {
+  color: var(--ops-muted);
+  font-size: 18px;
+  padding: 2px 6px;
+}
+.ops-root .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+  border-top-color: var(--ops-surface);
+}
+.ops-root .mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
+  border-bottom-color: var(--ops-surface);
+}
+.ops-pop-k {
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ops-muted);
+}
+.ops-pop-name {
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  margin-top: 2px;
+}
+.ops-pop-stage {
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.ops-pop-line {
+  margin-top: 6px;
+  font-size: 13.5px;
+}
+.ops-pop-meta {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--ops-muted);
+}
+.ops-pop-link {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ops-ink);
+}
+
 .ops-map-list {
   overflow: auto;
   border-top: 1px solid var(--ops-line);
