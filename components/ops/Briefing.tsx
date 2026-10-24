@@ -74,8 +74,16 @@ function riverStateColor(state?: string): string | undefined {
   return undefined;
 }
 
+function hasUsableRiver(d: District): boolean {
+  if (d.river_state && d.river_state.state && d.river_state.state !== 'unknown') return true;
+  // Bulletin site on the card is enough — do not contradict a DoWR reading
+  // with "no river gauge" (prod 24 Oct 2026).
+  if (d.river_site) return true;
+  return false;
+}
+
 function deriveRiverNote(districts: District[]): string {
-  const withRiver = districts.filter((d) => d.river_state && d.river_state.state !== 'unknown');
+  const withRiver = districts.filter(hasUsableRiver);
   if (withRiver.length === 0) {
     return 'No river gauge is reporting live for these locations today, so every score above is from rainfall alone.';
   }
