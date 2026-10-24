@@ -323,10 +323,26 @@ function DistrictRow({
         ) : null}
       </div>
 
-      {d.top_action ? (
-        <p className={`mt-1.5 text-sm ${std ? 'text-slate-800' : 'text-slate-200'}`}>
-          <span className={std ? 'text-slate-400' : 'text-slate-500'}>Action: </span>
-          {d.top_action}
+        {d.river_state?.label ? (
+          <p
+            className={`mt-1.5 text-sm ${
+              d.river_state.state === 'unknown'
+                ? std
+                  ? 'text-slate-500'
+                  : 'text-slate-500'
+                : std
+                  ? 'text-slate-800'
+                  : 'text-slate-200'
+            }`}
+          >
+            {d.river_state.label}
+          </p>
+        ) : null}
+
+        {d.top_action ? (
+          <p className={`mt-1.5 text-sm ${std ? 'text-slate-800' : 'text-slate-200'}`}>
+            <span className={std ? 'text-slate-400' : 'text-slate-500'}>Action: </span>
+            {d.top_action}
         </p>
       ) : null}
 

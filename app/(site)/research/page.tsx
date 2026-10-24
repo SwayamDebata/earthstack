@@ -331,7 +331,7 @@ export default function ResearchPage() {
           <Reveal>
             <div className="me-panel" style={{ borderLeft: '2px solid var(--laterite)' }}>
               <p className="me-label" style={{ marginBottom: 14 }}>
-                The honest position, September 2026
+                The honest position, October 2026
               </p>
               <h3 className="me-display me-d3" style={{ marginBottom: 14 }}>
                 Every claim above is labelled. If we cannot label it, we do not make it.

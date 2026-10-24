@@ -32,7 +32,7 @@ const products = [
     name: 'North Odisha',
     status: 'Shadow',
     statusClass: 'border-slate-400/35 bg-white/5 text-slate-200',
-    blurb: 'Baitarani · Brahmani · Budhabalanga. Scored and published with DoWR gauges, never alerted. Validation, not product alerts.',
+    blurb: 'Baitarani · Brahmani · Budhabalanga. Scored and published with DoWR gauges, never alerted. Validation, not product alerts. Advisory pilot tier for named district offices (D036). Still not a public alert.',
     cta: 'Open shadow surface',
   },
 ] as const;

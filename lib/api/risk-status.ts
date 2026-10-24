@@ -1,10 +1,17 @@
 /**
- * Risk payload honesty helpers (D023-D025).
- * Gate alerts on `alerting === true`. Gate river display on `river_status === "live"`.
+ * Risk payload honesty helpers (D023-D025, D036).
+ * Gate alerts on `alerting === true`.
+ * Gate river display on `riverIsLive` (`live` CWC telemetry or `live_daily` DoWR bulletin).
  */
 
-export type RiverStatus = 'live' | 'stale' | 'unavailable' | string;
+export type RiverStatus = 'live' | 'live_daily' | 'stale' | 'unavailable';
 export type ScoringMode = 'rain_only' | 'rain_and_river' | string;
+
+export const RIVER_LIVE: ReadonlySet<string> = new Set(['live', 'live_daily']);
+
+export function riverIsLive(s: string | null | undefined): boolean {
+  return RIVER_LIVE.has(String(s ?? '').toLowerCase());
+}
 
 const RAIN_ONLY_CAP = 0.665;
 
@@ -21,7 +28,7 @@ export function riverStatusOf(
 ): RiverStatus {
   const raw = riskRaw(riskOrEvidence);
   const s = String(riskOrEvidence.river_status ?? raw.river_status ?? '').toLowerCase();
-  if (s === 'live' || s === 'stale' || s === 'unavailable') return s;
+  if (s === 'live' || s === 'live_daily' || s === 'stale' || s === 'unavailable') return s;
   return 'unavailable';
 }
 
@@ -29,7 +36,7 @@ export function scoringModeOf(risk: Record<string, unknown>): ScoringMode {
   const raw = riskRaw(risk);
   const m = String(risk.scoring_mode ?? raw.scoring_mode ?? '').toLowerCase();
   if (m === 'rain_only' || m === 'rain_and_river') return m;
-  return riverStatusOf(risk) === 'live' ? 'rain_and_river' : 'rain_only';
+  return riverIsLive(riverStatusOf(risk)) ? 'rain_and_river' : 'rain_only';
 }
 
 /** True only when this location may trigger product alerts. */
@@ -83,14 +90,57 @@ export function fmtSignedMetres(n: number | null | undefined): string {
   return `${v > 0 ? '+' : ''}${v} m`;
 }
 
-/* ==========================================================================
-   Rule v2.5 (D034) — river stage became a scoring input, not just a decay gate.
+/** Never call a DoWR bulletin "live". CWC hourly = Live gauge; bulletin = dated. */
+export function fmtIstStamp(iso: string | null | undefined): string | null {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (!Number.isFinite(d.getTime())) return null;
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Kolkata',
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(d);
+  const get = (t: Intl.DateTimeFormatPartTypes) => parts.find((p) => p.type === t)?.value ?? '';
+  const day = get('day');
+  const month = get('month');
+  const hour = get('hour');
+  const minute = get('minute');
+  if (!day || !month) return null;
+  return `${day} ${month} ${hour}:${minute}`;
+}
 
-   Both fields are dormant today: every river feed is stale or unavailable (the
-   CWC Brahmani/Baitarani feed stalled on 2026-06-03) and every river path stays
-   gated on `river_status === "live"`, so `signal_source` reads "rainfall"
-   everywhere and `river_ratio` is null. The UI is built now because it lights up
-   the moment a live feed returns, not because it shows anything today.
+export function riverFeedCaption(status: string, observedAt?: string | null): string | null {
+  if (status === 'live') return 'Live gauge';
+  if (status === 'live_daily') {
+    const t = fmtIstStamp(observedAt);
+    return t ? `DoWR bulletin, ${t} IST` : 'DoWR bulletin';
+  }
+  return null;
+}
+
+export function riverSourceLabel(source: unknown): string | null {
+  const s = String(source ?? '').trim().toLowerCase();
+  if (!s) return null;
+  if (s === 'dowr_flood_bulletin') return 'DoWR daily bulletin';
+  if (s === 'cwc_telemetry') return 'CWC gauge';
+  return s.replace(/[_-]+/g, ' ');
+}
+
+export function riverTrendWord(trend: unknown): string | null {
+  const t = String(trend ?? '').trim().toLowerCase();
+  if (t === 'rising') return 'rising';
+  if (t === 'falling') return 'falling';
+  if (t === 'steady' || t === 'stable' || t === 'flat') return 'steady';
+  return null;
+}
+
+/* ==========================================================================
+   Rule v2.5 (D034) - river stage is a scoring input, not just a decay gate.
+   D036: `live_daily` (DoWR bulletin ≤ 30 h) scores like `live` on the four
+   pilot reaches. The five LIVE cities stay rain-only.
    ========================================================================== */
 
 export type SignalSource = 'rainfall' | 'river' | 'both';

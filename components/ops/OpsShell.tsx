@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { asRole, type Role } from '@/lib/ops/workflow';
 import { opsApi, type OpsMe } from '@/lib/ops/api';
 import { clearOpsSession, getAccessToken, loginOps } from '@/lib/ops/session';
+import { StatusLabel } from '@/components/ops/Bits';
 
 export type OpsUser = {
   id: number;
@@ -15,6 +16,8 @@ export type OpsUser = {
   org_name: string;
   org_slug: string;
   jurisdiction: string[];
+  pilot_jurisdiction: string[];
+  pilot_enabled: boolean;
   on_duty: string | null;
 };
 
@@ -67,6 +70,8 @@ function userFromMe(me: OpsMe): OpsUser {
     org_name: me.org.name,
     org_slug: String(me.org.slug ?? ''),
     jurisdiction: me.jurisdiction ?? [],
+    pilot_jurisdiction: me.pilot_jurisdiction ?? [],
+    pilot_enabled: Boolean(me.org.pilot_enabled),
     on_duty: me.org.on_duty ?? null,
   };
 }
@@ -197,9 +202,18 @@ export default function OpsShell({ children }: { children: ReactNode }) {
               <div className="ops-top-inner">
                 <Link href="/ops" className="ops-brand">
                   <div className="ops-brand-desk">{user.org_name}</div>
-                  <div className="ops-brand-sub">
-                    {user.full_name} · {user.role}
-                    {user.jurisdiction.length === 1 ? ` · ${user.jurisdiction[0]}` : ''}
+                  <div className="ops-brand-sub" style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
+                    {user.pilot_jurisdiction.length > 0 ? (
+                      <>
+                        <StatusLabel kind="PILOT" />
+                        <span>advisory</span>
+                        <span aria-hidden>·</span>
+                      </>
+                    ) : null}
+                    <span>
+                      {user.full_name} · {user.role}
+                      {user.jurisdiction.length === 1 ? ` · ${user.jurisdiction[0]}` : ''}
+                    </span>
                   </div>
                 </Link>
                 <nav className="ops-nav">

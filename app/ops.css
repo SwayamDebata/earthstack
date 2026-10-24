@@ -377,6 +377,9 @@ html:has(.ops-root.ops-dark) body {
   border-left-color: var(--imd-yellow);
   background: color-mix(in srgb, var(--imd-yellow-bg) 40%, transparent);
 }
+.ops-row-still-flooding {
+  border-left-color: var(--imd-red);
+}
 .ops-row-LOW {
   border-left-color: var(--imd-green);
 }

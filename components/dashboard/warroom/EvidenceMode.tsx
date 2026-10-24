@@ -14,6 +14,9 @@ import {
   fmtRiverRatio,
   isAlertingLocation,
   maxAchievableScore,
+  riverFeedCaption,
+  riverIsLive,
+  riverObservedAt,
   riverRatioOf,
   riverStationLabel,
   riverStatusOf,
@@ -177,11 +180,21 @@ export default function EvidenceMode({
             <div className={std ? 'rounded-lg border border-slate-200 bg-slate-50 p-3' : 'rounded-md border border-white/10 bg-white/5 p-3'}>
               <p className={label}>Driven by</p>
               <p className={`mt-1 text-sm ${std ? 'text-slate-900' : 'text-slate-100'}`}>
-                {drivenBy === 'river'
-                  ? `River — ${riverStationLabel(riskShape) ?? 'gauge'} ${fmtRiverRatio(riverRatio)}`
-                  : drivenBy === 'both'
-                    ? `Both — rainfall, and ${riverStationLabel(riskShape) ?? 'the river'} ${fmtRiverRatio(riverRatio)}`
-                    : 'Rainfall — no live river reading is contributing to this score'}
+                {(() => {
+                  const status = riverStatusOf(riskShape);
+                  const bulletin =
+                    status === 'live_daily'
+                      ? riverFeedCaption(status, riverObservedAt(riskShape))
+                      : null;
+                  const extra = bulletin ? ` · ${bulletin}` : '';
+                  if (drivenBy === 'river') {
+                    return `River - ${riverStationLabel(riskShape) ?? 'gauge'} ${fmtRiverRatio(riverRatio)}${extra}`;
+                  }
+                  if (drivenBy === 'both') {
+                    return `Both - rainfall, and ${riverStationLabel(riskShape) ?? 'the river'} ${fmtRiverRatio(riverRatio)}${extra}`;
+                  }
+                  return 'Rainfall - no usable river reading is in this score';
+                })()}
               </p>
 
               {/* Gauge fill. Only with a live reading: an empty bar would read
@@ -361,7 +374,7 @@ function EvidencePanel({
   const source = evidence.rainfall_source_used;
   const decay = evidence.antecedent_decay_applied;
   const gaugePct =
-    status === 'live' && level !== null && threshold && threshold > 0
+    riverIsLive(status) && level !== null && threshold && threshold > 0
       ? Math.max(0, Math.min(100, (level / threshold) * 100))
       : null;
 
@@ -375,7 +388,7 @@ function EvidencePanel({
       <h3 className={`mb-2 text-sm font-semibold ${std ? 'text-slate-900' : 'text-white'}`}>Evidence</h3>
 
       {/* River gauge: only live readings are current; stale is labelled not-used-in-score */}
-      {status === 'live' && level !== null && threshold !== null && threshold > 0 ? (
+      {riverIsLive(status) && level !== null && threshold !== null && threshold > 0 ? (
         <div className={`${cell} mb-3`}>
           <div className="flex items-center justify-between">
             <p className={label}>River level vs flood mark{station ? ` · ${String(station)}` : ''}</p>

@@ -23,13 +23,7 @@ const ROWS: {
   {
     value: '497',
     caption:
-      "daily flood bulletins archived, 2023 to 2026. The label is Odisha's own published gauge record: did the river cross its danger mark. Not our judgement, not an academic dataset.",
-    kind: 'backtest',
-  },
-  {
-    value: '48',
-    unit: 'h',
-    caption: 'lead on all six onsets in the August 2026 north Odisha replay',
+      "daily flood bulletins archived, 2023 to 2026 (129 days of 2026, 125 parsed). The label is Odisha's own published gauge record: did the river cross its danger mark. Not our judgement, not an academic dataset.",
     kind: 'backtest',
   },
   {
@@ -60,6 +54,93 @@ const ROWS: {
      - it is never rendered as a percentage or as "100% accurate".
      - it never appears without the statewide figure.
    ========================================================================== */
+
+export function SeasonTape() {
+  return (
+    <Reveal delay={20}>
+      <div
+        className="me-panel"
+        style={{
+          borderLeft: '2px solid var(--laterite)',
+          marginBottom: 'clamp(1.75rem, 3.5vw, 2.5rem)',
+          display: 'grid',
+          gap: 'clamp(1.25rem, 3vw, 2.25rem)',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+        }}
+      >
+        <div>
+          <div style={{ marginBottom: 12 }}>
+            <Chip kind="backtest" />
+          </div>
+          <p
+            className="me-display"
+            style={{
+              margin: '0 0 0.75rem',
+              fontSize: 'clamp(1.35rem, 2.2vw, 1.75rem)',
+              lineHeight: 1.2,
+              letterSpacing: '-0.02em',
+              color: 'var(--ink)',
+            }}
+          >
+            14 of 15 river-over-danger spells flagged two days ahead.
+          </p>
+          <p style={{ margin: 0, fontSize: 14.5, lineHeight: 1.65, color: 'var(--muted)' }}>
+            The 2026 monsoon on the Baitarani, scored end to end. Fifteen times a river crossed its
+            danger mark on the four reaches we watch. With rainfall forecasts plus the state&rsquo;s
+            own daily gauge bulletin we flagged 14 of 15 two days ahead, and were HIGH or above on
+            all 27 days a river already stood above danger (a nowcast, not a forecast).{' '}
+            <strong style={{ color: 'var(--text)' }}>n = 15 spells</strong>
+            {' · '}forecasts as issued, 2 Jun-5 Oct 2026 · unmodified engine.
+          </p>
+        </div>
+
+        <div>
+          <div style={{ marginBottom: 12 }}>
+            <Chip kind="miss" />
+          </div>
+          <p
+            className="me-display"
+            style={{
+              margin: '0 0 0.75rem',
+              fontSize: 'clamp(1.35rem, 2.2vw, 1.75rem)',
+              lineHeight: 1.2,
+              letterSpacing: '-0.02em',
+              color: 'var(--ink)',
+            }}
+          >
+            What production actually ran, rainfall only: 9 of 15.
+          </p>
+          <p style={{ margin: 0, fontSize: 14.5, lineHeight: 1.65, color: 'var(--muted)' }}>
+            And LOW on 6 of those 27 above-danger days: Jajpur on 26-27 September with the river at
+            1.06× danger. That miss is why the river term now exists.
+          </p>
+        </div>
+
+        <div>
+          <div style={{ marginBottom: 12 }}>
+            <Chip kind="backtest" />
+          </div>
+          <p
+            className="me-display"
+            style={{
+              margin: '0 0 0.75rem',
+              fontSize: 'clamp(1.35rem, 2.2vw, 1.75rem)',
+              lineHeight: 1.2,
+              letterSpacing: '-0.02em',
+              color: 'var(--ink)',
+            }}
+          >
+            The cost: MEDIUM on about 80% of monsoon days.
+          </p>
+          <p style={{ margin: 0, fontSize: 14.5, lineHeight: 1.65, color: 'var(--muted)' }}>
+            Akhuapada sat within 10% of danger for half the season, so Bhadrak and Jajpur read
+            MEDIUM on about 80% of monsoon days. MEDIUM is a river watch; HIGH is the action bar.
+          </p>
+        </div>
+      </div>
+    </Reveal>
+  );
+}
 
 function LeadEvidence() {
   return (
@@ -140,9 +221,11 @@ export default function Ledger() {
             className="me-label"
             style={{ marginBottom: '1.5rem', color: 'var(--muted)', letterSpacing: '0.18em' }}
           >
-            The position, September 2026 - stated the way we would want it stated back to us
+            The position, October 2026 - stated the way we would want it stated back to us
           </p>
         </Reveal>
+
+        <SeasonTape />
 
         <LeadEvidence />
 
@@ -187,6 +270,36 @@ export default function Ledger() {
         </Reveal>
 
         <Reveal delay={140}>
+          <div
+            className="me-panel"
+            style={{
+              marginTop: 'clamp(1.75rem, 3.5vw, 2.5rem)',
+              borderLeft: '2px solid var(--laterite)',
+            }}
+          >
+            <div style={{ marginBottom: 12 }}>
+              <Chip kind="pilot" />
+            </div>
+            <p
+              className="me-display"
+              style={{
+                margin: '0 0 0.75rem',
+                fontSize: 'clamp(1.35rem, 2.2vw, 1.75rem)',
+                lineHeight: 1.2,
+                letterSpacing: '-0.02em',
+                color: 'var(--ink)',
+              }}
+            >
+              Advisory pilot for the Baitarani districts.
+            </p>
+            <p style={{ margin: 0, fontSize: 14.5, lineHeight: 1.65, color: 'var(--muted)' }}>
+              30 days, no fee, scorecard agreed before day 1 and published on day 30. Jajpur ·
+              Bhadrak · Keonjhar (Anandapur) · Mayurbhanj (Baripada).
+            </p>
+          </div>
+        </Reveal>
+
+        <Reveal delay={160}>
           <p
             className="me-label"
             style={{

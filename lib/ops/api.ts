@@ -26,9 +26,11 @@ export const OpsMeSchema = z
         name: z.string(),
         slug: z.string().optional(),
         on_duty: z.string().nullable().optional(),
+        pilot_enabled: z.boolean().optional(),
       })
       .passthrough(),
     jurisdiction: z.array(z.string()).optional().default([]),
+    pilot_jurisdiction: z.array(z.string()).optional().default([]),
   })
   .passthrough();
 
@@ -102,4 +104,41 @@ export const opsApi = {
       body: {},
       signal,
     }),
+
+  weakPoints: (location?: string, signal?: AbortSignal) =>
+    apiRequest(
+      location ? `/weak-points?location=${encodeURIComponent(location)}` : '/weak-points',
+      List,
+      { ...ops, signal },
+    ),
+
+  addWeakPoint: (
+    body: {
+      location: string;
+      river: string;
+      site: string;
+      kind?: string;
+      block?: string | null;
+      watch_gauge?: string | null;
+      watch_ratio?: number | null;
+      last_breach_dates?: string[];
+      note?: string | null;
+      source?: string | null;
+    },
+    signal?: AbortSignal,
+  ) => apiRequest('/weak-points', Obj, { ...ops, method: 'POST', body, signal }),
+
+  deactivateWeakPoint: (id: string | number, signal?: AbortSignal) =>
+    apiRequest(`/weak-points/${encodeURIComponent(String(id))}`, Obj, {
+      ...ops,
+      method: 'DELETE',
+      signal,
+    }),
+
+  externalFeeds: (location?: string, signal?: AbortSignal) =>
+    apiRequest(
+      location ? `/feeds/external?location=${encodeURIComponent(location)}` : '/feeds/external',
+      Obj,
+      { ...ops, signal },
+    ),
 };

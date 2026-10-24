@@ -9,7 +9,8 @@ import { opsApi } from '@/lib/ops/api';
 import { MAPBOX_TOKEN } from '@/lib/config';
 import { normalizeSeverity, needsAttention, severity as sev } from '@/lib/ops/severity';
 import { ago } from '@/lib/ops/language';
-import { canSeeShadowLocations, placesFromMaps, type OpsPlace } from '@/lib/ops/places';
+import { includeShadowPlaces, placeStatusKind, placesFromMaps, type OpsPlace } from '@/lib/ops/places';
+import { isRiverWatch } from '@/lib/ops/alerts';
 import { SeverityChip, StatusLabel, Unreachable } from '@/components/ops/Bits';
 import { useOpsTheme, useOpsUser } from '@/components/ops/OpsShell';
 
@@ -53,7 +54,7 @@ export default function OpsMap() {
     queryFn: () => opsApi.riskMap(),
     refetchInterval: 120_000,
   });
-  const includeShadow = canSeeShadowLocations(user.role, user.jurisdiction);
+  const includeShadow = includeShadowPlaces(user.role, user.pilot_jurisdiction);
   const shadowQ = useQuery({
     queryKey: ['ops-shadow-map'],
     queryFn: () => opsApi.shadowMap(),
@@ -61,10 +62,27 @@ export default function OpsMap() {
     enabled: includeShadow,
   });
 
+  const briefingQ = useQuery({
+    queryKey: ['ops-briefing'],
+    queryFn: () => opsApi.briefing(),
+    refetchInterval: 300_000,
+  });
+
   const places = useMemo(
-    () => placesFromMaps(liveQ.data, shadowQ.data, user.jurisdiction, includeShadow),
-    [liveQ.data, shadowQ.data, user.jurisdiction, includeShadow],
+    () =>
+      placesFromMaps(liveQ.data, shadowQ.data, user.jurisdiction, {
+        role: user.role,
+        pilotJurisdiction: user.pilot_jurisdiction,
+      }),
+    [liveQ.data, shadowQ.data, user.jurisdiction, user.role, user.pilot_jurisdiction],
   );
+  const riverStateByPlace = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const d of briefingQ.data?.districts ?? []) {
+      if (d.location && d.river_state?.state) m.set(d.location.toLowerCase(), d.river_state.state);
+    }
+    return m;
+  }, [briefingQ.data]);
   const placesRef = useRef(places);
   placesRef.current = places;
 
@@ -215,6 +233,7 @@ export default function OpsMap() {
   }, [places, paint, mapFailed]);
 
   const needing = places.filter((p) => needsAttention(p.severity)).length;
+  const onPilot = places.filter((p) => p.tier === 'pilot').length;
   const failed = liveQ.isError;
   const loading = liveQ.isLoading;
 
@@ -234,7 +253,9 @@ export default function OpsMap() {
         <p className="ops-lede">
           {loading
             ? 'Loading scores…'
-            : `Scored ${ago(liveQ.dataUpdatedAt)}. The list is the same as the map.`}
+            : `Scored ${ago(liveQ.dataUpdatedAt)}. The list is the same as the map.${
+                onPilot ? ` ${onPilot} on pilot tier.` : ''
+              }`}
         </p>
       </div>
 
@@ -262,8 +283,17 @@ export default function OpsMap() {
                     <Link href={`/ops/places/${encodeURIComponent(p.region)}`} className="ops-item-name">
                       {p.region}
                     </Link>
-                    <SeverityChip value={p.severity} showAction />
-                    {!p.live ? <StatusLabel kind="SHADOW" /> : null}
+                    <SeverityChip
+                      value={p.severity}
+                      showAction
+                      riverWatch={isRiverWatch({
+                        tier: p.tier,
+                        severity: p.severity,
+                        signal_source: p.signal_source,
+                        river_state: riverStateByPlace.get(p.region.toLowerCase()) ?? null,
+                      })}
+                    />
+                    {placeStatusKind(p) ? <StatusLabel kind={placeStatusKind(p)!} /> : null}
                   </div>
                 </li>
               );

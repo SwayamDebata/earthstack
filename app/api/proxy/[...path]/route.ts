@@ -88,3 +88,7 @@ export async function PUT(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   return proxy(request, 'PATCH');
 }
+
+export async function DELETE(request: NextRequest) {
+  return proxy(request, 'DELETE');
+}

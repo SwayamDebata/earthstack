@@ -3,7 +3,7 @@
  * No hardcoded risk scores - only transforms validated upstream fields.
  */
 
-import { riverStatusOf, scoringModeOf, riverStationLabel, riverObservedAt, riverRatioOf } from '@/lib/api/risk-status';
+import { riverStatusOf, scoringModeOf, riverStationLabel, riverObservedAt, riverRatioOf, riverIsLive } from '@/lib/api/risk-status';
 
 export type RiskPayload = Record<string, unknown>;
 
@@ -134,7 +134,7 @@ export function buildDrivers(risk: RiskPayload): OperationalDriver[] {
       : null;
   const ratioForDriver = authoritativeRatio ?? derivedRatio;
 
-  if (status === 'live' && ratioForDriver !== null) {
+  if (riverIsLive(status) && ratioForDriver !== null) {
     const ratio = ratioForDriver;
     const levelText =
       riverLevel !== null && floodThreshold !== null
@@ -158,7 +158,7 @@ export function buildDrivers(risk: RiskPayload): OperationalDriver[] {
     });
   } else {
     drivers.push({
-      label: 'No live river gauge',
+      label: 'No usable river gauge',
       detail: 'Score is rainfall-only; CRITICAL not assessable without river data',
     });
   }

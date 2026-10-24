@@ -1,6 +1,8 @@
 import { asOpsStatus, asOutcome, type AlertState, type Outcome } from '@/lib/ops/workflow';
 import { normalizeSeverity, type Severity } from '@/lib/ops/severity';
 
+export type AlertTier = 'live' | 'pilot';
+
 export type OpsAlert = {
   id: string;
   region: string;
@@ -16,7 +18,31 @@ export type OpsAlert = {
   closed_at: string | null;
   closed_by: string | number | null;
   outcome: Outcome | null;
+  tier: AlertTier | null;
+  channel: string | null;
+  signal_source: string | null;
 };
+
+const RIVER_WATCH_STATES = new Set([
+  'still_flooding',
+  'receding',
+  'rising_to_danger',
+  'near_danger',
+]);
+
+/** Pilot MEDIUM driven by the river is a watch, not a rainfall "be aware". */
+export function isRiverWatch(alert: {
+  tier?: string | null;
+  severity: unknown;
+  signal_source?: string | null;
+  river_state?: string | null;
+  river_ratio?: number | null;
+}): boolean {
+  if (alert.tier !== 'pilot' || normalizeSeverity(alert.severity) !== 'MEDIUM') return false;
+  if (String(alert.signal_source ?? '').toLowerCase() === 'river') return true;
+  if (RIVER_WATCH_STATES.has(String(alert.river_state ?? '').toLowerCase())) return true;
+  return typeof alert.river_ratio === 'number' && alert.river_ratio >= 0.9;
+}
 
 type RawAlert = Record<string, unknown>;
 
@@ -57,6 +83,8 @@ export function toOpsAlert(r: RawAlert): OpsAlert | null {
   const pipeline = str(r.pipeline_status);
   const statusRaw = str(r.ops_status) ?? str(r.status);
   const statusIsPipeline = statusRaw ? PIPELINE.has(statusRaw.toLowerCase()) : false;
+  const tierRaw = str(r.tier)?.toLowerCase();
+  const tier: AlertTier | null = tierRaw === 'pilot' || tierRaw === 'live' ? tierRaw : null;
 
   return {
     id,
@@ -73,6 +101,9 @@ export function toOpsAlert(r: RawAlert): OpsAlert | null {
     closed_at: str(r.closed_at),
     closed_by: byline(r.closed_by),
     outcome: asOutcome(r.outcome),
+    tier,
+    channel: str(r.channel),
+    signal_source: str(r.signal_source),
   };
 }
 

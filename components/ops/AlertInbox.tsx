@@ -4,10 +4,10 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { opsApi } from '@/lib/ops/api';
-import { toOpsAlerts, type OpsAlert } from '@/lib/ops/alerts';
+import { isRiverWatch, toOpsAlerts, type OpsAlert } from '@/lib/ops/alerts';
 import { severity as sev, severityRank, needsAttention, normalizeSeverity } from '@/lib/ops/severity';
 import { ago, elapsed, minutesSince, needAttentionLine } from '@/lib/ops/language';
-import { canSeeShadowLocations, placesFromMaps } from '@/lib/ops/places';
+import { includeShadowPlaces, placeStatusKind, placesFromMaps } from '@/lib/ops/places';
 import { CAN, STATE_LABELS } from '@/lib/ops/workflow';
 import { useOpsUser } from '@/components/ops/OpsShell';
 import { SeverityChip, StatusLabel, Empty, Loading, Unreachable } from '@/components/ops/Bits';
@@ -35,12 +35,14 @@ function Row({
   onAck,
   selected,
   busy,
+  riverWatch,
 }: {
   alert: OpsAlert;
   canAck: boolean;
   onAck: (id: string) => void;
   selected: boolean;
   busy: boolean;
+  riverWatch: boolean;
 }) {
   const s = sev(alert.severity);
   const untouched = alert.ops_status === 'new';
@@ -55,7 +57,8 @@ function Row({
             <Link href={`/ops/alerts/${encodeURIComponent(alert.id)}`} className="ops-item-name">
               {alert.region}
             </Link>
-            <SeverityChip value={alert.severity} size="sm" />
+            {alert.tier === 'pilot' ? <StatusLabel kind="PILOT" /> : null}
+            <SeverityChip value={alert.severity} size="sm" riverWatch={riverWatch} />
           </div>
           <p className="ops-item-meta">
             {untouched ? (
@@ -114,19 +117,53 @@ export default function AlertInbox() {
     queryFn: () => opsApi.riskMap(),
     refetchInterval: 120_000,
   });
-  const includeShadow = canSeeShadowLocations(user.role, user.jurisdiction);
+  const includeShadow = includeShadowPlaces(user.role, user.pilot_jurisdiction);
   const shadowQ = useQuery({
     queryKey: ['ops-shadow-map'],
     queryFn: () => opsApi.shadowMap(),
     refetchInterval: 300_000,
     enabled: includeShadow,
   });
+  const briefingQ = useQuery({
+    queryKey: ['ops-briefing'],
+    queryFn: () => opsApi.briefing(),
+    refetchInterval: 300_000,
+  });
 
   const alerts = useMemo(() => toOpsAlerts(alertsQ.data), [alertsQ.data]);
   const places = useMemo(
-    () => placesFromMaps(riskQ.data, shadowQ.data, user.jurisdiction, includeShadow),
-    [riskQ.data, shadowQ.data, user.jurisdiction, includeShadow],
+    () =>
+      placesFromMaps(riskQ.data, shadowQ.data, user.jurisdiction, {
+        role: user.role,
+        pilotJurisdiction: user.pilot_jurisdiction,
+      }),
+    [riskQ.data, shadowQ.data, user.jurisdiction, user.role, user.pilot_jurisdiction],
   );
+  const riverStateByPlace = useMemo(() => {
+    const m = new Map<string, string>();
+    const districts = (briefingQ.data?.districts ?? []) as {
+      location?: string;
+      river_state?: { state?: string };
+    }[];
+    for (const d of districts) {
+      if (d.location && d.river_state?.state) m.set(d.location.toLowerCase(), d.river_state.state);
+    }
+    return m;
+  }, [briefingQ.data]);
+  const flooding = useMemo(() => {
+    const set = new Set<string>();
+    for (const [name, state] of riverStateByPlace) {
+      if (state === 'still_flooding') set.add(name);
+    }
+    return set;
+  }, [riverStateByPlace]);
+  const signalByPlace = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const p of places) {
+      if (p.signal_source) m.set(p.region.toLowerCase(), p.signal_source);
+    }
+    return m;
+  }, [places]);
 
   const windowHours = WINDOWS.find((w) => w.key === windowKey)?.hours ?? 168;
   const inWindow = useMemo(
@@ -153,9 +190,12 @@ export default function AlertInbox() {
       if (untouchedX !== untouchedY) return untouchedX - untouchedY;
       const r = severityRank(a.severity) - severityRank(b.severity);
       if (r !== 0) return r;
+      const fx = flooding.has(a.region.toLowerCase()) ? 0 : 1;
+      const fy = flooding.has(b.region.toLowerCase()) ? 0 : 1;
+      if (fx !== fy) return fx - fy;
       return a.issued_at.localeCompare(b.issued_at);
     });
-  }, [inWindow, filter]);
+  }, [inWindow, filter, flooding]);
 
   const needing = inWindow.filter(
     (a) => a.ops_status === 'new' && needsAttention(a.severity),
@@ -163,6 +203,17 @@ export default function AlertInbox() {
 
   const canAck = CAN[user.role].acknowledge;
   const above = places.filter((p) => needsAttention(p.severity)).length;
+  const onPilot = places.filter((p) => p.tier === 'pilot').length;
+  const shadowPlaces = places.some((p) => p.tier === 'shadow');
+
+  const watchFor = (alert: OpsAlert) => {
+    const key = alert.region.toLowerCase();
+    return isRiverWatch({
+      ...alert,
+      signal_source: alert.signal_source ?? signalByPlace.get(key) ?? null,
+      river_state: riverStateByPlace.get(key) ?? null,
+    });
+  };
 
   const ack = async (id: string) => {
     setAckError(null);
@@ -216,7 +267,8 @@ export default function AlertInbox() {
             : `${places.length} locations monitored${
                 above ? `, ${above} above alert level` : ', none above alert level'
               }`}
-          {includeShadow ? ' · north Odisha in shadow' : ''}
+          {onPilot ? ` · ${onPilot} on pilot tier` : ''}
+          {shadowPlaces ? ' · north Odisha in shadow' : ''}
           {alertsQ.isSuccess ? ` · Updated ${ago(alertsQ.dataUpdatedAt)}` : ''}
         </p>
         <p className="ops-k">j / k move · enter open · a acknowledge</p>
@@ -226,15 +278,27 @@ export default function AlertInbox() {
         <div>
           <h2 className="ops-h2">Now</h2>
           <div className="ops-now">
-            {places.map((p) => (
+            {places.map((p) => {
+              const kind = placeStatusKind(p);
+              return (
               <Link key={p.region} href={`/ops/places/${encodeURIComponent(p.region)}`}>
                 <div className="ops-now-name">{p.region}</div>
                 <div className="ops-now-stage">
-                  <SeverityChip value={p.severity} size="sm" />
-                  {!p.live ? <StatusLabel kind="SHADOW" /> : null}
+                  <SeverityChip
+                    value={p.severity}
+                    size="sm"
+                    riverWatch={isRiverWatch({
+                      tier: p.tier,
+                      severity: p.severity,
+                      signal_source: p.signal_source,
+                      river_state: riverStateByPlace.get(p.region.toLowerCase()) ?? null,
+                    })}
+                  />
+                  {kind ? <StatusLabel kind={kind} /> : null}
                 </div>
               </Link>
-            ))}
+              );
+            })}
           </div>
         </div>
       ) : null}
@@ -302,6 +366,7 @@ export default function AlertInbox() {
                 canAck={canAck}
                 selected={i === cursor}
                 busy={busyId === a.id}
+                riverWatch={watchFor(a)}
                 onAck={(id) => void ack(id)}
               />
             ))}
